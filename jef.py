@@ -5,6 +5,10 @@ from __future__ import print_function
 import argparse
 import json
 from plugins.config.HandlerConfig import HandlerConfig
+from plugins.dataset.LocalFileDataSetHandler import LocalFileDataSetHandler
+from plugins.dataset.LaceworkCLIDataSetHandler import LaceworkCLIDataSetHandler
+from plugins.report.LocalFileReportHandler import LocalFileReportHandler
+from plugins.report.SlackReportHandler import SlackReportHandler
 from pyfiglet import Figlet
 
 
