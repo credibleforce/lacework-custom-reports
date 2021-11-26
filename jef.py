@@ -2,81 +2,10 @@
 
 from __future__ import print_function
 
-import os
 import argparse
 import json
-import jinja2
-import subprocess
+from plugins.config.HandlerConfig import HandlerConfig
 from pyfiglet import Figlet
-
-class HandlerConfig():
-    def __init__(self,dataHandlersPath="./config/datatypes.json",reportHandlersPath="./config/reporttypes.json"):
-        self.dataHandlersPath = dataHandlersPath
-        self.reportHandlersPath = reportHandlersPath    
-        self.dataHandlers = {}
-        self.reportHandlers = {}
-        self.load()
-
-    def load(self):
-        with open(self.dataHandlersPath) as f:
-            self.dataHandlers = json.load(f)
-
-        with open(self.reportHandlersPath) as f:
-            self.reportHandlers = json.load(f)
-
-    def dataHandlers(self):
-        return self.dataHandlers
-
-    def reportHandlers(self):
-        return self.reportHandlers
-
-class DataSetHandler():
-    def __init__(self,dataset):
-        self.dataset = dataset
-        self.data = { "name": None, "data": None }
-        self.load()
-        self.generate()
-
-    def load(self):
-        return None
-
-    def generate(self):
-        return self.data
-    
-class LocalFileDataSetHandler(DataSetHandler):
-    def load(self):
-        with open(self.dataset['path']) as f:
-            j = json.load(f)
-
-        self.data = {
-            "name": self.dataset['name'],
-            "data": j
-        }
-
-class LaceworkCLIDataSetHandler(DataSetHandler):
-    def load(self):
-        command = 'lacework {0} {1} --json'.format(self.dataset['command'],self.dataset['args'])
-        result = json.loads(subprocess.run(command, capture_output=True, text=True, shell=True).stdout)
-        self.data = {
-            "name": self.dataset['name'],
-            "data": result
-        }
-
-class ReportHandler():
-    def __init__(self,datasets,template,report):
-        self.datasets = datasets
-        loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(template))
-        env = jinja2.Environment(loader=loader)
-        self.template = env.get_template(os.path.basename(template))
-        self.report = report
-
-    def generate(self):
-        pass
-
-class LocalFileReportHandler(ReportHandler):
-    def generate(self):
-        with open(self.report['path'], 'w') as f:
-            f.write(self.template.render(items=self.datasets))
 
 
 class JustEffectivelyFormatting():
@@ -121,10 +50,10 @@ def main():
     print("{0} [{1}]\n".format(dsc,ver))
 
     parser = argparse.ArgumentParser(description=dsc)
-    parser.add_argument('--config', required=True, help='path to config file')
+    parser.add_argument('--reports', required=True, help='path to config file')
     args = parser.parse_args()
 
-    with open(args.config) as f:
+    with open(args.reports) as f:
         config = json.load(f)
         for r in config['reports']:
             j = JustEffectivelyFormatting(report=r)  
