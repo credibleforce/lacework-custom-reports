@@ -1,7 +1,7 @@
 {
     "reports": [
         {
-            "name": "sample",
+            "name": "sample1",
             "datasources": [
                 {
                     "name": "dataset1",
@@ -27,6 +27,25 @@
                     "type": "local",
                     
                     "path": "./output/output.html"
+                }
+            ]
+        },
+        {
+            "name": "sample2",
+            "datasources": [
+                {
+                    "name": "dataset1",
+                    "type": "local",
+                    "path": "./data/dataset1.json"
+                }
+            ],
+            "template": null,
+            "reports": [
+                {
+                    "name": "slack",
+                    "type": "slack",
+                    "token": "test",
+                    "channel": "log"
                 }
             ]
         }

@@ -41,8 +41,8 @@ class JustEffectivelyFormatting():
             # enumerate the report handlers and dynamically instanciate the class
             for t in self.reportHandler.keys():
                 if t == r['type']:
-                    dataClass = globals()[self.reportHandler[t]]
-                    dataClass(datasets=self.datasets,template=self.template,report=r).generate()
+                    reportClass = globals()[self.reportHandler[t]]
+                    reportClass(datasets=self.datasets,template=self.template,report=r).generate()
                     break
 
 def main():

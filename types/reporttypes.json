@@ -1,3 +1,4 @@
 {
-    "local": "LocalFileReportHandler"
+    "local": "LocalFileReportHandler",
+    "slack": "SlackReportHandler"
 }

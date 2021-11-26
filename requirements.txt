@@ -2,3 +2,5 @@ jinja2
 jq
 pyfiglet
 awscli
+slack
+slackclient
