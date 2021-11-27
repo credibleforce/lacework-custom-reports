@@ -28,7 +28,7 @@
 ## Workflow
 
 1) spin up docker image
-2) install lacework cli
+2) install lacework cli (curl https://raw.githubusercontent.com/lacework/go-sdk/main/cli/install.sh | bash)
 3) install awscli
 4) install python3, jq, jinja template
 5) read data from source as object, apply filters

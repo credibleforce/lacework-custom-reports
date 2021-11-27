@@ -17,16 +17,26 @@
                     "name": "dataset3",
                     "type": "laceworkcli",
                     "command": "compliance",
-                    "args": "aws get-report 535849429554"
+                    "args": "aws get-report {{ env['AWS_ACCOUNT_ID'] }}",
+                    "organization": false,
+                    "subaccount": null,
+                    "account": null,
+                    "api_key": null,
+                    "api_secret": null,
+                    "api_token": null,
+                    "profile": null
+
                 }
             ],
-            "template": "./templates/template.html.j2",
+            "settings": {
+                "template": "./templates/template.html.j2"
+            },
             "reports": [
                 {
                     "name": "output",
                     "type": "local",
                     
-                    "path": "./output/output.html"
+                    "path": "./output/local_output.html"
                 }
             ]
         },
@@ -39,12 +49,14 @@
                     "path": "./data/dataset1.json"
                 }
             ],
-            "template": null,
+            "settings": {
+                "template": "./templates/slack.json.j2"
+            },
             "reports": [
                 {
                     "name": "slack",
                     "type": "slack",
-                    "token": "test",
+                    "token": "{{ env['TEST_TOKEN'] }}",
                     "channel": "log"
                 }
             ]

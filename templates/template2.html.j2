@@ -1,0 +1,27 @@
+<html>
+<head></head>
+<body>
+
+<h1>{{ items['s3dataset1'].name }}</h1>
+<table>
+<thead>
+   <tr>
+      {% for field in items['s3dataset1'].data[0] %}
+      <TD class="c1">{{ field }}</TD>
+      {% endfor %}
+   </tr>
+</thead>
+{% for item in items['s3dataset1'].data %}
+<tr>
+   {% for field in item %}
+   <TD class="c1">{{ item[field] }}</TD>
+   {% endfor %}
+</tr>
+{% endfor %}
+
+</table>
+<script type="text/javascript">
+   var dataset1 = {{ items['s3dataset1'].data | tojson() }}
+   console.log(dataset1)
+</script>
+</body>

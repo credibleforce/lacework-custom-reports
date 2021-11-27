@@ -1,6 +1,10 @@
 jinja2
 jq
 pyfiglet
-awscli
+boto3
 slack
 slackclient
+awswrangler
+jsonschema
+pytz
+python-dateutil
