@@ -24,7 +24,7 @@ class reports():
     
     def load(self):
         loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(self.config))
-        env = jinja2.Environment(loader=loader)
+        env = jinja2.Environment(loader=loader,extensions=['jinja2.ext.do'])
         template = env.get_template(os.path.basename(self.config))
         self.config = json.loads(template.render(env=os.environ))
         

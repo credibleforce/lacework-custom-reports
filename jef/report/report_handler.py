@@ -19,11 +19,11 @@ class report_handler():
         # allow report override for global template
         if 'template' in self.report.keys():
             loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(self.report['template']))
-            env = jinja2.Environment(loader=loader)
+            env = jinja2.Environment(loader=loader,extensions=['jinja2.ext.do'])
             self.template = env.get_template(os.path.basename(self.report['template']))
         elif 'template' in self.settings.keys():
             loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(self.settings['template']))
-            env = jinja2.Environment(loader=loader)
+            env = jinja2.Environment(loader=loader,extensions=['jinja2.ext.do'])
             self.template = env.get_template(os.path.basename(self.settings['template']))
 
     def generate(self):

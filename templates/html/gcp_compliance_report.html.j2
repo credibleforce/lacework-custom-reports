@@ -202,7 +202,7 @@
         </article>
         {% set categories = [] %}
         {% for r in items['dataset1']['data']['recommendations'] if r['category'] not in categories %}
-            <div style="block:none">{{ categories.append(r['category']) }}</div>'
+           {% do categories.append(r['category']) %}
         {% endfor %}
         {% for c in categories %}
         <article>
