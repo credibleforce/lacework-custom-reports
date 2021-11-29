@@ -1,0 +1,24 @@
+{
+    "reports": [
+        {
+            "name": "sample1",
+            "datasources": [
+                {
+                    "name": "dataset1",
+                    "type": "local_dataset_handler",
+                    "path": "./data/dataset1.json"
+                }
+            ],
+            "settings": {
+                "template": "./templates/html/table_simple.html.j2"
+            },
+            "reports": [
+                {
+                    "name": "output",
+                    "type": "local_report_handler",
+                    "path": "./output/local_output.html"
+                }
+            ]
+        }
+    ]
+}

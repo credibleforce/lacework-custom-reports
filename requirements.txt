@@ -8,3 +8,4 @@ awswrangler
 jsonschema
 pytz
 python-dateutil
+genson

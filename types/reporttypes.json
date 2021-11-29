@@ -1,5 +1,0 @@
-{
-    "local": "LocalFileReportHandler",
-    "slack": "SlackReportHandler",
-    "s3": "AWSS3ReportHandler"
-}

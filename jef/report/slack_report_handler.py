@@ -1,11 +1,13 @@
 from slack.web.slack_response import SlackResponse
-from plugins.report.ReportHandler import ReportHandler
-import os
+from .report_handler import report_handler
 from slack import WebClient
 from slack.errors import SlackApiError
 import json
+import os
 
-class SlackReportHandler(ReportHandler):
+module_path = os.path.abspath(os.path.dirname(__file__))
+
+class slack_report_handler(report_handler):
     def generate(self):
         # as we can't submit json directory with the client we parse first and then supply args
         message_from_template = self.template.render(items=self.datasets,channel=self.report['channel'])

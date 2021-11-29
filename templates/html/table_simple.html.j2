@@ -2,16 +2,16 @@
 <head></head>
 <body>
 
-<h1>{{ items['s3dataset1'].name }}</h1>
+<h1>{{ items['dataset1'].name }}</h1>
 <table>
 <thead>
    <tr>
-      {% for field in items['s3dataset1'].data[0] %}
+      {% for field in items['dataset1'].data[0] %}
       <TD class="c1">{{ field }}</TD>
       {% endfor %}
    </tr>
 </thead>
-{% for item in items['s3dataset1'].data %}
+{% for item in items['dataset1'].data %}
 <tr>
    {% for field in item %}
    <TD class="c1">{{ item[field] }}</TD>
@@ -21,7 +21,7 @@
 
 </table>
 <script type="text/javascript">
-   var dataset1 = {{ items['s3dataset1'].data | tojson() }}
+   var dataset1 = {{ items['dataset1'].data | tojson() }}
    console.log(dataset1)
 </script>
 </body>

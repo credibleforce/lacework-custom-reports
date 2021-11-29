@@ -1,8 +1,13 @@
-from plugins.dataset.DataSetHandler import DataSetHandler
+from __future__ import print_function
+
+from .dataset_handler import dataset_handler
 import json
 import subprocess
+import os
 
-class LaceworkCLIDataSetHandler(DataSetHandler):
+module_path = os.path.abspath(os.path.dirname(__file__))
+
+class laceworkcli_dataset_handler(dataset_handler):
     def load(self):
         subaccount = ("--subaccount={0}".format(self.dataset['subaccount']) if 'subaccount' in self.dataset.keys() and self.dataset['subaccount'] else "")
         profile = ("--profile={0}".format(self.dataset['profile']) if 'profile' in self.dataset.keys() and self.dataset['profile'] else "")

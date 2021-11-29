@@ -4,8 +4,8 @@
             "name": "sample3",
             "datasources": [
                 {
-                    "name": "s3dataset1",
-                    "type": "s3",
+                    "name": "dataset1",
+                    "type": "s3_dataset_handler",
                     "s3_path": "s3://proservlab-lacework-data/agent/2021-11-25/2021-11-25-0[0-1]-00/dns_query.json.gz",
                     "newline_separated": true,
                     "profile": "root",
@@ -14,14 +14,13 @@
                 }
             ],
             "settings": {
-                "template": "./templates/template2.html.j2"
+                "template": "./templates/html/table_simple.html.j2"
             },
             "reports": [
                 {
                     "name": "output",
-                    "type": "local",
-                    
-                    "path": "./output/s3_output.html"
+                    "type": "local_report_handler",
+                    "path": "./output/output.html"
                 }
             ]
         }

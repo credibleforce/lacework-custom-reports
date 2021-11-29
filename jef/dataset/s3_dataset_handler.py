@@ -1,4 +1,6 @@
-from plugins.dataset.DataSetHandler import DataSetHandler
+from __future__ import print_function
+
+from .dataset_handler import dataset_handler
 import json
 import boto3
 import gzip
@@ -6,8 +8,11 @@ import awswrangler as wr
 import pytz
 from datetime import datetime
 from dateutil.parser import isoparse
+import os
 
-class AWSS3DataHandler(DataSetHandler):
+module_path = os.path.abspath(os.path.dirname(__file__))
+
+class s3_dataset_handler(dataset_handler):
     def read_compressed_json(self, decompress):
         if decompress:
             with gzip.GzipFile(fileobj=object['Body']) as gzipfile:
@@ -26,6 +31,7 @@ class AWSS3DataHandler(DataSetHandler):
         return result
 
     def load(self):
+        self.logger.debug("Loading s3 bucket...")
         s3_path = (self.dataset['s3_path'] if 's3_path' in self.dataset.keys() and self.dataset['s3_path'] else None)
         profile = (self.dataset['profile'] if 'profile' in self.dataset.keys() and self.dataset['profile'] else None)
         newline_separated = (self.dataset['newline_separated'] if 'newline_separated' in self.dataset.keys() and self.dataset['newline_separated'] else False)
@@ -54,8 +60,7 @@ class AWSS3DataHandler(DataSetHandler):
         else:
             objects = wr.s3.list_objects(path=s3_path,boto3_session=s)
             
-        print(objects)
-        print("Found: {0} files".format(len(objects)))
+        self.logger.debug("Found: {0} files".format(len(objects)))
         for o in objects:
             result = result + [json.loads(wr.s3.read_json(o,lines=newline_separated,boto3_session=s).to_json())]
         

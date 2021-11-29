@@ -1,0 +1,33 @@
+{
+    "reports": [
+        {
+            "name": "sample1",
+            "datasources": [
+                {
+                    "name": "dataset1",
+                    "type": "laceworkcli_dataset_handler",
+                    "command": "compliance",
+                    "args": "aws get-report {{ env['AWS_ACCOUNT_ID'] }}",
+                    "organization": false,
+                    "subaccount": null,
+                    "account": null,
+                    "api_key": null,
+                    "api_secret": null,
+                    "api_token": null,
+                    "profile": null
+                }
+            ],
+            "settings": {
+                "template": "./templates/slack/text.json.j2"
+            },
+            "reports": [
+                {
+                    "name": "slack",
+                    "type": "slack_report_handler",
+                    "token": "{{ env['TEST_TOKEN'] }}",
+                    "channel": "log"
+                }
+            ]
+        }
+    ]
+}

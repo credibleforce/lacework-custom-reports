@@ -1,5 +1,0 @@
-{
-    "local": "LocalFileDataSetHandler",
-    "laceworkcli": "LaceworkCLIDataSetHandler",
-    "s3": "AWSS3DataHandler"
-}
