@@ -4,19 +4,23 @@ import json
 import jsonschema
 from jsonschema import validate
 import jinja2
+from .generate import generate
 import os
+import logging
 
 module_path = os.path.abspath(os.path.dirname(__file__))
 
 class reports():
-    def __init__(self,config):
+    def __init__(self,config,plugins=[]):
+        self.logger = logging.getLogger(__name__)
         self.config = config
+        self.plugins = plugins
         valid, msg = self.load()
         if valid:
-            print(msg)
+            self.logger.debug(msg)
             self.generate()
         else:
-            print(msg)
+            self.logger.error(msg)
     
     def load(self):
         loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(self.config))
@@ -29,7 +33,7 @@ class reports():
     def generate(self):
         # enumerate reports and render
         for r in self.config['reports']:
-            j = report(report=r)
+            j = generate(report=r,plugins=self.plugins)
 
     def get_schema(self):
         """This function loads the given schema available"""
@@ -45,4 +49,3 @@ class reports():
             return False, err
 
         return True, "Validated schema successfully"
-
