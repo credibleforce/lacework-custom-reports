@@ -47,5 +47,4 @@ class reports():
             validate(instance=json_data, schema=execute_api_schema)
         except jsonschema.exceptions.ValidationError as err:
             return False, err
-
         return True, "Validated schema successfully"
