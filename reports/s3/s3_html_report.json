@@ -20,7 +20,7 @@
                 {
                     "name": "output",
                     "type": "local_report_handler",
-                    "path": "./output/output.html"
+                    "path": "./output/s3_dns_query_report.html"
                 }
             ]
         }
