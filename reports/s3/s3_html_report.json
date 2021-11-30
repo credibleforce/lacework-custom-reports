@@ -14,7 +14,7 @@
                 }
             ],
             "settings": {
-                "template": "./templates/html/table_simple.html.j2"
+                "template": "./templates/html/s3_dns_query_report.html.j2"
             },
             "reports": [
                 {
