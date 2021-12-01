@@ -1,0 +1,28 @@
+{
+    "reports": [
+        {
+            "name": "sample2",
+            "datasources": [
+                {
+                    "name": "dataset1",
+                    "type": "local_dataset_handler",
+                    "path": "./data/dataset1.json"
+                }
+            ],
+            "settings": {
+                "template": "./templates/slack/text.json.j2"
+            },
+            "reports": [
+                {
+                    "name": "slack",
+                    "type": "slack_report_handler",
+                    "token": "{{ env['TEST_TOKEN'] }}",
+                    "attachment_template": "./templates/html/table_simple.html.j2",
+                    "attachment_name": "report.html",
+                    "attachment_comment": "report",
+                    "channel": "log"
+                }
+            ]
+        }
+    ]
+}

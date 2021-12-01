@@ -1,12 +1,25 @@
 {
     "channel": "{{ channel }}",
-    "blocks": [{
+    "text": "Report Available",
+    "blocks": [
+      {
+        "type": "header",
+        "text": {
+          "type": "plain_text",
+          "text": "Report"
+        }
+		  },
+      {
         "type": "section",
         "fields": [
         {% for field in items['dataset1'].data[0] %}
           {
             "type": "mrkdwn",
-	        "text": "{{ field }}"
+	          "text": "*{{ field }}*"
+          },
+          {
+            "type": "plain_text",
+	          "text": "{{ items['dataset1'].data[0][field] }}"
           }{{ ", " if not loop.last else "" }}
         {% endfor %}
         ]

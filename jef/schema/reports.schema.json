@@ -88,16 +88,25 @@
 									"type": "string"
 								},
 								"path": {
-									"type": "string"
+									"type": ["null", "string"]
 								},
 								"token": {
-									"type": "string"
+									"type": ["null", "string"]
 								},
 								"channel": {
-									"type": "string"
+									"type": ["null", "string"]
 								},
 								"template": {
-									"type": "string"
+									"type": ["null", "string"]
+								},
+								"attachment_template": {
+									"type": ["null", "string"]
+								},
+								"attachment_name": {
+									"type": ["null", "string"]
+								},
+								"attachment_comment": {
+									"type": ["null", "string"]
 								}
 							},
 							"required": ["name", "type"]
