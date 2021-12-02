@@ -109,15 +109,18 @@
                 border: lightgray 1px solid;
                 padding: 10px;
             }
-            table {
+            
+            /* ensure table data is wrapped for PDF */
+            .data-table {
                 width: 100%;
+                overflow-wrap: anywhere;
             }
-            thead {
+            .data-table thead {
                 background-color: lightgray;
                 font-size: 0.8em;
                 font-weight: bold;
             }
-            td {
+            .data-table tr td {
                 padding: 5px;
                 font-size: 0.75em;
             }
@@ -208,15 +211,16 @@
                 border: lightgray 1px solid;
                 padding: 10px;
             }
-            table {
+
+            .data-table {
                 width: 100%;
             }
-            thead {
+            .data-table thead {
                 background-color: lightgray;
                 font-size: 0.8em;
                 font-weight: bold;
             }
-            td {
+            .data-table tr td {
                 padding: 5px;
                 font-size: 0.75em;
             }
@@ -316,7 +320,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <table>
+                    <table class="data-table">
                         <thead>
                             <td>id</td>
                             <td>recommendation</td>
