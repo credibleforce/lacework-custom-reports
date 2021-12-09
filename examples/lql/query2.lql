@@ -1,0 +1,22 @@
+---
+evaluatorId: <<IMPLICIT>>
+queryId: Custom_HE_Users_1
+queryText: |-
+  Custom_HE_Users_1 {
+    SOURCE {
+      LW_HE_USERS
+    }
+    FILTER {
+      ANY_IN_ARRAY(OTHER_GROUP_NAMES, 'google-sudoers')
+    }
+    RETURN DISTINCT {
+      BATCH_START_TIME,
+      BATCH_END_TIME,
+      RECORD_CREATED_TIME,
+      MID,
+      USERNAME,
+      PRIMARY_GROUP_NAME,
+      OTHER_GROUP_NAMES,
+      HOME_DIR
+    }
+  }

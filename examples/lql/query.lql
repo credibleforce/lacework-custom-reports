@@ -1,0 +1,14 @@
+evaluatorId: Cloudtrail
+queryId: MyLQL
+queryText: |-
+  MyLQL {
+      source {
+          CloudTrailRawEvents
+      }
+      filter {
+          EVENT_SOURCE = 'iam.amazonaws.com'
+      }
+      return {
+          EVENT_SOURCE
+      }
+  }

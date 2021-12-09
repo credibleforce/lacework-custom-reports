@@ -1,0 +1,26 @@
+---
+evaluatorId: <<IMPLICIT>>
+queryId: Custom_HE_Machine_1
+queryText: |-
+  Custom_HE_Machine_1 {
+    SOURCE {
+      LW_HE_MACHINES
+    }
+    FILTER {
+      OS = 'Ubuntu'
+      AND OS_VERSION not like any ('16.%')
+    }
+    RETURN DISTINCT {
+      BATCH_START_TIME,
+      BATCH_END_TIME,
+      RECORD_CREATED_TIME,
+      MID,
+      HOSTNAME,
+      DOMAIN,
+      KERNEL,
+      KERNEL_RELEASE,
+      KERNEL_VERSION,
+      OS,
+      OS_VERSION
+    }
+  }

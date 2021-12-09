@@ -1,0 +1,34 @@
+---
+evaluatorId: <<IMPLICIT>>
+queryId: Custom_HE_Container_1
+queryText: |-
+  Custom_HE_Container_1 {
+    SOURCE {
+      LW_HE_CONTAINERS
+    }
+    FILTER {
+      REPO like '%gcr.io/customer-facing%'
+      AND TAG = '1.0.0'
+    }
+    RETURN DISTINCT {
+      BATCH_START_TIME,
+      BATCH_END_TIME,
+      RECORD_CREATED_TIME,
+      MID,
+      CONTAINER_START_TIME,
+      CONTAINER_ID,
+      CONTAINER_TYPE,
+      CONTAINER_NAME,
+      PRIVILEGED,
+      NETWORK_MODE,
+      PID_MODE,
+      IPV4,
+      IPV6,
+      LISTEN_PORT_MAP,
+      VOLUME_MAP,
+      REPO,
+      TAG,
+      PROPS_LABEL,
+      PROPS_ENV
+    }
+  }

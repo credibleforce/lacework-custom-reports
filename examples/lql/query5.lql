@@ -1,0 +1,28 @@
+---
+evaluatorId: <<IMPLICIT>>
+queryId: Custom_HE_Images_1
+queryText: |-
+ Custom_HE_Images_1 {
+    SOURCE {
+      LW_HE_IMAGES
+    }
+    FILTER {
+      TAG like '%develop%'
+    }
+    RETURN DISTINCT {
+      BATCH_START_TIME,
+      BATCH_END_TIME,
+      RECORD_CREATED_TIME,
+      IMAGE_CREATED_TIME,
+      MID,
+      IMAGE_ID,
+      CONTAINER_TYPE,
+      AUTHOR,
+      REPO,
+      TAG,
+      SIZE,
+      VIRTUAL_SIZE,
+      IMAGE_VERSION,
+      ACTIVE_COUNT
+    }
+  }

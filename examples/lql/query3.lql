@@ -1,0 +1,26 @@
+---
+evaluatorId: <<IMPLICIT>>
+queryId: Custom_HE_Processes_1
+queryText: |-
+  Custom_HE_Processes_1 {
+    SOURCE {
+      LW_HE_PROCESSES
+    }
+    FILTER {
+      USERNAME = 'zabbix'
+    }
+    RETURN DISTINCT {
+      BATCH_START_TIME,
+      BATCH_END_TIME,
+      RECORD_CREATED_TIME,
+      MID,
+      PROCESS_START_TIME,
+      PID_HASH,
+      PID,
+      USERNAME,
+      EXE_PATH,
+      CMDLINE,
+      CWD,
+      ROOT
+    }
+  }
