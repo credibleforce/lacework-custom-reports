@@ -68,7 +68,7 @@ class s3_dataset_handler(dataset_handler):
         
         # concat all results
         result = pd.concat(dfs, ignore_index=True)
-        self.logger.info(result.to_json(date_format='iso'))
+        self.logger.debug(result.to_json(date_format='iso'))
         
         self.data = {
             "name": self.dataset['name'],
