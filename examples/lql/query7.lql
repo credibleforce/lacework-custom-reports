@@ -1,0 +1,25 @@
+---
+evaluatorId:
+queryId: LW_Host_Join
+queryText: |-
+  LW_Host_Join {
+      source {
+        LW_HE_PROCESSES processes with (
+            LW_HE_MACHINES machines on (processes.MID = machines.MID)
+        )
+      }
+      filter {
+          machines.TAGS:InstanceId = 'i-08c65d452890dad08'
+      }
+      return distinct {
+          processes.RECORD_CREATED_TIME,
+          processes.MID,
+          processes.EXE_PATH,
+          processes.CMDLINE,
+          processes.CWD,
+          processes.ROOT,
+          processes.USERNAME,
+          processes.PROCESS_START_TIME,
+          machines.TAGS
+      }
+  }
