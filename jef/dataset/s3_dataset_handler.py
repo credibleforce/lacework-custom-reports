@@ -8,6 +8,7 @@ import awswrangler as wr
 import pytz
 from datetime import datetime
 from dateutil.parser import isoparse
+import pandas as pd
 import os
 
 module_path = os.path.abspath(os.path.dirname(__file__))
@@ -54,17 +55,24 @@ class s3_dataset_handler(dataset_handler):
             s = boto3.session.Session()
         
         # enumerate results
-        result = []
+        dfs = []
         if last_modified_filter:
             objects = wr.s3.list_objects(path=s3_path,last_modified_begin=begin_utc, last_modified_end=end_utc,boto3_session=s)
         else:
             objects = wr.s3.list_objects(path=s3_path,boto3_session=s)
             
-        self.logger.debug("Found: {0} files".format(len(objects)))
+        self.logger.info("Found: {0} files".format(len(objects)))
         for o in objects:
-            result = result + [json.loads(wr.s3.read_json(o,lines=newline_separated,boto3_session=s).to_json())]
+            data = wr.s3.read_json(o,lines=newline_separated,boto3_session=s)
+            dfs.append(data)
+        
+        # concat all results
+        result = pd.concat(dfs, ignore_index=True)
+        self.logger.info(result.to_json(date_format='iso'))
         
         self.data = {
             "name": self.dataset['name'],
-            "data": result
+            "data": json.loads(result.to_json(date_format='iso'))
         }
+
+        self.logger.info(self.data)

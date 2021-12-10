@@ -6,11 +6,11 @@
                 {
                     "name": "dataset1",
                     "type": "s3_dataset_handler",
-                    "s3_path": "s3://proservlab-lacework-data/agent/2021-11-25/2021-11-25-0[0-1]-00/dns_query.json.gz",
+                    "s3_path": "s3://proservlab-lacework-data/AwsCompliance/2021-12-0[1-2]/*/cloud_compliance.json.gz",
                     "newline_separated": true,
                     "profile": "root",
-                    "last_modified_begin": "2021-11-25T00:00:00",
-                    "last_modified_end": "2021-11-26T00:00:00"
+                    "last_modified_begin": "2021-11-01T00:00:00",
+                    "last_modified_end": "2021-12-11T00:00:00"
                 }
             ],
             "settings": {

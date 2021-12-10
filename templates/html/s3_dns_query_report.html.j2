@@ -246,17 +246,17 @@
                   <table class="data-table">
                      <thead>
                         <tr>
-                           {% set fields = (items['dataset1'].data|first).keys() %}
-                           {% for field in items['dataset1'].data[0] %}
+                           {% set fields = items['dataset1'].data.keys() %}
+                           {% for field in items['dataset1'].data %}
                            <TD class="c1">{{ field }}</TD>
                            {% endfor %}
                         </tr>
                      </thead>
                      {% set first_field = fields|first %}
-                     {% for row in items['dataset1'].data[0][first_field].keys() %}
+                     {% for row in items['dataset1'].data[first_field].keys() %}
                      <tr>
                         {% for field in fields %}
-                        <TD class="c1">{{ items['dataset1'].data[0][field][row] }}</TD>
+                        <TD class="c1">{{ items['dataset1'].data[field][row] }}</TD>
                         {% endfor %}
                      </tr>
                      {% endfor %}
