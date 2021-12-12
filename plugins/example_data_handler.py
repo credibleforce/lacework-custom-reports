@@ -19,6 +19,6 @@ class example_data_handler(dataset_handler):
     def load(self):
         result = json.loads({"example": "dataset"})
         self.data = {
-            "name": self.dataset['name'],
+            "name": self.dataset.get('name'),
             "data": result
         }

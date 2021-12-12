@@ -1,10 +1,18 @@
 from __future__ import print_function
 
+# dataset handler
 from .dataset.local_dataset_handler import local_dataset_handler
 from .dataset.laceworkcli_dataset_handler import laceworkcli_dataset_handler
+from .dataset.laceworksdk_host_vuln_dataset_handler import laceworksdk_host_vuln_dataset_handler
 from .dataset.s3_dataset_handler import s3_dataset_handler
+
+# report handler
 from .report.local_report_handler import local_report_handler
 from .report.slack_report_handler import slack_report_handler
+
+# filter handerl
+from .filter.laceworksdk_host_vuln_filter_handler import laceworksdk_host_vuln_filter_handler
+
 import os
 import logging
 
@@ -14,9 +22,9 @@ class generate():
     # init method or constructor   
     def __init__(self, report,plugins=[]):
         self.logger = logging.getLogger(__name__)
-        self.datasource = report['datasources']
-        self.reports = report['reports']
-        self.settings = report['settings']
+        self.datasource = report.get('datasources')
+        self.reports = report.get('reports')
+        self.settings = report.get('settings')
         self.datasets = {}
         self.outputs = []
 
@@ -28,8 +36,12 @@ class generate():
             
             # enumerate the data handlers and dynamically instanciate the class
             dataClass = globals()[d['type']]
+            
+            # enumerate the filter handlers and dynamically instanciate the class
+            filterClass = globals()[d['filter']]
+
             # provide the existing datasets for others to reference
-            self.datasets[d['name']] = dataClass(d,self.datasets).generate()
+            self.datasets[d['name']] = dataClass(d,self.datasets,filterClass=filterClass).generate()
             break
     
     def generate(self):

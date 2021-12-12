@@ -16,32 +16,32 @@ class slack_report_handler(report_handler):
             self.logger.info("Attachment template defined - parsing...")
             attachment_from_template = self.attachment_template.render(items=self.datasets)
 
-        message_from_template = self.template.render(items=self.datasets,channel=self.report['channel'])
+        message_from_template = self.template.render(items=self.datasets,channel=self.report.get('channel'))
         slack_message = json.loads(message_from_template)
-        client = WebClient(token=self.report['token'])
+        client = WebClient(token=self.report.get('token'))
 
         try:
             response = client.chat_postMessage(
-                channel=slack_message['channel'],
-                text=(slack_message['text'] if 'text' in slack_message.keys() is not None else None),
-                attachments=(slack_message['attachments'] if 'attachments' in slack_message.keys() is not None else None),
-                blocks=(slack_message['blocks'] if 'blocks' in slack_message.keys() is not None else None)
+                channel=slack_message.get('channel'),
+                text=slack_message.get('text'),
+                attachments=slack_message.get('attachments'),
+                blocks=slack_message.get('blocks')
             )
             
             # if we have a templated attachment upload content to same thread
             if self.attachment_template is not None:
                 try:
                     upload_reponse = client.files_upload(
-                        channels=self.report['channel'],
+                        channels=self.report.get('channel'),
                         content=attachment_from_template,
-                        filename=self.report['attachment_name'],
-                        initial_comment=self.report['attachment_comment'],
-                        thread_ts=response['ts']
+                        filename=self.report.get('attachment_name'),
+                        initial_comment=self.report.get('attachment_comment'),
+                        thread_ts=response.get('ts')
                     )
                 except SlackApiError as e:
-                    self.logger.error(e.response["error"]) # str like 'invalid_auth', 'channel_not_found'
+                    self.logger.error(e.response.get("error")) # str like 'invalid_auth', 'channel_not_found'
                 
         except SlackApiError as e:
-            self.logger.error(e.response["error"])
+            self.logger.error(e.response.get("error"))
             # You will get a SlackApiError if "ok" is False
-            assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
+            assert e.response.get("error") # str like 'invalid_auth', 'channel_not_found'

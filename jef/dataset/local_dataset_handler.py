@@ -8,10 +8,13 @@ module_path = os.path.abspath(os.path.dirname(__file__))
 
 class local_dataset_handler(dataset_handler):
     def load(self):
-        with open(self.dataset['path']) as f:
+        with open(self.dataset.get('path')) as f:
             j = json.load(f)
 
         self.data = {
-            "name": self.dataset['name'],
-            "data": j
+            "name": self.dataset.get('name'),
+            "data": j,
+            "summary": {
+                "rows": len(j)
+            }
         }

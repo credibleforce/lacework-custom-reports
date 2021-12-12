@@ -21,23 +21,23 @@ class report_handler():
     def parse_template(self):
         # allow report override for global template
         if 'template' in self.report.keys():
-            loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(self.report['template']))
+            loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(self.report.get('template')))
             env = jinja2.Environment(loader=loader,extensions=['jinja2.ext.do'])
             self.template = env.get_template(os.path.basename(self.report['template']))
         elif 'template' in self.settings.keys():
-            loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(self.settings['template']))
+            loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(self.settings.get('template')))
             env = jinja2.Environment(loader=loader,extensions=['jinja2.ext.do'])
-            self.template = env.get_template(os.path.basename(self.settings['template']))
+            self.template = env.get_template(os.path.basename(self.settings.get('template')))
 
         # allow for attachment formatting when set report handler will be used to 'attach' result in that context
         if 'attachment_template' in self.report.keys():
-            loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(self.report['attachment_template']))
+            loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(self.report.get('attachment_template')))
             env = jinja2.Environment(loader=loader,extensions=['jinja2.ext.do'])
-            self.attachment_template = env.get_template(os.path.basename(self.report['attachment_template']))
+            self.attachment_template = env.get_template(os.path.basename(self.report.get('attachment_template')))
             
             # set default name and comment values
-            self.attachment_name = self.report['attachment_name'] if 'attachment_name' in self.report.keys() else 'report'
-            self.attachment_comment = self.report['attachment_comment'] if 'attachment_comment' in self.report.keys() else 'report'
+            self.attachment_name = self.report.get('attachment_name','report')
+            self.attachment_comment = self.report.get('attachment_comment','report')
 
     def generate(self):
         pass

@@ -33,12 +33,12 @@ class s3_dataset_handler(dataset_handler):
 
     def load(self):
         self.logger.debug("Loading s3 bucket...")
-        s3_path = (self.dataset['s3_path'] if 's3_path' in self.dataset.keys() and self.dataset['s3_path'] else None)
-        profile = (self.dataset['profile'] if 'profile' in self.dataset.keys() and self.dataset['profile'] else None)
-        newline_separated = (self.dataset['newline_separated'] if 'newline_separated' in self.dataset.keys() and self.dataset['newline_separated'] else False)
+        s3_path = self.dataset.get('s3_path')
+        profile = self.dataset.get('profile')
+        newline_separated = self.dataset.get('newline_separated',False)
 
-        last_modified_begin = (self.dataset['last_modified_begin'] if 'last_modified_begin' in self.dataset.keys() and self.dataset['last_modified_begin'] else None)
-        last_modified_end = (self.dataset['last_modified_end'] if 'last_modified_end' in self.dataset.keys() and self.dataset['last_modified_end'] else None)
+        last_modified_begin = self.dataset.get('last_modified_begin')
+        last_modified_end = self.dataset.get('last_modified_end')
 
         last_modified_filter = False
         if last_modified_begin and last_modified_end:
@@ -67,12 +67,16 @@ class s3_dataset_handler(dataset_handler):
             dfs.append(data)
         
         # concat all results
-        result = pd.concat(dfs, ignore_index=True)
-        self.logger.debug(result.to_json(date_format='iso'))
-        
+        df = pd.concat(dfs, ignore_index=True)
+        rows = len(df.index)
+        json_data = json.loads(df.to_json(date_format='iso'))
+
         self.data = {
             "name": self.dataset['name'],
-            "data": json.loads(result.to_json(date_format='iso'))
+            "data": json_data,
+            "summary": {
+                "rows": rows
+            }
         }
 
         self.logger.info(self.data)
