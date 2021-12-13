@@ -8,6 +8,7 @@ from datetime import datetime
 from datetime import datetime, timedelta, timezone
 from laceworksdk import LaceworkClient
 import pandas as pd
+import numpy as np
 
 module_path = os.path.abspath(os.path.dirname(__file__))
 
@@ -19,14 +20,14 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
                     api_secret=self.dataset.get('api_secret'))
         
         # Build start/end times
-        start_time = self.dataset.get('start_time')
-        end_time = self.dataset.get('end_time')
+        start_time = datetime.strptime(self.dataset.get('start_time'),'%Y-%m-%dT%H:%M:%SZ')
+        end_time = datetime.strptime(self.dataset.get('end_time'),'%Y-%m-%dT%H:%M:%SZ')
 
         # build an array of days to compare daily results
-        delta = datetime.strptime(end_time,'%Y-%m-%dT%H:%M:%SZ') - datetime.strptime(start_time,'%Y-%m-%dT%H:%M:%SZ')  # returns timedelta
+        delta = end_time - start_time # returns timedelta
         days = []
         for i in range(delta.days + 1):
-            day = datetime.strptime(start_time,'%Y-%m-%dT%H:%M:%SZ') + timedelta(days=i)
+            day = start_time + timedelta(days=i)
             days.append(day.strftime('%Y-%m-%dT%H:%M:%SZ'))
 
         # set severity
@@ -66,11 +67,37 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
         
         df = pd.DataFrame(results)
         rows = len(df.index)
-        df['assessment_date']= pd.to_datetime(df['assessment_date'])
 
-        severity_summary = df.set_index('assessment_date').groupby([pd.Grouper(freq='d'), 'severity']).size()
-        status_summary = df.set_index('assessment_date').groupby([pd.Grouper(freq='d'), 'status']).size()
+        df['assessment_date'] = pd.to_datetime(df['assessment_date'])
+        df['fixed_time'] = pd.to_datetime(df['fixed_time'])
+        df['last_updated_time'] = pd.to_datetime(df['last_updated_time'])
+        df['first_seen_time'] = pd.to_datetime(df['first_seen_time'])
+        df['time_to_resolve'] = pd.to_numeric(df['time_to_resolve'])
+        
+        # build summary data
+        active = df.loc[(df['status'] == 'Active')]
+        new = df.loc[(df['status'] == 'New')]
+        fixed = df.loc[(df['status'] == 'Fixed') & (df['fixed_time'] <= self.dataset.get('end_time')) & (df['fixed_time'] >= self.dataset.get('start_time'))]
+        all_fixed = df.loc[(df['status'] == 'Fixed')]
 
+        severity_summary = active.set_index('assessment_date').groupby([pd.Grouper(freq='d'), 'severity'], as_index=False).size().rename(columns={"size": "count"})
+        status_summary = df.set_index('assessment_date').groupby([pd.Grouper(freq='d'), 'severity', 'status'], as_index=False).size().rename(columns={"size": "count"})
+        
+        # total for the report period
+        total_fixed = len(fixed.index)
+        total_new = len(new.index)
+        total_active = len(active.index)
+
+        mttr = fixed['time_to_resolve'].mean()
+        max_resolution_time = fixed['time_to_resolve'].max()
+        min_resolution_time = fixed['time_to_resolve'].min()
+        
+        # totals including those fixed outside the report period
+        mttr_all = all_fixed['time_to_resolve'].mean()
+        max_resolution_time_all = all_fixed['time_to_resolve'].max()
+        min_resolution_time_all = all_fixed['time_to_resolve'].min()
+        
+        # convert to json
         json_data = json.loads(df.to_json(date_format='iso'))
         json_severity_summary = json.loads(severity_summary.to_json(date_format='iso'))
         json_status_summary = json.loads(status_summary.to_json(date_format='iso'))
@@ -81,6 +108,16 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
             "summary": {
                 "rows": rows,
                 "severity": json_severity_summary,
-                "status": json_status_summary
+                "status": json_status_summary,
+                "total_fixed": total_fixed,
+                "total_new": total_new,
+                "total_active": total_active,
+                "mttr": mttr,
+                "mttr_days": round(mttr/1440),
+                "max_resolution_time": max_resolution_time,
+                "min_resolution_time": min_resolution_time,
+                "mttr_all": mttr_all,
+                "max_resolution_time_all": max_resolution_time_all,
+                "min_resolution_time_all": min_resolution_time_all
             }
         }

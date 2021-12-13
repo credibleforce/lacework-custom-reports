@@ -12,3 +12,4 @@ genson
 pandas
 laceworksdk
 glom
+numpy

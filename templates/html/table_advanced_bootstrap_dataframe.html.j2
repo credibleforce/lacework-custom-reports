@@ -152,6 +152,13 @@
                 padding: 5px;
                 font-size: 0.75em;
             }
+            .trend-box {
+                color: slategray;
+                font-weight: bold;
+                font-size: 1.5em; 
+                border:darkgrey 1px solid; 
+                margin-left: 10px; margin-right:-10px;
+            }
         }
 
         /* example of screen formating */
@@ -254,6 +261,13 @@
                 padding: 5px;
                 font-size: 0.75em;
             }
+            .trend-box {
+                color: slategray;
+                font-weight: bold;
+                font-size: 1.5em; 
+                border:darkgrey 1px solid; 
+                margin-left: 10px; margin-right:-10px;
+            }
         }
     </style>
 </head>
@@ -261,19 +275,47 @@
 <body>
     <section class="sheet padding-10mm">
       <div class="row">
-         <div class="col-sm-4"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIxLjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAxNTAwIDQyNyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTUwMCA0Mjc7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojMDBBRUVGO30KCS5zdDF7ZmlsbDojODA4ODhGO30KPC9zdHlsZT4KPGc+Cgk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzM4LDkzLjRjMC0yLjktMi4xLTUuMy00LjktNS43SDEwOS45Yy0yLjgsMC40LTQuOSwyLjgtNC45LDUuN3YxMTguOWMwLDEzLjYsMiwyNi41LDYuNSwzOC40bDIyNi41LTEyN1Y5My40CgkJeiIvPgoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTIyMS41LDM0My4zYzI5LDAsMTE2LjMtNTIuOSwxMTYuMy0xMzAuOXYtNDAuMmwtMjI1LDgzLjJDMTM0LjYsMzA3LjYsMTk3LjcsMzQzLjMsMjIxLjUsMzQzLjMiLz4KPC9nPgo8cG9seWdvbiBjbGFzcz0ic3QxIiBwb2ludHM9IjQxNi41LDEzMi43IDQ0OC4yLDEzMi43IDQ0OC4yLDI1My4yIDUwNy44LDI1My4yIDUwNy44LDI4MS4yIDQxNi41LDI4MS4yICIvPgo8Zz4KCTxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik01OTguOSwyMjcuOGMwLTE2LjQtMTMuNy0yNy40LTI3LjYtMjcuNGMtMTUuMSwwLTI3LjYsMTEuNi0yNy42LDI3LjRjMCwxNS41LDEyLjYsMjcuNiwyNy42LDI3LjYKCQlDNTg1LjksMjU1LjQsNTk4LjksMjQ0LDU5OC45LDIyNy44IE02MjkuNywxNzQuOXYxMDYuNGgtMjkuOVYyNjhjLTcuNSwxMC41LTIyLjQsMTUuMy0zNC4yLDE1LjNjLTI3LjQsMC01Mi4zLTIxLjItNTIuMy01NS41CgkJczI0LjktNTUuNSw1Mi4zLTU1LjVjMTIuMywwLDI2LjcsNC42LDM0LjIsMTUuM3YtMTIuOGgyOS45VjE3NC45eiIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTY0My4xLDIyNy42YzAtMzMuOCwyNy40LTU1LjUsNTguNC01NS41YzE5LjQsMCwzNC45LDkuMSw0NSwyMi44bC0yMi40LDE1LjdjLTQuOC02LjYtMTMuNy0xMC43LTIyLjQtMTAuNwoJCWMtMTYuOSwwLTI4LjMsMTIuMS0yOC4zLDI3LjZjMCwxNS43LDExLjQsMjcuOSwyOC4zLDI3LjljOC43LDAsMTcuNi00LjEsMjIuNC0xMC43bDIyLjQsMTUuN2MtMTAsMTMuOS0yNS42LDIyLjgtNDUsMjIuOAoJCUM2NzAuNSwyODMuMyw2NDMuMSwyNjEuNCw2NDMuMSwyMjcuNiIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTgzNS44LDIxOC4yYy0wLjktMTIuNi0xMS40LTIwLjEtMjQuOS0yMC4xYy0xMi4xLDAtMjIuOCw1LjctMjYsMjAuMUg4MzUuOHogTTg2NS4zLDIzNy42aC04MC40CgkJYzMuMiwxMi4zLDEzLjIsMTkuMiwyNy42LDE5LjJjMTAuNywwLDIxLjUtNC4zLDI3LjktMTEuOWwxNy42LDE3LjZjLTEwLDEzLjUtMjguOCwyMC44LTQ3LjUsMjAuOGMtMzIuNiwwLTU2LjYtMjIuNC01Ni42LTU1LjIKCQljMC0zNC41LDI2LTU1LjksNTYuNi01NS45YzMwLjQsMCw1NS4yLDIxLjUsNTUuMiw1NC4xQzg2NS43LDIyOS4yLDg2NS41LDIzMi44LDg2NS4zLDIzNy42Ii8+CjwvZz4KPHBvbHlnb24gY2xhc3M9InN0MSIgcG9pbnRzPSIxMDM4LjMsMTc0LjkgMTAwMC42LDI4MS4yIDk3NS4xLDI4MS4yIDk1My4yLDIxMi4xIDkzMS45LDI4MS4yIDkwNi40LDI4MS4yIDg2Ny41LDE3NC45IDkwMCwxNzQuOSAKCTkyMCwyMzkuNyA5NDAuNCwxNzQuOSA5NjUuNSwxNzQuOSA5ODUuOCwyMzkuNyAxMDA1LjksMTc0LjkgIi8+CjxnPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTExMjAuOSwyMjcuOGMwLTE2LjctMTIuMS0yNy45LTI2LjktMjcuOXMtMjYuOSwxMS4yLTI2LjksMjcuOWMwLDE2LjQsMTIuMSwyNy42LDI2LjksMjcuNgoJCUMxMTA4LjgsMjU1LjQsMTEyMC45LDI0NC4zLDExMjAuOSwyMjcuOCBNMTAzNi42LDIyNy44YzAtMzMuOCwyNi45LTU1LjcsNTcuMy01NS43czU3LjMsMjEuOSw1Ny4zLDU1LjcKCQljMCwzMy42LTI2LjksNTUuNS01Ny4zLDU1LjVTMTAzNi42LDI2MS40LDEwMzYuNiwyMjcuOCIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTEyNDIuNSwxNzUuNWwtNi45LDI4LjVjLTYuNC0zLjQtMTEuNi0zLjktMTUuMy0zLjljLTE1LjMsMC0yNS44LDE0LjItMjUuOCw0NC41djM2LjVoLTI5LjlWMTc0LjloMjkuN3YyMi42CgkJYzUuOS0xNy44LDE4LTI1LjMsMzEuMy0yNS4zQzEyMzEuMywxNzIuMSwxMjM3LjcsMTczLDEyNDIuNSwxNzUuNSIvPgo8L2c+Cjxwb2x5Z29uIGNsYXNzPSJzdDEiIHBvaW50cz0iMTMyMi41LDI4MS4yIDEyODUuMSwyMzUuMSAxMjg1LjEsMjgxLjIgMTI1NS4yLDI4MS4yIDEyNTUuMiwxMjYuOCAxMjg1LjEsMTI2LjggMTI4NS4xLDIwNy4zIAoJMTMxMiwxNzQuOSAxMzUwLjQsMTc0LjkgMTMwOC44LDIyMS43IDEzNTkuOCwyODEuMiAiLz4KPHBvbHlnb24gY2xhc3M9InN0MSIgcG9pbnRzPSIxMzYyLjIsMTI4LjYgMTM1Ni42LDEyOC42IDEzNTYuNiwxNDQuMiAxMzU0LjIsMTQ0LjIgMTM1NC4yLDEyOC42IDEzNDguNiwxMjguNiAxMzQ4LjYsMTI2LjggCgkxMzYyLjIsMTI2LjggIi8+Cjxwb2x5Z29uIGNsYXNzPSJzdDEiIHBvaW50cz0iMTM3OSwxMjYuOCAxMzczLjQsMTQxIDEzNzMuMywxNDEgMTM2Ny44LDEyNi44IDEzNjQuOCwxMjYuOCAxMzY0LjgsMTQ0LjIgMTM2Ny4xLDE0NC4yIDEzNjcuMSwxMzcuMyAKCTEzNjYuOSwxMzAuMyAxMzY3LDEzMC4zIDEzNzIuNiwxNDQuMiAxMzc0LjIsMTQ0LjIgMTM3OS44LDEzMC4yIDEzNzkuOSwxMzAuMiAxMzc5LjYsMTM3LjMgMTM3OS42LDE0NC4yIDEzODIsMTQ0LjIgMTM4MiwxMjYuOCAiLz4KPC9zdmc+Cg==" title="Lacework icon" class="logo-icon" alt=""></div>
+         <div class="col-sm-4"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIxLjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAxNTAwIDQyNyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTUwMCA0Mjc7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojMDBBRUVGO30KCS5zdDF7ZmlsbDojODA4ODhGO30KPC9zdHlsZT4KPGc+Cgk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzM4LDkzLjRjMC0yLjktMi4xLTUuMy00LjktNS43SDEwOS45Yy0yLjgsMC40LTQuOSwyLjgtNC45LDUuN3YxMTguOWMwLDEzLjYsMiwyNi41LDYuNSwzOC40bDIyNi41LTEyN1Y5My40CgkJeiIvPgoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTIyMS41LDM0My4zYzI5LDAsMTE2LjMtNTIuOSwxMTYuMy0xMzAuOXYtNDAuMmwtMjI1LDgzLjJDMTM0LjYsMzA3LjYsMTk3LjcsMzQzLjMsMjIxLjUsMzQzLjMiLz4KPC9nPgo8cG9seWdvbiBjbGFzcz0ic3QxIiBwb2ludHM9IjQxNi41LDEzMi43IDQ0OC4yLDEzMi43IDQ0OC4yLDI1My4yIDUwNy44LDI1My4yIDUwNy44LDI4MS4yIDQxNi41LDI4MS4yICIvPgo8Zz4KCTxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik01OTguOSwyMjcuOGMwLTE2LjQtMTMuNy0yNy40LTI3LjYtMjcuNGMtMTUuMSwwLTI3LjYsMTEuNi0yNy42LDI3LjRjMCwxNS41LDEyLjYsMjcuNiwyNy42LDI3LjYKCQlDNTg1LjksMjU1LjQsNTk4LjksMjQ0LDU5OC45LDIyNy44IE02MjkuNywxNzQuOXYxMDYuNGgtMjkuOVYyNjhjLTcuNSwxMC41LTIyLjQsMTUuMy0zNC4yLDE1LjNjLTI3LjQsMC01Mi4zLTIxLjItNTIuMy01NS41CgkJczI0LjktNTUuNSw1Mi4zLTU1LjVjMTIuMywwLDI2LjcsNC42LDM0LjIsMTUuM3YtMTIuOGgyOS45VjE3NC45eiIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTY0My4xLDIyNy42YzAtMzMuOCwyNy40LTU1LjUsNTguNC01NS41YzE5LjQsMCwzNC45LDkuMSw0NSwyMi44bC0yMi40LDE1LjdjLTQuOC02LjYtMTMuNy0xMC43LTIyLjQtMTAuNwoJCWMtMTYuOSwwLTI4LjMsMTIuMS0yOC4zLDI3LjZjMCwxNS43LDExLjQsMjcuOSwyOC4zLDI3LjljOC43LDAsMTcuNi00LjEsMjIuNC0xMC43bDIyLjQsMTUuN2MtMTAsMTMuOS0yNS42LDIyLjgtNDUsMjIuOAoJCUM2NzAuNSwyODMuMyw2NDMuMSwyNjEuNCw2NDMuMSwyMjcuNiIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTgzNS44LDIxOC4yYy0wLjktMTIuNi0xMS40LTIwLjEtMjQuOS0yMC4xYy0xMi4xLDAtMjIuOCw1LjctMjYsMjAuMUg4MzUuOHogTTg2NS4zLDIzNy42aC04MC40CgkJYzMuMiwxMi4zLDEzLjIsMTkuMiwyNy42LDE5LjJjMTAuNywwLDIxLjUtNC4zLDI3LjktMTEuOWwxNy42LDE3LjZjLTEwLDEzLjUtMjguOCwyMC44LTQ3LjUsMjAuOGMtMzIuNiwwLTU2LjYtMjIuNC01Ni42LTU1LjIKCQljMC0zNC41LDI2LTU1LjksNTYuNi01NS45YzMwLjQsMCw1NS4yLDIxLjUsNTUuMiw1NC4xQzg2NS43LDIyOS4yLDg2NS41LDIzMi44LDg2NS4zLDIzNy42Ii8+CjwvZz4KPHBvbHlnb24gY2xhc3M9InN0MSIgcG9pbnRzPSIxMDM4LjMsMTc0LjkgMTAwMC42LDI4MS4yIDk3NS4xLDI4MS4yIDk1My4yLDIxMi4xIDkzMS45LDI4MS4yIDkwNi40LDI4MS4yIDg2Ny41LDE3NC45IDkwMCwxNzQuOSAKCTkyMCwyMzkuNyA5NDAuNCwxNzQuOSA5NjUuNSwxNzQuOSA5ODUuOCwyMzkuNyAxMDA1LjksMTc0LjkgIi8+CjxnPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTExMjAuOSwyMjcuOGMwLTE2LjctMTIuMS0yNy45LTI2LjktMjcuOXMtMjYuOSwxMS4yLTI2LjksMjcuOWMwLDE2LjQsMTIuMSwyNy42LDI2LjksMjcuNgoJCUMxMTA4LjgsMjU1LjQsMTEyMC45LDI0NC4zLDExMjAuOSwyMjcuOCBNMTAzNi42LDIyNy44YzAtMzMuOCwyNi45LTU1LjcsNTcuMy01NS43czU3LjMsMjEuOSw1Ny4zLDU1LjcKCQljMCwzMy42LTI2LjksNTUuNS01Ny4zLDU1LjVTMTAzNi42LDI2MS40LDEwMzYuNiwyMjcuOCIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTEyNDIuNSwxNzUuNWwtNi45LDI4LjVjLTYuNC0zLjQtMTEuNi0zLjktMTUuMy0zLjljLTE1LjMsMC0yNS44LDE0LjItMjUuOCw0NC41djM2LjVoLTI5LjlWMTc0LjloMjkuN3YyMi42CgkJYzUuOS0xNy44LDE4LTI1LjMsMzEuMy0yNS4zQzEyMzEuMywxNzIuMSwxMjM3LjcsMTczLDEyNDIuNSwxNzUuNSIvPgo8L2c+Cjxwb2x5Z29uIGNsYXNzPSJzdDEiIHBvaW50cz0iMTMyMi41LDI4MS4yIDEyODUuMSwyMzUuMSAxMjg1LjEsMjgxLjIgMTI1NS4yLDI4MS4yIDEyNTUuMiwxMjYuOCAxMjg1LjEsMTI2LjggMTI4NS4xLDIwNy4zIAoJMTMxMiwxNzQuOSAxMzUwLjQsMTc0LjkgMTMwOC44LDIyMS43IDEzNTkuOCwyODEuMiAiLz4KPHBvbHlnb24gY2xhc3M9InN0MSIgcG9pbnRzPSIxMzYyLjIsMTI4LjYgMTM1Ni42LDEyOC42IDEzNTYuNiwxNDQuMiAxMzU0LjIsMTQ0LjIgMTM1NC4yLDEyOC42IDEzNDguNiwxMjguNiAxMzQ4LjYsMTI2LjggCgkxMzYyLjIsMTI2LjggIi8+Cjxwb2x5Z29uIGNsYXNzPSJzdDEiIHBvaW50cz0iMTM3OSwxMjYuOCAxMzczLjQsMTQxIDEzNzMuMywxNDEgMTM2Ny44LDEyNi44IDEzNjQuOCwxMjYuOCAxMzY0LjgsMTQ0LjIgMTM2Ny4xLDE0NC4yIDEzNjcuMSwxMzcuMyAKCTEzNjYuOSwxMzAuMyAxMzY3LDEzMC4zIDEzNzIuNiwxNDQuMiAxMzc0LjIsMTQ0LjIgMTM3OS44LDEzMC4yIDEzNzkuOSwxMzAuMiAxMzc5LjYsMTM3LjMgMTM3OS42LDE0NC4yIDEzODIsMTQ0LjIgMTM4MiwxMjYuOCAiLz4KPC9zdmc+Cg==" title="Lacework icon" class="logo-icon" alt="" height="100"></div>
          <div class="col-sm-8">&nbsp;</div>
       </div>
       <article>
         <div class="row">
-            <div class="col-4">
+            <div class="col-4 trend-box">
+                <div class="row">
+                    <div class="col-4" style="text-align: right;">MTTR</div>
+                    <div class="col-8">{{ items['dataset1'].summary.mttr_days }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-4" style="text-align: right;">Active</div>
+                    <div class="col-8">{{ items['dataset1'].summary.total_active }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-4" style="text-align: right;">Fixed</div>
+                    <div class="col-8">{{ items['dataset1'].summary.total_fixed }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-4" style="text-align: right;">New</div>
+                    <div class="col-8">{{ items['dataset1'].summary.total_new }}</div>
+                </div>
+            </div>
+            <div class="col-8">
                 <canvas id="myChart1"></canvas>
             </div>
-            <div class="col-4">
-                <canvas id="myChart2"></canvas>
+        </div>
+      </article>
+      <article>
+        <div class="row">
+            <div class="col-12">
+                <div class="severity_toolbar">Severity</div>
+                <table class="data-table" id="severity_table"></table>
             </div>
-            <div class="col-4">
-                <canvas id="myChart3"></canvas>
+        </div>
+      </article>
+      <article>
+        <div class="row">
+            <div class="col-12">
+                <div class="status_toolbar">Status</div>
+                <table class="data-table" id="status_table"></table>
             </div>
         </div>
       </article>
@@ -290,19 +332,50 @@
    </section>
    <script type="text/javascript">
         const ctx1 = document.getElementById('myChart1');
-        const ctx2 = document.getElementById('myChart2');
-        const ctx3 = document.getElementById('myChart3');
         
+        {% set severities = [] %}
+        {% for col in items['dataset1'].summary.severity.severity if items['dataset1'].summary.severity.severity[col] not in severities %}
+            {% do severities.append(items['dataset1'].summary.severity.severity[col]) %}
+        {% endfor %}
+
+        {% set dates = [] %}
+        {% for col in items['dataset1'].summary.severity.assessment_date if items['dataset1'].summary.severity.assessment_date[col] not in dates %}
+            {% do dates.append(items['dataset1'].summary.severity.assessment_date[col]) %}
+        {% endfor %}
+
         const data = {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-            datasets: [{
-                label: 'Vulnerability Trend',
-                data: [65, 59, 80, 81, 56, 55, 40],
-                fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-            }]
-        };
+            labels: [
+                {% for date in dates %}
+                 '{{ date.split("T") | first}}'
+                {%- if not loop.last -%}
+                ,
+                {% endif %}
+                {% endfor %}
+            ],
+            datasets: [
+                {% for sev in severities %}
+                {
+                    label: '{{ sev }}',
+                    data: [
+                        {% for col in items['dataset1'].summary.severity.count %}
+                        {% if items['dataset1'].summary.severity.severity[col] == sev %}
+                        {{ items['dataset1'].summary.severity.count[col] }}
+                        {%- if not loop.last -%}
+                        ,
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                    ],
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }
+                {%- if not loop.last -%}
+                ,
+                {% endif %}
+                {% endfor %}
+            ]
+        }
 
         const myChart1 = new Chart(ctx1, {
             type: 'line',
@@ -315,36 +388,130 @@
                 }
             }
         });
-
-        const myChart2 = new Chart(ctx2, {
-            type: 'line',
-            data: data,
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        const myChart3 = new Chart(ctx3, {
-            type: 'line',
-            data: data,
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
         
+        // summary severity table
+        {% set summary_severity_fields = items['dataset1'].summary.severity.keys() %}
+        {% set summary_severity_first_field = summary_severity_fields|first %}
+
+        const severity_table_cols = [
+            {% for field in items['dataset1'].summary.severity %}
+                 {
+                    field: '{{ field }}',
+                    title: '{{ field }}',
+                    sortable: true
+                }
+                {%- if not loop.last -%}
+                ,
+                {% endif %}
+            {% endfor %}    
+            ]
+        
+        const severity_table_data = [
+                {% for row in items['dataset1'].summary.severity[summary_severity_first_field].keys() %}
+                {
+                    id: {{ row }},
+                    {% for field in summary_severity_fields %}
+                    {{ field }}: '{{ items['dataset1'].summary.severity[field][row] }}'
+                    {%- if not loop.last -%}
+                    ,
+                    {% endif %}
+                    {% endfor %}
+                }
+                {%- if not loop.last -%}
+                ,
+                {% endif %}
+                {% endfor %}    
+            ]
+
+        $('#severity_table').bootstrapTable({
+            toolbar: ".severity_toolbar",
+            //height: "460",
+
+            search: true,
+            showColumns: true,
+            showFullscreen: true,
+            
+            showExport: true,
+            exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+            
+            showExtendedPagination: true,
+            filterControl: false,
+            pagination: true,
+            
+            showPaginationSwitch: true,
+            paginationVAlign: "bottom",
+            showFooter: false,
+            sortable: true,
+            
+            data: severity_table_data,
+            columns: severity_table_cols
+        })
+        
+        // summary status table
+        {% set summary_status_fields = items['dataset1'].summary.status.keys() %}
+        {% set summary_status_first_field = summary_status_fields|first %}
+
+        const status_table_cols = [
+            {% for field in items['dataset1'].summary.status %}
+                 {
+                    field: '{{ field }}',
+                    title: '{{ field }}',
+                    sortable: true
+                }
+                {%- if not loop.last -%}
+                ,
+                {% endif %}
+            {% endfor %}    
+            ]
+        
+        const status_table_data = [
+                {% for row in items['dataset1'].summary.status[summary_status_first_field].keys() %}
+                {
+                    id: {{ row }},
+                    {% for field in summary_status_fields %}
+                    {{ field }}: '{{ items['dataset1'].summary.status[field][row] }}'
+                    {%- if not loop.last -%}
+                    ,
+                    {% endif %}
+                    {% endfor %}
+                }
+                {%- if not loop.last -%}
+                ,
+                {% endif %}
+                {% endfor %}    
+            ]
+
+        $('#status_table').bootstrapTable({
+            toolbar: ".status_toolbar",
+            //height: "460",
+
+            search: true,
+            showColumns: true,
+            showFullscreen: true,
+            
+            showExport: true,
+            exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+            
+            showExtendedPagination: true,
+            filterControl: false,
+            pagination: true,
+            
+            showPaginationSwitch: true,
+            paginationVAlign: "bottom",
+            showFooter: false,
+            sortable: true,
+            
+            data: status_table_data,
+            columns: status_table_cols
+        })
+
+        // data table
         {% set fields = items['dataset1'].data.keys() %}
         {% set first_field = fields|first %}
 
         var $table = $('#table')
         var total = 0
+
         const table_cols = [
             {% for field in items['dataset1'].data %}
                  {
@@ -357,6 +524,7 @@
                 {% endif %}
             {% endfor %}    
             ]
+
         const table_data = [
                 {% for row in items['dataset1'].data[first_field].keys() %}
                 {
@@ -373,7 +541,8 @@
                 {% endif %}
                 {% endfor %}    
             ]
-        const table = $('#table').bootstrapTable({
+
+        $table.bootstrapTable({
             toolbar: ".toolbar",
             //height: "460",
 
@@ -399,7 +568,7 @@
     </script>
     <!-- json object debugging -->
     <script type="text/javascript">
-        var dataset1 = {{ items['dataset1'].data | tojson() }}
+        var dataset1 = {{ items['dataset1'].summary | tojson() }}
         console.log(dataset1)
     </script>
     <!-- json object debugging -->

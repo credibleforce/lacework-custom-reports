@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 module_path = os.path.abspath(os.path.dirname(__file__))
 
@@ -15,8 +15,20 @@ class laceworksdk_host_vuln_filter_handler():
         results = []
         for d in data:
             severity = list(d.get('summary').get('severity').keys())[0]
+            total_fixed = 0
+            total_new = 0
             for p in d.get('packages'):
+                
+                assessment_date = datetime.fromtimestamp(int(d.get('summary').get('last_evaluation_time'))/1000)
+                last_updated_time = datetime.strptime(p.get('last_updated_time'),'%a, %d %b %Y %H:%M:%S %z')
+                first_seen_time = datetime.strptime(p.get('first_seen_time'),'%a, %d %b %Y %H:%M:%S %z')
+                if p.get('status') == 'Fixed':
+                    fixed_time = (first_seen_time + timedelta(minutes=int(p.get('time_to_resolve')))).strftime('%Y-%m-%dT%H:%M:%SZ')
+                else:
+                    fixed_time = None
+
                 results.append({
+                    'assessment_date': assessment_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
                     'cve_id': d.get('cve_id'),
                     'name': p.get('name'),
                     'namespace': p.get('namespace'),
@@ -32,10 +44,10 @@ class laceworksdk_host_vuln_filter_handler():
                     #'description': p.get('description'),
                     'status': p.get('status'),
                     'package_status': p.get('package_status'),
-                    'last_updated_time': datetime.strptime(p.get('last_updated_time'),'%a, %d %b %Y %H:%M:%S %z').strftime('%Y-%m-%dT%H:%M:%SZ'),
-                    'first_seen_time': datetime.strptime(p.get('first_seen_time'),'%a, %d %b %Y %H:%M:%S %z').strftime('%Y-%m-%dT%H:%M:%SZ'),
+                    'last_updated_time': last_updated_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                    'first_seen_time': first_seen_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
                     'time_to_resolve': p.get('time_to_resolve'),
-                    'assessment_date': datetime.fromtimestamp(int(d.get('summary').get('last_evaluation_time'))/1000).strftime('%Y-%m-%dT%H:%M:%SZ'),
+                    'fixed_time': fixed_time,
                     #'total_vulnerabilities': d.get('summary').get('total_vulnerabilities'),
                     #'total_exception_vulnerabilities': d.get('summary').get('total_exception_vulnerabilities'),
                     #'exception_fixable': d.get('summary').get('severity').get(severity).get('exception_fixable'),

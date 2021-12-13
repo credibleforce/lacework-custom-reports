@@ -38,7 +38,10 @@ class generate():
             dataClass = globals()[d['type']]
             
             # enumerate the filter handlers and dynamically instanciate the class
-            filterClass = globals()[d['filter']]
+            if d.get('filter') != None:
+                filterClass = globals()[d['filter']]
+            else:
+                filterClass = None
 
             # provide the existing datasets for others to reference
             self.datasets[d['name']] = dataClass(d,self.datasets,filterClass=filterClass).generate()
