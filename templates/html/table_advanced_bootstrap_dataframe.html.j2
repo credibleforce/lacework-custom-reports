@@ -299,38 +299,6 @@
                             <div class="col-3 compliance-severity-count">{{ items['dataset1'].summary.total_new }}</div>
                         </div>
                     </div>
-                    {%- for sev in severities %}
-                    {%- set sev_field = sev.lower() %}
-                    <div class="row card" 
-                        {%- if sev == 'Critical' %}
-                        style="background-color:crimson;"
-                        {%- elif sev == 'High' %}
-                        style="background-color:red;"
-                        {%- elif sev == 'Medium' %}
-                        style="background-color:orange;"
-                        {%- elif sev == 'Low' %}
-                        style="background-color:yellow;"
-                        {%- elif sev == 'Info' %}
-                        style="background-color:cornflowerblue;"
-                        background-color: 'cornflowerblue',
-                        {%- else %}
-                        style="background-color:lightgrey;"
-                        {%- endif %}
-                    >
-                        <div class="row">
-                            <div class="col-3 compliance-severity">MTTR</div>
-                            <div class="col-3 compliance-severity">ACTIVE</div>
-                            <div class="col-3 compliance-severity">FIXED</div>
-                            <div class="col-3 compliance-severity">NEW</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-3 compliance-severity-count">{{ items['dataset1']['summary']['mttr_{0}_days'.format(sev_field)] }}</div>
-                            <div class="col-3 compliance-severity-count">{{ items['dataset1']['summary']['total_{0}_active'.format(sev_field)] }}</div>
-                            <div class="col-3 compliance-severity-count">{{ items['dataset1']['summary']['total_{0}_fixed'.format(sev_field)] }}</div>
-                            <div class="col-3 compliance-severity-count">{{ items['dataset1']['summary']['total_{0}_new'.format(sev_field)] }}</div>
-                        </div>
-                    </div>
-                    {%- endfor %}
                 </div>
                 <div class="col-8">
                     <div class="trend-chart">
@@ -499,7 +467,7 @@
 
         $('#severity_table').bootstrapTable({
             toolbar: ".severity_toolbar",
-            height: "460",
+            //height: "460",
 
             search: true,
             showColumns: true,
@@ -557,7 +525,7 @@
 
         $('#status_table').bootstrapTable({
             toolbar: ".status_toolbar",
-            height: "460",
+            //height: "460",
 
             search: true,
             showColumns: true,
@@ -618,7 +586,6 @@
 
         $table.bootstrapTable({
             toolbar: ".toolbar",
-            height: "460",
 
             search: true,
             showColumns: true,

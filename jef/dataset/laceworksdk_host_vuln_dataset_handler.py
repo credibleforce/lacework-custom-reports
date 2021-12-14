@@ -75,15 +75,17 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
         df['time_to_resolve'] = pd.to_numeric(df['time_to_resolve'])
         
         # build summary data - use most recent assessment date
-        last_report = df['assessment_date'].max()
+        last_report_start_time = (end_time - timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
+        last_report_end_time = end_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+
         # all marked active as of latest assessment
-        active = df.loc[(df['status'] == 'Active') & (df['assessment_date'] == last_report)]
+        active = df.loc[(df['status'] == 'Active') & (df['assessment_date'] <= last_report_end_time) & (df['assessment_date'] >= last_report_start_time)]
         # all with first_seen_time in the reporting period as of latest assessment
-        new = df.loc[(df['assessment_date'] == last_report) & (df['first_seen_time'] <= self.dataset.get('end_time')) & (df['first_seen_time'] >= self.dataset.get('start_time'))]
+        new = df.loc[(df['assessment_date'] <= last_report_end_time) & (df['assessment_date'] >= last_report_start_time) & (df['first_seen_time'] <= self.dataset.get('end_time')) & (df['first_seen_time'] >= self.dataset.get('start_time'))]
         # all with fixed_time in the reporting period as of latest assessment
-        fixed = df.loc[(df['assessment_date'] == last_report) & (df['status'] == 'Fixed') & (df['fixed_time'] <= self.dataset.get('end_time')) & (df['fixed_time'] >= self.dataset.get('start_time'))]
+        fixed = df.loc[(df['assessment_date'] <= last_report_end_time) & (df['assessment_date'] >= last_report_start_time) & (df['status'] == 'Fixed') & (df['fixed_time'] <= self.dataset.get('end_time')) & (df['fixed_time'] >= self.dataset.get('start_time'))]
         # all fixed both in an out of the reporting period
-        all_fixed = df.loc[(df['status'] == 'Fixed') & (df['assessment_date'] == last_report)]
+        all_fixed = df.loc[(df['status'] == 'Fixed') & (df['assessment_date'] <= last_report_end_time) & (df['assessment_date'] >= last_report_start_time)]
 
         severity_summary = df.loc[(df['status'] == 'Active')].set_index('assessment_date').groupby([pd.Grouper(freq='d'), 'severity'], as_index=False).size().rename(columns={"size": "count"})
         status_summary = df.set_index('assessment_date').groupby([pd.Grouper(freq='d'), 'severity', 'status'], as_index=False).size().rename(columns={"size": "count"})
@@ -93,50 +95,9 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
         total_new = len(new.index)
         total_active = len(active.index)
 
-        total_critical_fixed = len(fixed.loc[(df['severity']=='Critical')].index)
-        total_critical_new = len(new.loc[(df['severity']=='Critical')].index)
-        total_critical_active = len(active.loc[(df['severity']=='Critical')].index)
-
-        total_high_fixed = len(fixed.loc[(df['severity']=='High')].index)
-        total_high_new = len(new.loc[(df['severity']=='High')].index)
-        total_high_active = len(active.loc[(df['severity']=='High')].index)
-
-        total_medium_fixed = len(fixed.loc[(df['severity']=='Medium')].index)
-        total_medium_new = len(new.loc[(df['severity']=='Medium')].index)
-        total_medium_active = len(active.loc[(df['severity']=='Medium')].index)
-
-        total_low_fixed = len(fixed.loc[(df['severity']=='Low')].index)
-        total_low_new = len(new.loc[(df['severity']=='Low')].index)
-        total_low_active = len(active.loc[(df['severity']=='Low')].index)
-
-        total_info_fixed = len(fixed.loc[(df['severity']=='Info')].index)
-        total_info_new = len(new.loc[(df['severity']=='Info')].index)
-        total_info_active = len(active.loc[(df['severity']=='Info')].index)
-
-
         mttr = fixed['time_to_resolve'].mean()
         max_resolution_time = fixed['time_to_resolve'].max()
         min_resolution_time = fixed['time_to_resolve'].min()
-
-        mttr_critical = fixed.loc[(df['severity']=='Critical')]['time_to_resolve'].mean()
-        max_critical_resolution_time = fixed.loc[(df['severity']=='Critical')]['time_to_resolve'].max()
-        min_critical_resolution_time = fixed.loc[(df['severity']=='Critical')]['time_to_resolve'].min()
-
-        mttr_high = fixed.loc[(df['severity']=='High')]['time_to_resolve'].mean()
-        max_high_resolution_time = fixed.loc[(df['severity']=='High')]['time_to_resolve'].max()
-        min_high_resolution_time = fixed.loc[(df['severity']=='High')]['time_to_resolve'].min()
-
-        mttr_medium = fixed.loc[(df['severity']=='Medium')]['time_to_resolve'].mean()
-        max_medium_resolution_time = fixed.loc[(df['severity']=='Medium')]['time_to_resolve'].max()
-        min_medium_resolution_time = fixed.loc[(df['severity']=='Medium')]['time_to_resolve'].min()
-
-        mttr_low = fixed.loc[(df['severity']=='Low')]['time_to_resolve'].mean()
-        max_low_resolution_time = fixed.loc[(df['severity']=='Low')]['time_to_resolve'].max()
-        min_low_resolution_time = fixed.loc[(df['severity']=='Low')]['time_to_resolve'].min()
-
-        mttr_info = fixed.loc[(df['severity']=='Info')]['time_to_resolve'].mean()
-        max_info_resolution_time = fixed.loc[(df['severity']=='Info')]['time_to_resolve'].max()
-        min_info_resolution_time = fixed.loc[(df['severity']=='Info')]['time_to_resolve'].min()
         
         # totals including those fixed outside the report period
         mttr_all = all_fixed['time_to_resolve'].mean()
@@ -161,45 +122,10 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
                 "total_fixed": total_fixed,
                 "total_new": total_new,
                 "total_active": total_active,
-                "total_critical_fixed": total_critical_fixed,
-                "total_critical_new": total_critical_new,
-                "total_critical_active": total_critical_active,
-                "total_high_fixed": total_high_fixed,
-                "total_high_new": total_high_new,
-                "total_high_active": total_high_active,
-                "total_medium_fixed": total_medium_fixed,
-                "total_medium_new": total_medium_new,
-                "total_medium_active": total_medium_active,
-                "total_low_fixed": total_low_fixed,
-                "total_low_new": total_low_new,
-                "total_low_active": total_low_active,
-                "total_info_fixed": total_info_fixed,
-                "total_info_new": total_info_new,
-                "total_info_active": total_info_active,
                 "mttr": mttr if not pd.isna(mttr) else 0,
                 "mttr_days": round(mttr/1440) if not pd.isna(mttr) else 0,
                 "max_resolution_time": max_resolution_time,
                 "min_resolution_time": min_resolution_time,
-                "mttr_critical": mttr_critical if not pd.isna(mttr_critical) else 0,
-                "mttr_critical_days": round(mttr_critical/1440) if not pd.isna(mttr_critical) else 0,
-                "max_critical_resolution_time": max_critical_resolution_time,
-                "min_critical_resolution_time": min_critical_resolution_time,
-                "mttr_high": mttr if not pd.isna(mttr_high) else 0,
-                "mttr_high_days": round(mttr_high/1440) if not pd.isna(mttr_high) else 0,
-                "max_high_resolution_time": max_high_resolution_time,
-                "min_high_resolution_time": min_high_resolution_time,
-                "mttr_medium": mttr_medium if not pd.isna(mttr_medium) else 0,
-                "mttr_medium_days": round(mttr_medium/1440) if not pd.isna(mttr_medium) else 0,
-                "max_medium_resolution_time": max_medium_resolution_time,
-                "min_medium_resolution_time": min_medium_resolution_time,
-                "mttr_low": mttr_low if not pd.isna(mttr_low) else 0,
-                "mttr_low_days": round(mttr_low/1440) if not pd.isna(mttr_low) else 0,
-                "max_low_resolution_time": max_low_resolution_time,
-                "min_low_resolution_time": min_low_resolution_time,
-                "mttr_info": mttr_info if not pd.isna(mttr_info) else 0,
-                "mttr_info_days": round(mttr_info/1440) if not pd.isna(mttr_info) else 0,
-                "max_info_resolution_time": max_info_resolution_time,
-                "min_info_resolution_time": min_info_resolution_time,
                 "mttr_all": mttr_all if not pd.isna(mttr_all) else 0,
                 "mttr_all_days": round(mttr_all/1440) if not pd.isna(mttr_all) else 0,
                 "max_resolution_time_all": max_resolution_time_all,
