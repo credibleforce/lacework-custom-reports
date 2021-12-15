@@ -349,7 +349,32 @@
                     {%- endif %}
                     tension: 0.1
                 },
-                
+                {
+                    label: 'Non-Compliant',
+                    data: [
+                        {%- for col in items['dataset1'].data.num_non_compliant %}
+                        {{ items['dataset1'].data.num_non_compliant[col] }}
+                        {%- if not loop.last -%}
+                        ,
+                        {%- endif %}
+                        {%- endfor %}
+                    ],
+                    fill: true,
+                    {%- if sev == 'Critical' %}
+                    borderColor: 'crimson',
+                    {%- elif sev == 'High' %}
+                    borderColor: 'red',
+                    {%- elif sev == 'Medium' %}
+                    borderColor: 'orange',
+                    {%- elif sev == 'Low' %}
+                    borderColor: 'yellow',
+                    {%- elif sev == 'Info' %}
+                    borderColor: 'green',
+                    {%- else %}
+                    borderColor: 'crimson',
+                    {%- endif %}
+                    tension: 0.1
+                }
             ]
         }
         
