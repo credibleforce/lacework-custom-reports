@@ -1,0 +1,36 @@
+{
+    "reports": [
+        {
+            "name": "sample1",
+            "datasources": [
+                {
+                    "name": "dataset1",
+                    "type": "laceworksdk_host_vuln_dataset_handler",
+                    "organization": false,
+                    "subaccount": null,
+                    "account": "{{ env['LW_ACCOUNT'] }}",
+                    "api_key": "{{ env['LW_API_KEY'] }}",
+                    "api_secret": "{{ env['LW_API_SECRET'] }}",
+                    "start_time": "2021-11-01T00:00:00Z",
+                    "end_time": "2021-11-02T00:00:00Z",
+                    "fixable": true,
+                    "severity": "critical",
+                    "filter": "laceworksdk_host_vuln_filter_handler",
+                    "time_day_split": true
+                }
+            ],
+            "settings": {
+                "template": "./templates/json/report.json.j2"
+            },
+            "reports": [
+                {
+                    "name": "output",
+                    "type": "s3_report_handler",
+                    "s3_path": "s3://proservlab-report-bucket/Lacework/Vulnerabilities/{{ date.strftime('%Y-%m-%d') }}/{{ date.strftime('%Y-%m-%d-%H-%M') }}/vulnerability_report.json",
+                    "profile": "root",
+                    "compressed": true
+                }
+            ]
+        }
+    ]
+}

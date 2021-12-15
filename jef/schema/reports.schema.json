@@ -83,6 +83,9 @@
 								},
 								"time_day_split": {
 									"type": ["null", "boolean"]
+								},
+								"compressed": {
+									"type": ["null", "boolean"]
 								}
 							},
 							"required": ["name", "type"]

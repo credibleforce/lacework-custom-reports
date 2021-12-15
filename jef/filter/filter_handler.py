@@ -9,7 +9,7 @@ class filter_handler():
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def filter(data):
+    def filter(self,data):
         """
         Overriden by specific data handlers
 

@@ -1,16 +1,17 @@
 from __future__ import print_function
 
-import os
+from .filter_handler import filter_handler
 import logging
 from datetime import datetime, timedelta
+import os
 
 module_path = os.path.abspath(os.path.dirname(__file__))
 
-class laceworksdk_host_vuln_filter_handler():
+class laceworksdk_host_vuln_filter_handler(filter_handler):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def filter(data):
+    def filter(self,data):
         # filter/manipulate the resultant data
         results = []
         for d in data:

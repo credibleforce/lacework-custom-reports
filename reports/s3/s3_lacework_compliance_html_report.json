@@ -1,0 +1,29 @@
+{
+    "reports": [
+        {
+            "name": "sample3",
+            "datasources": [
+                {
+                    "name": "dataset1",
+                    "type": "s3_dataset_handler",
+                    "s3_path": "s3://proservlab-report-bucket/Lacework/Compliance/2021-12-15/2021-12-15-*/gcp_compliance_report.json.gz",
+                    "newline_separated": true,
+                    "profile": "root",
+                    "last_modified_begin": "2021-12-01T00:00:00",
+                    "last_modified_end": "2021-12-31T00:00:00",
+                    "filter": "laceworkcli_s3_compliance_filter_handler"
+                }
+            ],
+            "settings": {
+                "template": "./templates/json/report.json.j2"
+            },
+            "reports": [
+                {
+                    "name": "output",
+                    "type": "local_report_handler",
+                    "path": "./output/s3_compliance_summary.json"
+                }
+            ]
+        }
+    ]
+}

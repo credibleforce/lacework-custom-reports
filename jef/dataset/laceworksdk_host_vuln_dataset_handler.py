@@ -61,7 +61,7 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
         
         # pass through a filter for parsing/manipulation if required
         if self.filterClass != None:
-            results = self.filterClass.filter(result.get('data'))
+            results = self.filterClass().filter(result.get('data'))
         else:
             results = result.get('data')
         
@@ -75,17 +75,19 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
         df['time_to_resolve'] = pd.to_numeric(df['time_to_resolve'])
         
         # build summary data - use most recent assessment date
-        last_report_start_time = (end_time - timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
-        last_report_end_time = end_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+        last_assessment = df['assessment_date'].max()
+        last_report_start_time = (last_assessment - timedelta(days=1)).strftime('%Y-%m-%d')
+        last_report_end_time = last_assessment.strftime('%Y-%m-%d')
+        last_report = df.loc[(df['assessment_date']>=last_report_start_time) & (df['assessment_date']<=last_report_end_time)]
 
         # all marked active as of latest assessment
-        active = df.loc[(df['status'] == 'Active') & (df['assessment_date'] <= last_report_end_time) & (df['assessment_date'] >= last_report_start_time)]
+        active =  last_report.loc[(df['status'] == 'Active')]
         # all with first_seen_time in the reporting period as of latest assessment
-        new = df.loc[(df['assessment_date'] <= last_report_end_time) & (df['assessment_date'] >= last_report_start_time) & (df['first_seen_time'] <= self.dataset.get('end_time')) & (df['first_seen_time'] >= self.dataset.get('start_time'))]
+        new = last_report.loc[(df['first_seen_time'] <= self.dataset.get('end_time')) & (df['first_seen_time'] >= self.dataset.get('start_time'))]
         # all with fixed_time in the reporting period as of latest assessment
-        fixed = df.loc[(df['assessment_date'] <= last_report_end_time) & (df['assessment_date'] >= last_report_start_time) & (df['status'] == 'Fixed') & (df['fixed_time'] <= self.dataset.get('end_time')) & (df['fixed_time'] >= self.dataset.get('start_time'))]
+        fixed = last_report.loc[(df['status'] == 'Fixed') & (df['fixed_time'] <= self.dataset.get('end_time')) & (df['fixed_time'] >= self.dataset.get('start_time'))]
         # all fixed both in an out of the reporting period
-        all_fixed = df.loc[(df['status'] == 'Fixed') & (df['assessment_date'] <= last_report_end_time) & (df['assessment_date'] >= last_report_start_time)]
+        all_fixed = last_report.loc[(df['status'] == 'Fixed')]
 
         severity_summary = df.loc[(df['status'] == 'Active')].set_index('assessment_date').groupby([pd.Grouper(freq='d'), 'severity'], as_index=False).size().rename(columns={"size": "count"})
         status_summary = df.set_index('assessment_date').groupby([pd.Grouper(freq='d'), 'severity', 'status'], as_index=False).size().rename(columns={"size": "count"})

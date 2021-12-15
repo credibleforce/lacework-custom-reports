@@ -3,6 +3,7 @@ from __future__ import print_function
 from .dataset_handler import dataset_handler
 import json
 import subprocess
+from datetime import datetime
 import os
 
 module_path = os.path.abspath(os.path.dirname(__file__))
@@ -30,10 +31,12 @@ class laceworkcli_dataset_handler(dataset_handler):
         self.logger.debug("Running: {0}".format(command))
 
         result = json.loads(subprocess.run(command, capture_output=True, text=True, shell=True).stdout)
+        
         self.data = {
             "name": self.dataset.get('name'),
             "data": result,
             "summary": {
+                "report_time": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                 "rows": len(result)
             }
         }

@@ -9,9 +9,11 @@ from .dataset.s3_dataset_handler import s3_dataset_handler
 # report handler
 from .report.local_report_handler import local_report_handler
 from .report.slack_report_handler import slack_report_handler
+from .report.s3_report_handler import s3_report_handler
 
-# filter handerl
+# filter handler
 from .filter.laceworksdk_host_vuln_filter_handler import laceworksdk_host_vuln_filter_handler
+from .filter.laceworkcli_s3_compliance_filter_handler import laceworkcli_s3_compliance_filter_handler
 
 import os
 import logging

@@ -1,0 +1,34 @@
+{
+    "reports": [
+        {
+            "name": "sample1",
+            "datasources": [
+                {
+                    "name": "dataset1",
+                    "type": "laceworkcli_dataset_handler",
+                    "command": "compliance",
+                    "args": "gcp get-report {{ env['GCP_ORG'] }} {{ env['GCP_PROJECT'] }}",
+                    "organization": false,
+                    "subaccount": null,
+                    "account": null,
+                    "api_key": null,
+                    "api_secret": null,
+                    "api_token": null,
+                    "profile": null
+                }
+            ],
+            "settings": {
+                "template": "./templates/json/report.json.j2"
+            },
+            "reports": [
+                {
+                    "name": "output",
+                    "type": "s3_report_handler",
+                    "s3_path": "s3://proservlab-report-bucket/Lacework/Compliance/{{ date.strftime('%Y-%m-%d') }}/{{ date.strftime('%Y-%m-%d-%H-%M') }}/gcp_compliance_report.json",
+                    "profile": "root",
+                    "compressed": true
+                }
+            ]
+        }
+    ]
+}

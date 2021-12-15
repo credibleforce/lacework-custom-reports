@@ -53,7 +53,7 @@ class s3_dataset_handler(dataset_handler):
             s = boto3.session.Session(profile_name=profile)
         else:
             s = boto3.session.Session()
-        
+
         # enumerate results
         dfs = []
         if last_modified_filter:
@@ -65,9 +65,14 @@ class s3_dataset_handler(dataset_handler):
         for o in objects:
             data = wr.s3.read_json(o,lines=newline_separated,boto3_session=s)
             dfs.append(data)
-        
-        # concat all results
+
+        # concat all results into single dataframe
         df = pd.concat(dfs, ignore_index=True)
+
+        # pass through a filter for parsing/manipulation if required
+        if self.filterClass != None:
+            df = self.filterClass().filter(df)
+
         rows = len(df.index)
         json_data = json.loads(df.to_json(date_format='iso'))
 
@@ -78,5 +83,3 @@ class s3_dataset_handler(dataset_handler):
                 "rows": rows
             }
         }
-
-        self.logger.info(self.data)

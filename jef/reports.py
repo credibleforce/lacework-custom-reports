@@ -7,6 +7,7 @@ import jinja2
 from .generate import generate
 import os
 import logging
+from datetime import datetime
 
 module_path = os.path.abspath(os.path.dirname(__file__))
 
@@ -26,7 +27,7 @@ class reports():
         loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(self.config))
         env = jinja2.Environment(loader=loader,extensions=['jinja2.ext.do'])
         template = env.get_template(os.path.basename(self.config))
-        self.config = json.loads(template.render(env=os.environ))
+        self.config = json.loads(template.render(env=os.environ,date=datetime.utcnow()))
         
         return self.validate_json(self.config)
 
