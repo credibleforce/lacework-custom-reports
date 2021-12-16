@@ -14,7 +14,18 @@ module_path = os.path.abspath(os.path.dirname(__file__))
 
 class laceworksdk_host_vuln_dataset_handler(dataset_handler):
     def load(self):
-        
+        ###################################################################################################
+        # Vulnerability report
+        #
+        # Data flow:
+        # gather data > apply filter to format data set > use self.data to hold the result
+        #
+        # To do:
+        # Ideally each of these handlers pass a standard data type (e.g. dataframe) to the filter class.
+        # Currently this handler does not follow that pattern.
+        #
+        ###################################################################################################
+
         lw = LaceworkClient(account=self.dataset.get('account'),
                     api_key=self.dataset.get('api_key'),
                     api_secret=self.dataset.get('api_secret'))

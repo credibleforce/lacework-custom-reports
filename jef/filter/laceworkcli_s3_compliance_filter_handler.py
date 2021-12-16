@@ -16,7 +16,6 @@ class laceworkcli_s3_compliance_filter_handler(filter_handler):
     def filter(self,df):
         results = []
         for index, row in df.iterrows():
-            self.logger.info(row)
             result = {
                     "report_time": row['summary']['report_time'],
                     "rows": row['summary']['rows'],
@@ -33,8 +32,11 @@ class laceworkcli_s3_compliance_filter_handler(filter_handler):
         
         df = pd.DataFrame(results)
         
+        df['report_time'] = pd.to_datetime(df['report_time'],format='%Y-%m-%dT%H:%M:%SZ')
         df['reportTime'] = pd.to_datetime(df['reportTime'])
 
-        status_summary = df.set_index('reportTime').groupby([pd.Grouper(freq='d'), 'num_compliant'], as_index=False).size().rename(columns={"size": "count"})
-        
+        self.logger.info(df)
+        status_summary = df.set_index('report_time').groupby([pd.Grouper(freq='d')], as_index=True).sum().reset_index()
+        self.logger.info(status_summary)
+
         return status_summary

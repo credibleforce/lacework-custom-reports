@@ -80,6 +80,9 @@ class s3_dataset_handler(dataset_handler):
             "name": self.dataset['name'],
             "data": json_data,
             "summary": {
-                "rows": rows
+                "rows": rows,
+                "report_time": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                "start_time": begin_utc.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                "end_time": end_utc.strftime('%Y-%m-%dT%H:%M:%SZ'), 
             }
         }

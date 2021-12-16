@@ -57,4 +57,7 @@ class laceworksdk_host_vuln_filter_handler(filter_handler):
                     #'vulnerabilities': d.get('summary').get('severity').get(severity).get('vulnerabilities'),
                     #'summary_severity': severity
                 })
+
+        # transform
+        
         return results

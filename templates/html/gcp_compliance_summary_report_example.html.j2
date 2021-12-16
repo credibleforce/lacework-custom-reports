@@ -251,8 +251,8 @@
     </style>
 </head>
 {%- set dates = [] %}
-{%- for col in items['dataset1'].data.report_time if items['dataset1'].data.report_time[col] not in dates %}
-    {%- do dates.append(items['dataset1'].data.report_time[col]) %}
+{%- for col in items['dataset1'].data.reportTime if items['dataset1'].data.reportTime[col] not in dates %}
+    {%- do dates.append(items['dataset1'].data.reportTime[col]) %}
 {%- endfor %}
 <body>
     <section class="sheet padding-10mm">
@@ -288,10 +288,10 @@
                             <div class="col-3 compliance-severity">LOW</div>
                         </div>
                         <div class="row">
-                            <div class="col-3 compliance-severity-count">{{ items['dataset1'].data.num_severity_1_non_compliance.values() | last }}</div>
-                            <div class="col-3 compliance-severity-count">{{ items['dataset1'].data.num_severity_2_non_compliance.values() | last }}</div>
-                            <div class="col-3 compliance-severity-count">{{ items['dataset1'].data.num_severity_3_non_compliance.values() | last }}</div>
-                            <div class="col-3 compliance-severity-count">{{ items['dataset1'].data.num_severity_4_non_compliance.values() | last }}</div>
+                            <div class="col-3 compliance-severity-count">5</div>
+                            <div class="col-3 compliance-severity-count">1</div>
+                            <div class="col-3 compliance-severity-count">12</div>
+                            <div class="col-3 compliance-severity-count">2</div>
                         </div>
                         <div class="row">
                             <div class="col-3 compliance-severity"><span class="dot-critical"></span></div>
@@ -352,8 +352,8 @@
                 {
                     label: 'Non-Compliant',
                     data: [
-                        {%- for col in items['dataset1'].data.num_not_compliant %}
-                        {{ items['dataset1'].data.num_not_compliant[col] }}
+                        {%- for col in items['dataset1'].data.num_non_compliant %}
+                        {{ items['dataset1'].data.num_non_compliant[col] }}
                         {%- if not loop.last -%}
                         ,
                         {%- endif %}

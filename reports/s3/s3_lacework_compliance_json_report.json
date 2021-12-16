@@ -15,13 +15,13 @@
                 }
             ],
             "settings": {
-                "template": "./templates/html/gcp_compliance_summary_report.html.j2"
+                "template": "./templates/json/report.json.j2"
             },
             "reports": [
                 {
                     "name": "output",
                     "type": "local_report_handler",
-                    "path": "./output/s3_compliance_summary.html"
+                    "path": "./output/s3_compliance_summary.json"
                 }
             ]
         }
