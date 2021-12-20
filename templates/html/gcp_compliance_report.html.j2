@@ -310,6 +310,7 @@
                 </div>
             </div>
         </article>
+        <!-- Report Table -->
         {% set categories = [] %}
         {% for r in dataset['recommendations'] if r['category'] not in categories %}
             {% do categories.append(r['category']) %}
@@ -345,6 +346,7 @@
             </div>
         </article>
         {% endfor %}
+        <!-- Report Table --> 
     </section>
 </body>
 
