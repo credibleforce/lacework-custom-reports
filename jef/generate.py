@@ -14,6 +14,8 @@ from .report.s3_report_handler import s3_report_handler
 # filter handler
 from .filter.laceworksdk_host_vuln_filter_handler import laceworksdk_host_vuln_filter_handler
 from .filter.laceworkcli_s3_compliance_filter_handler import laceworkcli_s3_compliance_filter_handler
+from .filter.laceworkcli_s3_connections_filter_handler import laceworkcli_s3_connections_filter_handler
+from .filter.laceworkcli_s3_connections_summary_filter_handler import laceworkcli_s3_connections_summary_filter_handler
 
 import os
 import logging

@@ -11,17 +11,17 @@
                     "profile": "root",
                     "last_modified_begin": "2021-11-01T00:00:00",
                     "last_modified_end": "2021-12-11T00:00:00",
-                    "filter": "laceworkcli_s3_connections_filter_handler"
+                    "filter": "laceworkcli_s3_connections_summary_filter_handler"
                 }
             ],
             "settings": {
-                "template": "./templates/html/s3_connections_report.html.j2"
+                "template": "./templates/html/s3_connections_summary_report.html.j2"
             },
             "reports": [
                 {
                     "name": "output",
                     "type": "local_report_handler",
-                    "path": "./output/s3_connections_report.html"
+                    "path": "./output/s3_connections_summary_report.html"
                 }
             ]
         }
