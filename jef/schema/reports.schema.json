@@ -86,6 +86,9 @@
 								},
 								"compressed": {
 									"type": ["null", "boolean"]
+								},
+								"enumerate_csp_accounts": {
+									"type": ["null", "boolean"]
 								}
 							},
 							"required": ["name", "type"]

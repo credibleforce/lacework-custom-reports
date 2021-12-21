@@ -16,6 +16,7 @@ from .filter.laceworksdk_host_vuln_filter_handler import laceworksdk_host_vuln_f
 from .filter.laceworkcli_s3_compliance_filter_handler import laceworkcli_s3_compliance_filter_handler
 from .filter.laceworkcli_s3_connections_filter_handler import laceworkcli_s3_connections_filter_handler
 from .filter.laceworkcli_s3_connections_summary_filter_handler import laceworkcli_s3_connections_summary_filter_handler
+from .filter.laceworkcli_compliance_summary_filter_handler import laceworkcli_compliance_summary_filter_handler
 
 import os
 import logging
@@ -49,11 +50,9 @@ class generate():
 
             # provide the existing datasets for others to reference
             self.datasets[d['name']] = dataClass(d,self.datasets,filterClass=filterClass).generate()
-            break
     
     def generate(self):
         for r in self.reports:
             # enumerate the report handlers and dynamically instanciate the class
             reportClass = globals()[r['type']]
             reportClass(datasets=self.datasets,settings=self.settings,report=r).generate()
-            break
