@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico">
+
+    <title>Lacework</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+        integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/chart.js@2.9.3/dist/Chart.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>
+    <script src="https://unpkg.com/tableexport.jquery.plugin@1.10.21/libs/jsPDF/jspdf.min.js"></script>
+    <script src="https://unpkg.com/tableexport.jquery.plugin@1.10.21/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.js"></script>
+    <script src="https://unpkg.com/chart.js@2.9.3/dist//Chart.min.js"></script>
+
+    <script src="https://visjs.github.io/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <script
+        src="https://unpkg.com/bootstrap-table@1.15.5/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        /* example of custom print formating */
+        @media print and (color) {
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            body {
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+
+            h3 {
+                margin-top: 2rem;
+            }
+
+            [class*="col-"] {
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }        
+
+            hr {
+                margin-top: 2rem;
+                margin-bottom: 2rem;
+            }
+            .sheet {
+                margin: 2rem;
+            }
+            .report-heading {
+                font-size: 0.6rem;
+            }
+            .compliance-assessment {
+                font-size: 0.6rem;
+            }
+            .compliance-title {
+                font-size: 0.5rem;
+                color: darkslategray;
+                font-weight: bold;
+            }
+            .compliance-severity {
+                font-size: 0.7rem;
+                text-align: center;
+            }
+            .compliance-severity-count {
+                font-size: 1.0rem;
+                text-align: center;
+            }
+            .dot-critical {
+                height: 7px;
+                width: 7px;
+                background-color:crimson;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            .dot-high {
+                height: 7px;
+                width: 7px;
+                background-color:red;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            .dot-medium {
+                height: 7px;
+                width: 7px;
+                background-color:orange;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            .dot-low {
+                height: 7px;
+                width: 7px;
+                background-color:yellow;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            .dot-info {
+                height: 7px;
+                width: 7px;
+                background-color:cornflowerblue;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            .card {
+                margin-top: 10px;
+            }
+            
+             /* ensure table data is wrapped for PDF */
+            .data-table {
+                width: 100%;
+                overflow-wrap: anywhere;
+            }
+            .data-table thead {
+                background-color: lightgray;
+                font-size: 0.8em;
+                font-weight: bold;
+            }
+            .data-table tr td {
+                padding: 5px;
+                font-size: 0.75em;
+            }
+            .trend-chart {
+                position: relative; margin: 10px; width: 40vw;
+            }
+        }
+
+        /* example of screen formating */
+        @media screen {
+            body {
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+
+            h3 {
+                margin-top: 2rem;
+            }
+
+            [class*="col-"] {
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }        
+
+            hr {
+                margin-top: 2rem;
+                margin-bottom: 2rem;
+            }
+            .sheet {
+                margin: 2rem;
+            }
+            .report-heading {
+                font-size: 0.6rem;
+            }
+            .compliance-assessment {
+                font-size: 0.6rem;
+            }
+            .compliance-title {
+                font-size: 0.5rem;
+                color: darkslategray;
+                font-weight: bold;
+            }
+            .compliance-severity {
+                font-size: 0.7rem;
+                text-align: center;
+            }
+            .compliance-severity-count {
+                font-size: 1.5rem;
+                text-align: center;
+            }
+            .dot-critical {
+                height: 7px;
+                width: 7px;
+                background-color:crimson;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            .dot-high {
+                height: 7px;
+                width: 7px;
+                background-color:red;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            .dot-medium {
+                height: 7px;
+                width: 7px;
+                background-color:orange;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            .dot-low {
+                height: 7px;
+                width: 7px;
+                background-color:yellow;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            .dot-info {
+                height: 7px;
+                width: 7px;
+                background-color:cornflowerblue;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            .card {
+                margin-top: 10px;
+            }
+
+            .data-table {
+                width: 100%;
+            }
+            .data-table thead {
+                background-color: lightgray;
+                font-size: 0.8em;
+                font-weight: bold;
+            }
+            .data-table tr td {
+                padding: 5px;
+                font-size: 0.75em;
+            }
+            .trend-chart {
+                position: relative; margin: auto; width: 40vw;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <section class="sheet padding-10mm">
+      <div class="row">
+         <div class="col-sm-4"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIxLjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAxNTAwIDQyNyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTUwMCA0Mjc7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojMDBBRUVGO30KCS5zdDF7ZmlsbDojODA4ODhGO30KPC9zdHlsZT4KPGc+Cgk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzM4LDkzLjRjMC0yLjktMi4xLTUuMy00LjktNS43SDEwOS45Yy0yLjgsMC40LTQuOSwyLjgtNC45LDUuN3YxMTguOWMwLDEzLjYsMiwyNi41LDYuNSwzOC40bDIyNi41LTEyN1Y5My40CgkJeiIvPgoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTIyMS41LDM0My4zYzI5LDAsMTE2LjMtNTIuOSwxMTYuMy0xMzAuOXYtNDAuMmwtMjI1LDgzLjJDMTM0LjYsMzA3LjYsMTk3LjcsMzQzLjMsMjIxLjUsMzQzLjMiLz4KPC9nPgo8cG9seWdvbiBjbGFzcz0ic3QxIiBwb2ludHM9IjQxNi41LDEzMi43IDQ0OC4yLDEzMi43IDQ0OC4yLDI1My4yIDUwNy44LDI1My4yIDUwNy44LDI4MS4yIDQxNi41LDI4MS4yICIvPgo8Zz4KCTxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik01OTguOSwyMjcuOGMwLTE2LjQtMTMuNy0yNy40LTI3LjYtMjcuNGMtMTUuMSwwLTI3LjYsMTEuNi0yNy42LDI3LjRjMCwxNS41LDEyLjYsMjcuNiwyNy42LDI3LjYKCQlDNTg1LjksMjU1LjQsNTk4LjksMjQ0LDU5OC45LDIyNy44IE02MjkuNywxNzQuOXYxMDYuNGgtMjkuOVYyNjhjLTcuNSwxMC41LTIyLjQsMTUuMy0zNC4yLDE1LjNjLTI3LjQsMC01Mi4zLTIxLjItNTIuMy01NS41CgkJczI0LjktNTUuNSw1Mi4zLTU1LjVjMTIuMywwLDI2LjcsNC42LDM0LjIsMTUuM3YtMTIuOGgyOS45VjE3NC45eiIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTY0My4xLDIyNy42YzAtMzMuOCwyNy40LTU1LjUsNTguNC01NS41YzE5LjQsMCwzNC45LDkuMSw0NSwyMi44bC0yMi40LDE1LjdjLTQuOC02LjYtMTMuNy0xMC43LTIyLjQtMTAuNwoJCWMtMTYuOSwwLTI4LjMsMTIuMS0yOC4zLDI3LjZjMCwxNS43LDExLjQsMjcuOSwyOC4zLDI3LjljOC43LDAsMTcuNi00LjEsMjIuNC0xMC43bDIyLjQsMTUuN2MtMTAsMTMuOS0yNS42LDIyLjgtNDUsMjIuOAoJCUM2NzAuNSwyODMuMyw2NDMuMSwyNjEuNCw2NDMuMSwyMjcuNiIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTgzNS44LDIxOC4yYy0wLjktMTIuNi0xMS40LTIwLjEtMjQuOS0yMC4xYy0xMi4xLDAtMjIuOCw1LjctMjYsMjAuMUg4MzUuOHogTTg2NS4zLDIzNy42aC04MC40CgkJYzMuMiwxMi4zLDEzLjIsMTkuMiwyNy42LDE5LjJjMTAuNywwLDIxLjUtNC4zLDI3LjktMTEuOWwxNy42LDE3LjZjLTEwLDEzLjUtMjguOCwyMC44LTQ3LjUsMjAuOGMtMzIuNiwwLTU2LjYtMjIuNC01Ni42LTU1LjIKCQljMC0zNC41LDI2LTU1LjksNTYuNi01NS45YzMwLjQsMCw1NS4yLDIxLjUsNTUuMiw1NC4xQzg2NS43LDIyOS4yLDg2NS41LDIzMi44LDg2NS4zLDIzNy42Ii8+CjwvZz4KPHBvbHlnb24gY2xhc3M9InN0MSIgcG9pbnRzPSIxMDM4LjMsMTc0LjkgMTAwMC42LDI4MS4yIDk3NS4xLDI4MS4yIDk1My4yLDIxMi4xIDkzMS45LDI4MS4yIDkwNi40LDI4MS4yIDg2Ny41LDE3NC45IDkwMCwxNzQuOSAKCTkyMCwyMzkuNyA5NDAuNCwxNzQuOSA5NjUuNSwxNzQuOSA5ODUuOCwyMzkuNyAxMDA1LjksMTc0LjkgIi8+CjxnPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTExMjAuOSwyMjcuOGMwLTE2LjctMTIuMS0yNy45LTI2LjktMjcuOXMtMjYuOSwxMS4yLTI2LjksMjcuOWMwLDE2LjQsMTIuMSwyNy42LDI2LjksMjcuNgoJCUMxMTA4LjgsMjU1LjQsMTEyMC45LDI0NC4zLDExMjAuOSwyMjcuOCBNMTAzNi42LDIyNy44YzAtMzMuOCwyNi45LTU1LjcsNTcuMy01NS43czU3LjMsMjEuOSw1Ny4zLDU1LjcKCQljMCwzMy42LTI2LjksNTUuNS01Ny4zLDU1LjVTMTAzNi42LDI2MS40LDEwMzYuNiwyMjcuOCIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTEyNDIuNSwxNzUuNWwtNi45LDI4LjVjLTYuNC0zLjQtMTEuNi0zLjktMTUuMy0zLjljLTE1LjMsMC0yNS44LDE0LjItMjUuOCw0NC41djM2LjVoLTI5LjlWMTc0LjloMjkuN3YyMi42CgkJYzUuOS0xNy44LDE4LTI1LjMsMzEuMy0yNS4zQzEyMzEuMywxNzIuMSwxMjM3LjcsMTczLDEyNDIuNSwxNzUuNSIvPgo8L2c+Cjxwb2x5Z29uIGNsYXNzPSJzdDEiIHBvaW50cz0iMTMyMi41LDI4MS4yIDEyODUuMSwyMzUuMSAxMjg1LjEsMjgxLjIgMTI1NS4yLDI4MS4yIDEyNTUuMiwxMjYuOCAxMjg1LjEsMTI2LjggMTI4NS4xLDIwNy4zIAoJMTMxMiwxNzQuOSAxMzUwLjQsMTc0LjkgMTMwOC44LDIyMS43IDEzNTkuOCwyODEuMiAiLz4KPHBvbHlnb24gY2xhc3M9InN0MSIgcG9pbnRzPSIxMzYyLjIsMTI4LjYgMTM1Ni42LDEyOC42IDEzNTYuNiwxNDQuMiAxMzU0LjIsMTQ0LjIgMTM1NC4yLDEyOC42IDEzNDguNiwxMjguNiAxMzQ4LjYsMTI2LjggCgkxMzYyLjIsMTI2LjggIi8+Cjxwb2x5Z29uIGNsYXNzPSJzdDEiIHBvaW50cz0iMTM3OSwxMjYuOCAxMzczLjQsMTQxIDEzNzMuMywxNDEgMTM2Ny44LDEyNi44IDEzNjQuOCwxMjYuOCAxMzY0LjgsMTQ0LjIgMTM2Ny4xLDE0NC4yIDEzNjcuMSwxMzcuMyAKCTEzNjYuOSwxMzAuMyAxMzY3LDEzMC4zIDEzNzIuNiwxNDQuMiAxMzc0LjIsMTQ0LjIgMTM3OS44LDEzMC4yIDEzNzkuOSwxMzAuMiAxMzc5LjYsMTM3LjMgMTM3OS42LDE0NC4yIDEzODIsMTQ0LjIgMTM4MiwxMjYuOCAiLz4KPC9zdmc+Cg==" title="Lacework icon" class="logo-icon" alt="" height="75"></div>
+         <div class="col-sm-8">&nbsp;</div>
+      </div>
+      {%- for dataset in items %}
+      <article class="card">
+          <content class="card-body">
+            <h5 class="card-title">{{ items[dataset].data.reportTitle['0'] }}</h5>
+            <div class="row">
+                <div class="col-12">
+                    <div class="toolbar_{{ dataset }}">
+                        Total rows: <span id="total">{{ items[dataset].summary.rows }}</span>
+                    </div>
+                    <table class="data-table" id="table_{{ dataset }}"></table>
+                </div>
+            </div>
+        </content>
+      </article>
+      {%- endfor %} 
+   </section>
+   <script type="text/javascript">
+        {%- for dataset in items %}
+
+        // data table {{ dataset }}
+        {%- set fields = items[dataset].data.keys() %}
+        {%- set first_field = fields|first %}
+        {%- set summary_fields = items[dataset].data.summary['0'].keys()  %}
+
+        var $table = $('#table_{{ dataset }}')
+        var total = 0
+        
+        const table_cols_{{ dataset }} = [
+            {%- for field in items[dataset].data %}
+            {%- if field != "summary" %}
+                 {
+                    field: '{{ field }}',
+                    title: '{{ field }}',
+                    sortable: true
+                }
+            {%- else %}
+                {%- for sum_field in summary_fields %}
+                    {
+                        field: '{{ sum_field }}',
+                        title: '{{ sum_field }}',
+                        sortable: true
+                    }
+                    {%- if not loop.last -%}
+                    ,
+                    {%- endif %}
+                {%- endfor %}
+            {%- endif %}
+            {%- if not loop.last -%}
+            ,
+            {%- endif %}
+            {%- endfor %}    
+            ]
+
+        const table_data_{{ dataset }} = [
+            {%- for row in items[dataset].data[first_field].keys() %}
+                {
+                    id: {{ row }},
+                    {%- for field in fields %}
+                        {%- if field != "summary" %}
+                            {{ field }}: "{{ items[dataset].data[field][row] }}"
+                        {%- else %}
+                            {%- for sum_field in summary_fields %}
+                                {{ sum_field }}: "{{ items[dataset].data['summary'][row][sum_field] }}"
+                                {%- if not loop.last -%}
+                                ,
+                                {%- endif %}
+                            {%- endfor %}
+                        {%- endif %}
+                        {%- if not loop.last -%}
+                        ,
+                        {%- endif %}
+                    {%- endfor %}
+                }
+                {%- if not loop.last -%}
+                ,
+                {%- endif %}
+            {%- endfor %}    
+        ]
+
+        $table.bootstrapTable({
+            toolbar: ".toolbar_{{ dataset }}",
+
+            search: true,
+            showColumns: true,
+            showFullscreen: true,
+            
+            showExport: true,
+            exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+            filterControl: false,
+
+            data: table_data_{{ dataset }},
+            columns: table_cols_{{ dataset }},
+
+            {%- if items[dataset].summary.rows>10000 %}
+            virtualScroll: true
+            {%- else %}
+            virtualScroll: false,
+            showExtendedPagination: true,
+            pagination: true,
+            showPaginationSwitch: true,
+            paginationVAlign: "bottom",
+            showFooter: false,
+            sortable: true
+            {%- endif %}
+        });
+        {%- endfor %}
+    </script>
+    <!-- json object debugging -->
+    <script type="text/javascript">
+        var dataset1 = {{ items['dataset1'].summary| tojson() }}
+        console.log(dataset1)
+    </script>
+    <!-- json object debugging -->
+</body>

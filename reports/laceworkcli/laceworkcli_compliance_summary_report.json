@@ -7,14 +7,14 @@
                     "name": "dataset1",
                     "type": "laceworkcli_dataset_handler",
                     "command": "compliance",
-                    "args": "aws get-report",
+                    "args": "aws get-report --severity high --type ISO_2700",
                     "organization": false,
                     "subaccount": null,
                     "account": null,
                     "api_key": null,
                     "api_secret": null,
                     "api_token": null,
-                    "profile": null,
+                    "profile": "grailbio",
                     "filter": "laceworkcli_compliance_summary_filter_handler",
                     "enumerate_csp_accounts": true
                 },
@@ -22,14 +22,14 @@
                     "name": "dataset2",
                     "type": "laceworkcli_dataset_handler",
                     "command": "compliance",
-                    "args": "gcp get-report",
+                    "args": "aws get-report --severity high --type SOC_Rev2",
                     "organization": false,
                     "subaccount": null,
                     "account": null,
                     "api_key": null,
                     "api_secret": null,
                     "api_token": null,
-                    "profile": null,
+                    "profile": "grailbio",
                     "filter": "laceworkcli_compliance_summary_filter_handler",
                     "enumerate_csp_accounts": true
                 },
@@ -37,26 +37,41 @@
                     "name": "dataset3",
                     "type": "laceworkcli_dataset_handler",
                     "command": "compliance",
-                    "args": "az get-report",
+                    "args": "gcp get-report --severity high --type SOC",
                     "organization": false,
                     "subaccount": null,
                     "account": null,
                     "api_key": null,
                     "api_secret": null,
                     "api_token": null,
-                    "profile": null,
+                    "profile": "grailbio",
+                    "filter": "laceworkcli_compliance_summary_filter_handler",
+                    "enumerate_csp_accounts": true
+                },
+                {
+                    "name": "dataset4",
+                    "type": "laceworkcli_dataset_handler",
+                    "command": "compliance",
+                    "args": "az get-report --severity high --type SOC",
+                    "organization": false,
+                    "subaccount": null,
+                    "account": null,
+                    "api_key": null,
+                    "api_secret": null,
+                    "api_token": null,
+                    "profile": "grailbio",
                     "filter": "laceworkcli_compliance_summary_filter_handler",
                     "enumerate_csp_accounts": true
                 }
             ],
             "settings": {
-                "template": "./templates/json/report.json.j2"
+                "template": "./templates/html/advanced_compliance_summary.html.j2"
             },
             "reports": [
                 {
                     "name": "output",
                     "type": "local_report_handler",
-                    "path": "./output/compliance_summary.json"
+                    "path": "./output/compliance_summary.html"
                 }
             ]
         }
