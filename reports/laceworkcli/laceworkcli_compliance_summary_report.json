@@ -47,21 +47,6 @@
                     "profile": "grailbio",
                     "filter": "laceworkcli_compliance_summary_filter_handler",
                     "enumerate_csp_accounts": true
-                },
-                {
-                    "name": "dataset4",
-                    "type": "laceworkcli_dataset_handler",
-                    "command": "compliance",
-                    "args": "az get-report --severity high --type SOC",
-                    "organization": false,
-                    "subaccount": null,
-                    "account": null,
-                    "api_key": null,
-                    "api_secret": null,
-                    "api_token": null,
-                    "profile": "grailbio",
-                    "filter": "laceworkcli_compliance_summary_filter_handler",
-                    "enumerate_csp_accounts": true
                 }
             ],
             "settings": {

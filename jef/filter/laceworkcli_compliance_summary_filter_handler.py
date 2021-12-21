@@ -54,6 +54,9 @@ class laceworkcli_compliance_summary_filter_handler(filter_handler):
             dfs.append(pd.DataFrame(data))
 
         # concat all results into single dataframe
-        df = pd.concat(dfs, ignore_index=True)
-        self.logger.info(df)
-        return df
+        if len(dfs) > 0:
+            df = pd.concat(dfs, ignore_index=True)
+            self.logger.info(df)
+            return df
+        else:
+            return pd.DataFrame(dfs)
