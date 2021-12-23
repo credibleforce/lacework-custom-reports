@@ -13,14 +13,13 @@ class laceworkcli_compliance_summary_filter_handler(filter_handler):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def filter(self,result):
-        
-        self.logger.info("Found: {0} results".format(len(result)))
+    def filter(self,data,datasets=[]):
+        self.logger.info("Found: {0} results".format(len(data)))
         dfs = []
-        csp_type = result['csp_type']
-        for r in result['reports']:
+        csp_type = data['csp_type']
+        for r in data['reports']:
             if csp_type == "aws":
-                data = {
+                tdf = {
                     "account" : r['accountAlias'],
                     "summary" : r['accountId'],
                     "reportTime": r['reportTime'],
@@ -29,7 +28,7 @@ class laceworkcli_compliance_summary_filter_handler(filter_handler):
                     "summary" : r['summary']
                 }
             elif csp_type in ["google","gcp"]:
-                data = {
+                tdf = {
                     "organizationId" : r['organizationId'],
                     "organizationName" : r['organizationName'],
                     "projectId" : r['projectId'],
@@ -40,7 +39,7 @@ class laceworkcli_compliance_summary_filter_handler(filter_handler):
                     "summary" : r['summary']
                 }
             elif csp_type in ["az","azure"]:
-                data = {
+                tdf = {
                     "tenantId" : r['tenantId'],
                     "tenantName" : r['tenantName'],
                     "subscriptionId" : r['subscriptionName'],
@@ -51,7 +50,7 @@ class laceworkcli_compliance_summary_filter_handler(filter_handler):
                     "summary" : r['summary']
                 }
             
-            dfs.append(pd.DataFrame(data))
+            dfs.append(pd.DataFrame(tdf))
 
         # concat all results into single dataframe
         if len(dfs) > 0:

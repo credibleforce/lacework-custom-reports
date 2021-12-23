@@ -7,7 +7,7 @@ queryText: |-
       LW_HE_CONTAINERS
     }
     FILTER {
-      REPO like '%gcr.io/customer-facing%'
+      REPO like '964896119444.dkr.ecr.us-east-1.amazonaws.com'
       AND TAG = '1.0.0'
     }
     RETURN DISTINCT {
@@ -29,6 +29,6 @@ queryText: |-
       REPO,
       TAG,
       PROPS_LABEL,
-      PROPS_ENV
+      PROPS_ENV,
     }
   }

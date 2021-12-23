@@ -32,13 +32,14 @@ class s3_dataset_handler(dataset_handler):
         return result
 
     def load(self):
-        self.logger.debug("Loading s3 bucket...")
         s3_path = self.dataset.get('s3_path')
         profile = self.dataset.get('profile')
         newline_separated = self.dataset.get('newline_separated',False)
 
         last_modified_begin = self.dataset.get('last_modified_begin')
         last_modified_end = self.dataset.get('last_modified_end')
+
+        self.logger.info("Loading s3 bucket: {0}".format(s3_path))
 
         last_modified_filter = False
         if last_modified_begin and last_modified_end:
@@ -71,7 +72,7 @@ class s3_dataset_handler(dataset_handler):
 
         # pass through a filter for parsing/manipulation if required
         if self.filterClass != None:
-            df = self.filterClass().filter(df)
+            df = self.filterClass().filter(df, self.datasets)
 
         rows = len(df.index)
         json_data = json.loads(df.to_json(date_format='iso'))

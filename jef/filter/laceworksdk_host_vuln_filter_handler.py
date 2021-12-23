@@ -11,7 +11,7 @@ class laceworksdk_host_vuln_filter_handler(filter_handler):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def filter(self,data):
+    def filter(self,data,datasets=[]):
         # filter/manipulate the resultant data
         results = []
         for d in data:

@@ -4,7 +4,7 @@ from .report_handler import report_handler
 from slack import WebClient
 from slack.errors import SlackApiError
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 module_path = os.path.abspath(os.path.dirname(__file__))
@@ -15,9 +15,9 @@ class slack_report_handler(report_handler):
         attachment_from_template = None
         if self.attachment_template is not None:
             self.logger.info("Attachment template defined - parsing...")
-            attachment_from_template = self.attachment_template.render(items=self.datasets,date=datetime.utcnow())
+            attachment_from_template = self.attachment_template.render(items=self.datasets,date=datetime.utcnow(),delta1d=timedelta(days=1),delta1h=timedelta(hours=1),delta30d=timedelta(days=30))
 
-        message_from_template = self.template.render(items=self.datasets,channel=self.report.get('channel'),date=datetime.utcnow())
+        message_from_template = self.template.render(items=self.datasets,channel=self.report.get('channel'),date=datetime.utcnow(),delta1d=timedelta(days=1),delta1h=timedelta(hours=1),delta30d=timedelta(days=30))
         slack_message = json.loads(message_from_template)
         client = WebClient(token=self.report.get('token'))
 

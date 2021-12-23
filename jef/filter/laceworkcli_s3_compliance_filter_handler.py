@@ -13,9 +13,9 @@ class laceworkcli_s3_compliance_filter_handler(filter_handler):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def filter(self,df):
+    def filter(self,data,datasets=[]):
         results = []
-        for index, row in df.iterrows():
+        for index, row in data.iterrows():
             result = {
                     "report_time": row['summary']['report_time'],
                     "rows": row['summary']['rows'],

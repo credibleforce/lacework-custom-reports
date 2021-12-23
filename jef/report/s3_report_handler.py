@@ -6,7 +6,7 @@ import boto3
 import gzip
 import awswrangler as wr
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.parser import isoparse
 from urllib.parse import urlparse
 import io
@@ -36,7 +36,7 @@ class s3_report_handler(report_handler):
             s = boto3.session.Session()
 
         # write results
-        data = self.template.render(items=self.datasets,date=datetime.utcnow()).encode('utf-8')
+        data = self.template.render(items=self.datasets,date=datetime.utcnow(),delta1d=timedelta(days=1),delta1h=timedelta(hours=1),delta30d=timedelta(days=30)).encode('utf-8')
         
         if compressed:
             wr.s3.upload(local_file=io.BytesIO(gzip.compress(data)),path="{0}.gz".format(s3_path),boto3_session=s)

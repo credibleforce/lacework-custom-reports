@@ -71,7 +71,7 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
 
         # pass through a filter for parsing/manipulation if required
         if self.filterClass != None:
-            df = self.filterClass().filter(df)
+            df = self.filterClass().filter(df, self.datasets)
         
         rows = len(df.index)
         
