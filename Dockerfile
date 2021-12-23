@@ -21,4 +21,4 @@ COPY jef ./jef
 # COPY reports ./reports
 # COPY templates ./templates
 
-#ENTRYPOINT [ "python", "-u", "/app/reports.py" ]
+ENTRYPOINT [ "python", "-u", "/app/reports.py" ]
