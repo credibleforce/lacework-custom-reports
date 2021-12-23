@@ -15,7 +15,7 @@ The easiest way to run:
 
 This will mount your Lacework CLI credentials into the container and execute the scan on the default profile. You can, of course, pass in a different profile:
 
-> `docker run -v ~/.lacework.toml:/home/user/.lacework.toml -v ./output:/app/output --env= GCP_PROJECT=kubernetes-cluster-331006 --env=GCP_ORG=286188307222 credibleforce/custom-reports --config /app/reports/laceworkcli/laceworkcli_gcp_compliance_html_report.json`
+> ``
 
 >> include examples of mounting report template and including environment variables
 

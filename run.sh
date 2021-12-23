@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker run --rm \
+docker run --rm -it \
     -v ~/.lacework.toml:/home/user/.lacework.toml \
     -v output:/app/output \
     -v reports:/app/reports \
@@ -8,4 +8,4 @@ docker run --rm \
     --env=GCP_PROJECT=kubernetes-cluster-331006 \
     --env=GCP_ORG=286188307222 \
     --name custom-reporting \
-    credibleforce/custom-reporting --config /app/reports/laceworkcli/laceworkcli_gcp_compliance_html_report.json
+    credibleforce/custom-reporting /bin/bash
