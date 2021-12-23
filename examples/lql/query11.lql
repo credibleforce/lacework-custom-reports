@@ -1,0 +1,28 @@
+---
+evaluatorId: <<IMPLICIT>>
+queryId: Custom_HA_User_Logins_1
+queryText: |-
+  Custom_HA_User_Logins_1 {
+    SOURCE {
+      LW_HA_USER_LOGINS
+    }
+    FILTER {
+      EVENT_TYPE ='LOGOFF'
+      AND TTY='ts/0manoj.gandhi'
+    }
+    RETURN DISTINCT {
+      BATCH_START_TIME,
+      BATCH_END_TIME,
+      RECORD_CREATED_TIME,
+      MID,
+      LOGIN_TIME,
+      LOGOFF_TIME,
+      EVENT_TYPE,
+      USERNAME,
+      HOSTNAME,
+      IP_ADDR,
+      TTY,
+      UID,
+      GID
+    }
+  }

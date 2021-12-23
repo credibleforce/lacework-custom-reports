@@ -1,0 +1,23 @@
+---
+evaluatorId: <<IMPLICIT>>
+queryId: Custom_HA_DNS_Request_1
+queryText: |-
+  Custom_HA_DNS_Request_1 {
+    SOURCE {
+      LW_HA_DNS_REQUESTS
+    }
+    FILTER {
+      HOSTNAME = 'vault.reltio.com'
+    }
+    RETURN DISTINCT {
+      BATCH_START_TIME,
+      BATCH_END_TIME,
+      RECORD_CREATED_TIME,
+      MID,
+      SRV_IP_ADDR,
+      HOSTNAME,
+      HOST_IP_ADDR,
+      TTL,
+      PKTLEN
+    }
+  }

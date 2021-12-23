@@ -1,0 +1,42 @@
+---
+evaluatorId: <<IMPLICIT>>
+queryId: Custom_HA_Connections_1
+queryText: |-
+  Custom_HA_Connections_1 {
+    SOURCE {
+      LW_HA_CONNECTIONS
+    }
+    FILTER {
+      INCOMING:bytes > 20000
+      AND SYN ='Incoming'
+    }
+    RETURN DISTINCT {
+      BATCH_START_TIME,
+      BATCH_END_TIME,
+      RECORD_CREATED_TIME,
+      CONN_START_TIME,
+      CONN_END_TIME,
+      MID,
+      SRC_IP_ADDR,
+      SRC_PORT,
+      DST_IP_ADDR,
+      DST_PORT,
+      PROTOCOL,
+      SYN,
+      FIN,
+      LOCAL,
+      SESS_COUNT_IN,
+      SESS_COUNT_OUT,
+      PKT_PER_SESS_COUNT_IN,
+      PKT_PER_SESS_COUNT_OUT,
+      BYTES_PER_PKT_COUNT_IN,
+      BYTES_PER_PKT_COUNT_OUT,
+      SESSTIME_PER_SESS_IN,
+      SESSTIME_PER_SESS_OUT,
+      RESPTIME_PER_SESS_IN,
+      RESPTIME_PER_SESS_OUT,
+      INCOMING,
+      OUTGOING,
+      FIRST_KNOWN_TIME
+    }
+  }

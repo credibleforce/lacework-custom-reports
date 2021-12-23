@@ -2,6 +2,28 @@
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/AfIOBLr1NDU/0.jpg)](https://www.youtube.com/watch?v=AfIOBLr1NDU)
 
+The aim of this project is to make it easier to build custom reports from data availbale via Lacework API and S3 Data Export.
+
+## How It Works
+
+
+## How To Run
+
+The easiest way to run:
+
+> `docker run -v ~/.lacework.toml:/home/user/.lacework.toml credibleforce/custom-reports`
+
+This will mount your Lacework CLI credentials into the container and execute the scan on the default profile. You can, of course, pass in a different profile:
+
+> `docker run -v ~/.lacework.toml:/home/user/.lacework.toml -v ./output:/app/output --env= GCP_PROJECT=kubernetes-cluster-331006 --env=GCP_ORG=286188307222 credibleforce/custom-reports --config /app/reports/laceworkcli/laceworkcli_gcp_compliance_html_report.json`
+
+>> include examples of mounting report template and including environment variables
+
+The script can also read the standard Lacework CLI environment variables for authentication.
+
+## Known Issues
+
+
 ## Components
 
 1) Yaml file that describes properties of each report to generate:
