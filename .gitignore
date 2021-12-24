@@ -1,5 +1,7 @@
 # JEF - Output filter
-output/*
+output/*.html
+output/*.json
+output/*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
