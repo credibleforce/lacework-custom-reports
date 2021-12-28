@@ -20,8 +20,8 @@ jobs:
       LW_ACCOUNT_NAME: ${{ secrets.LW_ACCOUNT_NAME }}
       LW_SCANNER_SAVE_RESULTS: true
       LW_SCANNER_SCAN_LIBRARY_PACKAGES: true
-      DOCKER_REPO: credibleforce/custom-reporting
-      DOCKER_TEST_NAME: credibleforce/custom-reporting
+      DOCKER_REPO: credibleforce/lacework-custom-reports
+      DOCKER_TEST_NAME: credibleforce/lacework-custom-reports
     steps:
 
       - name: Checkout
