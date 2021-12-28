@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from jef.report.report_handler import report_handler
+from custom_reports.report.report_handler import report_handler
 from datetime import datetime, timedelta
 import os
 
