@@ -1,4 +1,4 @@
-# Lacework Custom Reporting
+# Lacework Custom Reports
 
 The aim of this project is to make it easier to build custom reports from data availbale via Lacework API and S3 Data Export.
 
