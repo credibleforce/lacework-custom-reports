@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO,format='%(asctime)s [%(levelname)s] %(fil
 
 def main():
     ''' Parsing inputs '''
-    ver = "0.0.3"
+    ver = "0.0.4"
     dsc = "Custom Reports"
     
     print(Figlet(font="3-d").renderText("CUSTOM REPORTS"))
