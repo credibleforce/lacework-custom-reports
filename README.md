@@ -1,4 +1,4 @@
-# Lacework Custom Reporting
+# Lacework Custom Reports
 
 The aim of this project is to make it easier to build custom reports from data availbale via Lacework API and S3 Data Export.
 
@@ -58,7 +58,7 @@ docker run --rm -it \
     --env=HOME=/home/user \
     --user $UID:$GID \
     `# run the report script` \
-    credibleforce/custom-reporting:main --config /app/reports/laceworkcli/laceworkcli_gcp_compliance_html_report.json
+    credibleforce/lacework-custom-reports:latest --config /app/reports/laceworkcli/laceworkcli_gcp_compliance_html_report.json
 ```
 
 ## Known Issues
