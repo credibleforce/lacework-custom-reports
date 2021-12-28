@@ -9,7 +9,7 @@ Output the template rendered data to a slack channel.
 **Note**: The report configuration file does accept five jinja templating options. 
 
 * `{{ env['VALUE'] }}` can be used to access environment variables.
-* `{{ date.strftime('%Y-%m-%d') }} provides access to the current date.
+* `{{ date.strftime('%Y-%m-%d') }}` provides access to the current date.
 * `{{ delta1d }}` provides access to the current timedelta objects which can be used for date math, this provides 1d timedelta.
 * `{{ delta1h }}` provides access to the current timedelta objects which can be used for date math, this provides 1h timedelta.
 * `{{ delta30d }}` provides access to the current timedelta objects which can be used for date math, this provides 30d timedelta.
