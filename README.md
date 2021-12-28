@@ -1,64 +1,56 @@
-# Just Effectively Formatting (JEF)
-
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/AfIOBLr1NDU/0.jpg)](https://www.youtube.com/watch?v=AfIOBLr1NDU)
+# Lacework Custom Reporting
 
 The aim of this project is to make it easier to build custom reports from data availbale via Lacework API and S3 Data Export.
 
 ## How It Works
 
+Lacework data source contain valuable information for reporting. These sources include the console API, S3 Data Export and Snowflake Data Share. In order to access these data sources and produce reports this project provides two configuration files:
+
+* Report Config - This file contains a listing of the Dataset Handlers, Filters, Templates and Report Handlers used to create one or more reports.
+* Report Template - These files are jinja template files that work in conjuntion with the data obtained from the data source.
+
+This project contains multiple examples of Data Source Handlers but is written for community members to contribute additional plugins as required. Out of the box these Dataset Handlers are available:
+
+* laceworkcli_dataset_handler - Pass command line arguements to the laceworkcli and capture the JSON output.
+* laceworksdk_host_vuln_dataset_handler - Example usage of the python SDK to retrieve vulnerability data from the lacework API.
+* local_dataset_hanlder - Read json data from a local file.
+* s3_dataset_handler - Read one or more JSON files from an S3 bucket. Written to be used with Lacework S3 Data Export Data.
+
+As with Data Source Handlers there are a number of pre-written Report Handlers. These handlers are use to write/output Dataset transformed data (e.g. write an HTML report to an S3 bucket). Out of the box these Report Handlers are available:
+
+* local_report_handler - Write reports to the local file system. 
+* s3_report_handler - Write reports to an S3 bucket.
+* slack_report_handler - Write reports (as attachments) to a slack message. 
+
+Lastly there area a number of example jinja templates for various Report examples. These include:
+
+* table_simple.html.j2 - Write a <table> from the Dataset data provided.
+* table_advanced_dataframe.html.j2 - Write a <table> element from a Pandas Dataframe formatted json object. 
+* table_advanced_boostrap_dataframe.html.j2 - Write a dynamic bootstrap-table from a Pandas Dataframe formatted json object.
+* gcp_compliance_summary_report.html.j2 - Example rendering of an HTML version of the Lacework PDF compliance report.
+* advanced_compliance_summary.html.j2 - Example of rendering multiple bootstap-tables from multiple Pandas Dataframe formatted objects.
 
 ## How To Run
 
-The easiest way to run:
+An example of using Docker to run reports is included in run.sh, which demonstrates mounting lacework credentials and report directories.
 
-> `docker run -v ~/.lacework.toml:/home/user/.lacework.toml credibleforce/custom-reports`
-
-This will mount your Lacework CLI credentials into the container and execute the scan on the default profile. You can, of course, pass in a different profile:
-
-> ``
-
->> include examples of mounting report template and including environment variables
-
-The script can also read the standard Lacework CLI environment variables for authentication.
+```
+docker run --rm -it \
+    `# name of the container` \
+    --name custom-reporting \
+    `# mount credentials and configuration` \
+    -v ~/.lacework.toml:/home/user/.lacework.toml \
+    -v $(pwd)/output:/app/output \
+    -v $(pwd)/reports:/app/reports \
+    -v $(pwd)/templates:/app/templates \
+    `# report environment variables` \
+    --env=GCP_PROJECT=kubernetes-cluster-331006 \
+    --env=GCP_ORG=286188307222 \
+    `# override the uid to allow docker write through to output volume (optional)` \
+    --env=HOME=/home/user \
+    --user $UID:$GID \
+    `# run the report script` \
+    credibleforce/custom-reporting:main --config /app/reports/laceworkcli/laceworkcli_gcp_compliance_html_report.json
+```
 
 ## Known Issues
-
-
-## Components
-
-1) Yaml file that describes properties of each report to generate:
-	1) `datasource` - where to get the data from:
-		- `name`:
-            * name of the datasource alias used in templates
-		- `type`: 
-			
-            * `local` - directory, filename filter
-			* `s3` - bucket, path, filename filter, credentials (stored in secret store attached to environment variable)
-			* `lacework` - uri, token (stored in secret store attached to environment variable)
-			* `generic` - uri, token (stored in secret store attached to environment variable)
-		- `jq_filter`: 
-            - filter the json result or get a count from an aggregated result
-	2) `template` - a jinja formatted file. datasource name is array of json objects.
-	3) `output`
-			- `name`:
-                * name of the output will be used in filename
-			- `type`:
-				- `local` - path
-				- `s3` - bucket name, path, credentials (stored in secret store attached to environment variable)
-2) Template file - jinja fomatted file that can be used to produce reports from template and existing data sources
-
-## Workflow
-
-1) spin up docker image
-2) install lacework cli (curl https://raw.githubusercontent.com/lacework/go-sdk/main/cli/install.sh | bash)
-3) install awscli
-4) install python3, jq, jinja template
-5) read data from source as object, apply filters
-6) pass data objects to jinja template file
-7) write output file to local or s3
-
-
-## Future
-
-1) web front-end via github
-2) web front-end via lambda and s3

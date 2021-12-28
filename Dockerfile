@@ -17,7 +17,7 @@ ENV PATH "$PATH:/home/user/.local/bin"
 WORKDIR /app
 
 COPY reports.py ./
-COPY jef ./jef
+COPY custom_reports ./custom_reports
 # COPY reports ./reports
 # COPY templates ./templates
 

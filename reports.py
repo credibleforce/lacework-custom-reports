@@ -5,7 +5,7 @@ from __future__ import print_function
 import argparse
 from pyfiglet import Figlet
 
-from jef.reports import reports
+from custom_reports.reports import reports
 
 import logging
 logging.basicConfig(level=logging.INFO,format='%(asctime)s [%(levelname)s] %(filename)s:%(lineno)s - %(message)s')
@@ -13,9 +13,9 @@ logging.basicConfig(level=logging.INFO,format='%(asctime)s [%(levelname)s] %(fil
 def main():
     ''' Parsing inputs '''
     ver = "0.0.1"
-    dsc = "Just Effectively Formatting"
+    dsc = "Custom Reports"
     
-    print(Figlet(font="3-d").renderText("JEF"))
+    print(Figlet(font="3-d").renderText("CUSTOM REPORTS"))
     print("{0} [{1}]\n".format(dsc,ver))
 
     parser = argparse.ArgumentParser(description=dsc)

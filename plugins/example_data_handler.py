@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from jef.dataset.dataset_handler import dataset_handler
+from custom_reports.dataset.dataset_handler import dataset_handler
 import json
 import os
 
