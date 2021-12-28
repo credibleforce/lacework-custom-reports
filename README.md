@@ -15,16 +15,16 @@ Lacework data source contain valuable information for reporting. These sources i
 
 This project contains multiple examples of Data Source Handlers but is written for community members to contribute additional plugins as required. Out of the box these Dataset Handlers are available:
 
-* [laceworkcli_dataset_handler](dataset/laceworkcli_dataset_handler.md) - Pass command line arguements to the laceworkcli and capture the JSON output.
-* [s3_dataset_handler](dataset/s3_dataset_handler.md) - Read one or more JSON files from an S3 bucket. Written to be used with Lacework S3 Data Export Data.
+* [laceworkcli_dataset_handler](docs/dataset/laceworkcli_dataset_handler.md) - Pass command line arguements to the laceworkcli and capture the JSON output.
+* [s3_dataset_handler](docs/dataset/s3_dataset_handler.md) - Read one or more JSON files from an S3 bucket. Written to be used with Lacework S3 Data Export Data.
 
 ### Report Handlers
 
 As with Data Source Handlers there are a number of pre-written Report Handlers. These handlers are use to write/output Dataset transformed data (e.g. write an HTML report to an S3 bucket). Out of the box these Report Handlers are available:
 
-* [local_report_handler](report/local_report_handler.md) - Write reports to the local file system. 
-* [s3_report_handler](report/s3_report_handler.md) - Write reports to an S3 bucket.
-* [slack_report_handler](report/slack_report_handler.md) - Write reports (as attachments) to a slack message. 
+* [local_report_handler](docs/report/local_report_handler.md) - Write reports to the local file system. 
+* [s3_report_handler](docs/report/s3_report_handler.md) - Write reports to an S3 bucket.
+* [slack_report_handler](docs/report/slack_report_handler.md) - Write reports (as attachments) to a slack message. 
 
 ### Templates
 
