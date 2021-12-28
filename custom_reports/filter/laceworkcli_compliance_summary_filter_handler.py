@@ -15,17 +15,29 @@ class laceworkcli_compliance_summary_filter_handler(filter_handler):
 
     def filter(self,data,datasets=[]):
         self.logger.info("Found: {0} results".format(len(data)))
+        
         dfs = []
         csp_type = data['csp_type']
-        for r in data['reports']:
+
+        for r in data.get('reports',[]):
+            # accumulate resources
+            resources = []
+            for rec in r.get('recommendations',[]):
+                violations = rec.get('violations') if rec.get('violations') is not None else []
+                for v in violations:
+                    res  = "{0} ({1}) {2}".format(v.get('resource'), v.get('region','not associated'),v.get('reasons'))
+                    if res not in resources:
+                        resources.append(res)
+
             if csp_type == "aws":
                 tdf = {
                     "account" : r['accountAlias'],
-                    "summary" : r['accountId'],
+                    "accountId" : r['accountId'],
                     "reportTime": r['reportTime'],
                     "reportTitle": r['reportTitle'],
                     "reportType": r['reportType'],
-                    "summary" : r['summary']
+                    "summary" : r['summary'],
+                    "resources": ", ".join(resources)
                 }
             elif csp_type in ["google","gcp"]:
                 tdf = {
@@ -36,7 +48,8 @@ class laceworkcli_compliance_summary_filter_handler(filter_handler):
                     "reportTime": r['reportTime'],
                     "reportTitle": r['reportTitle'],
                     "reportType": r['reportType'],
-                    "summary" : r['summary']
+                    "summary" : r['summary'],
+                    "resources": ", ".join(resources)
                 }
             elif csp_type in ["az","azure"]:
                 tdf = {
@@ -47,7 +60,8 @@ class laceworkcli_compliance_summary_filter_handler(filter_handler):
                     "reportTime": r['reportTime'],
                     "reportTitle": r['reportTitle'],
                     "reportType": r['reportType'],
-                    "summary" : r['summary']
+                    "summary" : r['summary'],
+                    "resources": ", ".join(resources)
                 }
             
             dfs.append(pd.DataFrame(tdf))
@@ -55,7 +69,7 @@ class laceworkcli_compliance_summary_filter_handler(filter_handler):
         # concat all results into single dataframe
         if len(dfs) > 0:
             df = pd.concat(dfs, ignore_index=True)
-            self.logger.info(df)
+            self.logger.info(df.head(3))
             return df
         else:
             return pd.DataFrame(dfs)
