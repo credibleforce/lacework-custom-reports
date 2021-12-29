@@ -13,6 +13,7 @@ import os
 
 module_path = os.path.abspath(os.path.dirname(__file__))
 
+
 class s3_dataset_handler(dataset_handler):
     def read_compressed_json(self, decompress):
         if decompress:
@@ -20,10 +21,10 @@ class s3_dataset_handler(dataset_handler):
                 data = gzipfile.read().decode("utf-8")
         else:
             data = object['Body'].read().decode('utf-8')
-        
+
         return data
 
-    def parse_json(self,newline_separated,data):
+    def parse_json(self, newline_separated, data):
         result = []
         if newline_separated:
             result = result + [json.loads(str(item)) for item in data.strip().split('\n')]
@@ -34,7 +35,7 @@ class s3_dataset_handler(dataset_handler):
     def load(self):
         s3_path = self.dataset.get('s3_path')
         profile = self.dataset.get('profile')
-        newline_separated = self.dataset.get('newline_separated',False)
+        newline_separated = self.dataset.get('newline_separated', False)
 
         last_modified_begin = self.dataset.get('last_modified_begin')
         last_modified_end = self.dataset.get('last_modified_end')
@@ -58,20 +59,29 @@ class s3_dataset_handler(dataset_handler):
         # enumerate results
         dfs = []
         if last_modified_filter:
-            objects = wr.s3.list_objects(path=s3_path,last_modified_begin=begin_utc, last_modified_end=end_utc,boto3_session=s)
+            objects = wr.s3.list_objects(
+                path=s3_path,
+                last_modified_begin=begin_utc,
+                last_modified_end=end_utc,
+                boto3_session=s)
         else:
-            objects = wr.s3.list_objects(path=s3_path,boto3_session=s)
-            
+            objects = wr.s3.list_objects(
+                path=s3_path,
+                boto3_session=s)
+
         self.logger.info("Found: {0} files".format(len(objects)))
         for o in objects:
-            data = wr.s3.read_json(o,lines=newline_separated,boto3_session=s)
+            data = wr.s3.read_json(
+                o,
+                lines=newline_separated,
+                boto3_session=s)
             dfs.append(data)
 
         # concat all results into single dataframe
         df = pd.concat(dfs, ignore_index=True)
 
         # pass through a filter for parsing/manipulation if required
-        if self.filterClass != None:
+        if self.filterClass is not None:
             df = self.filterClass().filter(df, self.datasets)
 
         rows = len(df.index)
@@ -84,6 +94,6 @@ class s3_dataset_handler(dataset_handler):
                 "rows": rows,
                 "report_time": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                 "start_time": begin_utc.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                "end_time": end_utc.strftime('%Y-%m-%dT%H:%M:%SZ'), 
+                "end_time": end_utc.strftime('%Y-%m-%dT%H:%M:%SZ'),
             }
         }

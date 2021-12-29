@@ -49,7 +49,7 @@ data = [
         "time_to_resolve": "None",
         "severity": "low"
     },
-    
+
     {
         "assessment_date": '2021-11-11T00:00:00Z',
         "cve_id": "CVE-2019-12735",
@@ -115,7 +115,7 @@ status_summary = df.set_index('assessment_date').groupby([pd.Grouper(freq='d'), 
 
 json_severity_summary = json.loads(severity_summary.to_json(date_format='iso'))
 json_status_summary = json.loads(status_summary.to_json(date_format='iso'))
-#json_mttr_summary = json.loads(mttr_summary.to_json(date_format='iso'))
+# json_mttr_summary = json.loads(mttr_summary.to_json(date_format='iso'))
 
-time_resolve = df.loc[(df['status']=='Fixed')]['time_to_resolve'].mean()
+time_resolve = df.loc[(df['status'] == 'Fixed')]['time_to_resolve'].mean()
 print(time_resolve)

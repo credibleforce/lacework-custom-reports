@@ -75,3 +75,12 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      
+      - name: Post to a Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.16.0
+        with:
+          channel-id: 'log'  # Slack channel id or user id to post message. https://api.slack.com/methods/chat.postMessage#channels
+          slack-message: 'posting from a github action!'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}

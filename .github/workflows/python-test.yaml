@@ -30,6 +30,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          python -m pip install flake8 pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
       - name: Lint with flake8
@@ -38,9 +39,19 @@ jobs:
           flake8 . --count --show-source --max-complexity=10 --statistics
       - name: Test with pytest
         run: |
+          python3 setup.py install
           pytest
         env:
           LW_ACCOUNT: ${{ secrets.LW_ACCOUNT }}
           LW_SUBACCOUNT: ${{ secrets.LW_SUBACCOUNT }}
           LW_API_KEY: ${{ secrets.LW_API_KEY }}
           LW_API_SECRET: ${{ secrets.LW_API_SECRET }}
+
+      - name: Post to a Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.16.0
+        with:
+          channel-id: 'log'  # Slack channel id or user id to post message. https://api.slack.com/methods/chat.postMessage#channels
+          slack-message: 'posting from a github action!'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}

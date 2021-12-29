@@ -5,11 +5,12 @@ import logging
 
 module_path = os.path.abspath(os.path.dirname(__file__))
 
+
 class filter_handler():
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def filter(self,data,datasets=[]):
+    def filter(self, data, datasets=[]):
         """
         Overriden by specific data handlers
 

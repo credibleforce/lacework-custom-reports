@@ -36,7 +36,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/guides/single-sourcing-package-version/
-    version='0.0.5',  # Required
+    version='0.0.6',  # Required
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
@@ -149,14 +149,14 @@ setup(
         'boto3>=1.20',
         'slackclient>=2.9',
         'awswrangler',
-        'jsonschema>=4.2',
+        'jsonschema>=4',
         'pytz>=2021.3',
         'python-dateutil>=2.8.2',
         'genson>=1.2',
-        'pandas>=1.3',
+        'pandas>=1',
         'laceworksdk>=0.10',
         'glom>=20.11.0',
-        'numpy>=1.21.3'
+        'numpy>=1'
     ],  # Optional
 
     # List additional groups of dependencies here (e.g. development

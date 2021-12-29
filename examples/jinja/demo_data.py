@@ -3,8 +3,8 @@
 import jinja2
 import os
 from datetime import datetime, timedelta
-import random 
-import json 
+import random
+import json
 
 numdays = 30
 base = datetime.today()
@@ -66,15 +66,24 @@ dataset = """
 """
 
 loader = jinja2.BaseLoader()
-env = jinja2.Environment(loader=loader,extensions=['jinja2.ext.do'])
+env = jinja2.Environment(loader=loader, extensions=['jinja2.ext.do'])
 template = env.from_string(dataset)
-dataset = json.loads(template.render(env=os.environ,date=datetime.utcnow(),date_list=date_list,values=values,values2=values2,len=len(date_list)))
+dataset = json.loads(
+    template.render(
+            env=os.environ,
+            date=datetime.utcnow(),
+            date_list=date_list,
+            values=values,
+            values2=values2,
+            len=len(date_list)
+        )
+    )
 print(dataset)
-report_template = os.path.join(module_path,'../../templates','html','gcp_compliance_summary_report_example.html.j2')
+report_template = os.path.join(module_path, '../../templates', 'html', 'gcp_compliance_summary_report_example.html.j2')
 fileloader = jinja2.FileSystemLoader(searchpath=os.path.dirname(report_template))
-env = jinja2.Environment(loader=fileloader,extensions=['jinja2.ext.do'])
+env = jinja2.Environment(loader=fileloader, extensions=['jinja2.ext.do'])
 template = env.get_template(os.path.basename(report_template))
-result = template.render(items=dataset,date=datetime.utcnow())
+result = template.render(items=dataset, date=datetime.utcnow())
 
-with open(os.path.join(module_path,'../../output','example.html'), 'w') as f:
+with open(os.path.join(module_path, '../../output', 'example.html'), 'w') as f:
     f.write(result)

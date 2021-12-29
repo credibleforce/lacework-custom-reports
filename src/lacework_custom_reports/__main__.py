@@ -12,9 +12,9 @@ logging.basicConfig(
     )
 
 
-def run():
+def run(args_override=None):
     ''' Parsing inputs '''
-    ver = "0.0.5"
+    ver = "0.0.6"
     dsc = "Custom Reports"
 
     print(Figlet(font="3-d").renderText("CUSTOM REPORTS"))
@@ -22,7 +22,11 @@ def run():
 
     parser = argparse.ArgumentParser(description=dsc)
     parser.add_argument('--config', required=True, help='path to config file')
-    args = parser.parse_args()
+
+    if args_override is not None:
+        args = args_override
+    else:
+        args = parser.parse_args()
 
     logger = logging.getLogger(__name__)
     logger.info("Starting configuration parsing...")

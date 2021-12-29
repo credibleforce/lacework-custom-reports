@@ -9,6 +9,6 @@ root_dir = "./"
 for filename in glob.iglob(root_dir + 'reports/**/*.json', recursive=True):
     with open(filename, 'r') as f:
         datastore = json.load(f)
-        builder.add_object(datastore )
+        builder.add_object(datastore)
 
 print(builder.to_schema())
