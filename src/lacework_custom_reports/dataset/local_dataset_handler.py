@@ -6,6 +6,7 @@ import os
 
 module_path = os.path.abspath(os.path.dirname(__file__))
 
+
 class local_dataset_handler(dataset_handler):
     def load(self):
         with open(self.dataset.get('path')) as f:
