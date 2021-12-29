@@ -38,6 +38,8 @@ Lastly there area a number of example jinja templates for various Report example
 
 ## How To Run
 
+### Docker
+
 The easiest way to run is using Docker. The included run.sh file demonstrates mounting lacework credentials and report directories. The result will be a HTML version of the `GCP compliance report` in the local `output` folder:
 
 ```
@@ -59,6 +61,19 @@ docker run --rm -it \
     credibleforce/lacework-custom-reports:latest --config /app/reports/laceworkcli/laceworkcli_gcp_compliance_html_report.json
 ```
 
+### Setup.py
+
+Alternatively the `lacework_custom_report`package can be installed on the local system using the following:
+
+```
+python3 setup.py install
+```
+
+Then to run the tool execute the following:
+
+```
+GCP_PROJECT=kubernetes-cluster-331006 GCP_ORG=286188307222 python3 -m lacework_custom_reports --config /app/reports/laceworkcli/laceworkcli_gcp_compliance_html_report.json
+```
 ## Known Issues
 
 Due to Lacework API limitations, only 400 containers can be scanned in a single hour.
