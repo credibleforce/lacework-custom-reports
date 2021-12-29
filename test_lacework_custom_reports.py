@@ -2,11 +2,11 @@ import argparse
 
 import pytest
 
-from src.lacework_custom_reports import __main__ as main
+from lacework_custom_reports import __main__ as main
 
 
 def test_main_default():
-    args = argparse.Namespace(config=None)
+    args = argparse.Namespace(config="reports/local/local_html_report.json")
     main.run(args)
 
 

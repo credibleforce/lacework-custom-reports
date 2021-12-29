@@ -39,6 +39,7 @@ jobs:
           flake8 . --count --show-source --max-complexity=10 --statistics
       - name: Test with pytest
         run: |
+          python3 setup.py install
           pytest
         env:
           LW_ACCOUNT: ${{ secrets.LW_ACCOUNT }}
