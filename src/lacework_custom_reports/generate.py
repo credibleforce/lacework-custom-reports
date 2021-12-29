@@ -1,41 +1,8 @@
 from __future__ import print_function
 
-# dataset handler
-from .dataset.dataset_handler \
-    import dataset_handler
-from .dataset.laceworkcli_dataset_handler \
-    import laceworkcli_dataset_handler
-from .dataset.laceworksdk_host_vuln_dataset_handler \
-    import laceworksdk_host_vuln_dataset_handler
-from .dataset.local_dataset_handler \
-    import local_dataset_handler
-
-# report handler
-from .report.report_handler \
-    import report_handler
-from .report.local_report_handler \
-    import local_report_handler
-from .report.s3_report_handler \
-    import s3_report_handler
-from .report.slack_report_handler \
-    import slack_report_handler
-
-# filter handler
-from .filter.filter_handler \
-    import filter_handler
-from .filter.laceworkcli_compliance_summary_filter_handler \
-    import laceworkcli_compliance_summary_filter_handler
-from .filter.laceworkcli_container_vulnerability_summary_filter_handler \
-    import laceworkcli_container_vulnerability_summary_filter_handler
-from .filter.laceworkcli_s3_compliance_filter_handler \
-    import laceworkcli_s3_compliance_filter_handler
-from .filter.laceworkcli_s3_connections_summary_filter_handler \
-    import laceworkcli_s3_connections_summary_filter_handler
-from .filter.laceworksdk_host_vuln_filter_handler \
-    import laceworksdk_host_vuln_filter_handler
-
 import os
 import logging
+import importlib
 
 module_path = os.path.abspath(os.path.dirname(__file__))
 
@@ -53,41 +20,17 @@ class generate():
         self.load()
         self.generate()
 
-    def dataset_classes(self):
-        return [
-            dataset_handler,
-            laceworkcli_dataset_handler,
-            laceworksdk_host_vuln_dataset_handler,
-            local_dataset_handler
-        ]
-
-    def report_classes(self):
-        return [
-            report_handler,
-            local_report_handler,
-            s3_report_handler,
-            slack_report_handler
-        ]
-
-    def filter_classes(self):
-        return [
-            filter_handler,
-            laceworkcli_compliance_summary_filter_handler,
-            laceworkcli_container_vulnerability_summary_filter_handler,
-            laceworkcli_s3_compliance_filter_handler,
-            laceworkcli_s3_connections_summary_filter_handler,
-            laceworksdk_host_vuln_filter_handler
-        ]
-
     def load(self):
         for d in self.datasource:
 
             # enumerate the data handlers and dynamically instanciate the class
-            dataClass = globals()[d['type']]
+            module = importlib.import_module('.dataset.{0}'.format(d['type']), package="lacework_custom_reports")
+            dataClass = getattr(module, d['type'])
 
             # enumerate the filter handlers and dynamically instanciate the class
             if d.get('filter') is not None:
-                filterClass = globals()[d['filter']]
+                module = importlib.import_module('.filter.{0}'.format(d['filter']), package="lacework_custom_reports")
+                filterClass = getattr(module, d['filter'])
             else:
                 filterClass = None
 
@@ -100,7 +43,9 @@ class generate():
     def generate(self):
         for r in self.reports:
             # enumerate the report handlers and dynamically instanciate the class
-            reportClass = globals()[r['type']]
+            module = importlib.import_module('.report.{0}'.format(r['type']), package="lacework_custom_reports")
+            reportClass = getattr(module, r['type'])
+
             reportClass(
                 datasets=self.datasets,
                 settings=self.settings,
