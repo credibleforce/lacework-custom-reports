@@ -39,6 +39,115 @@ class laceworkcli_dataset_handler(dataset_handler):
             self.logger.error("Failed to parse json: {0}".format(e))
             return None
 
+    def enumerate_aws(self, args_arr, command, subaccount, profile, api_key, api_secret, api_token, organization):
+        reports = []
+        accounts = self.laceworkcli_json_command(
+            command,
+            "{0} {1}".format(args_arr[0], "list-accounts"),
+            subaccount,
+            profile,
+            api_key,
+            api_secret,
+            api_token,
+            organization)
+        self.logger.info("AWS accounts: {0}".format(accounts))
+        if accounts:
+            for a in accounts['aws_accounts']:
+                reports.append(
+                    self.laceworkcli_json_command(
+                        command,
+                        "{0} {1} {2} {3}".format(
+                            args_arr[0],
+                            args_arr[1],
+                            a,
+                            " ".join(args_arr[2:])),
+                        subaccount,
+                        profile,
+                        api_key,
+                        api_secret,
+                        api_token,
+                        organization))
+        return reports
+
+    def enumerate_gcp(self, args_arr, command, subaccount, profile, api_key, api_secret, api_token, organization):
+        reports = []
+        org_projects = self.laceworkcli_json_command(
+            command,
+            "{0} {1}".format(args_arr[0], "list"),
+            subaccount,
+            profile,
+            api_key,
+            api_secret,
+            api_token,
+            organization)
+        self.logger.info("GCP org projects: {0}".format(org_projects))
+        if org_projects:
+            for op in org_projects['gcp_projects']:
+                reports.append(self.laceworkcli_json_command(
+                    command,
+                    "{0} {1} {2} {3} {4}".format(
+                        args_arr[0],
+                        args_arr[1],
+                        op['organization_id'],
+                        op['project_id'],
+                        " ".join(args_arr[2:])),
+                    subaccount,
+                    profile,
+                    api_key,
+                    api_secret,
+                    api_token,
+                    organization))
+        return reports
+
+    def enumerate_azure(self, args_arr, command, subaccount, profile, api_key, api_secret, api_token, organization):
+        reports = []
+        tennants = self.laceworkcli_json_command(
+            command,
+            "{0} {1}".format(args_arr[0], "list-tenants"),
+            subaccount,
+            profile,
+            api_key,
+            api_secret,
+            api_token,
+            organization)
+        subscriptions = []
+
+        if tennants:
+            for t in tennants.get('azure_tenants'):
+                subscriptions.append(
+                    self.laceworkcli_json_command(
+                        command,
+                        "{0} {1} {2}".format(args_arr[0], "list-subscriptions", t),
+                        subaccount,
+                        profile,
+                        api_key,
+                        api_secret,
+                        api_token,
+                        organization))
+        self.logger.info("Azure subscriptions: {0}".format(subscriptions))
+
+        if subscriptions:
+            for s in subscriptions:
+                tenant = s['tenant']['id']
+                for s in s['subscriptions']:
+                    subscription = s['id']
+                    reports.append(
+                        self.laceworkcli_json_command(
+                            command,
+                            "{0} {1} {2} {3} {4}".format(
+                                args_arr[0],
+                                args_arr[1],
+                                tenant,
+                                subscription,
+                                " ".join(args_arr[2:])),
+                            subaccount,
+                            profile,
+                            api_key,
+                            api_secret,
+                            api_token,
+                            organization))
+        return reports
+
     def enumerate_csp(self, args_arr, command, subaccount, profile, api_key, api_secret, api_token, organization):
         # capture an array of csp result
         result = {
@@ -47,105 +156,35 @@ class laceworkcli_dataset_handler(dataset_handler):
         }
 
         if args_arr[0] == "aws":
-            accounts = self.laceworkcli_json_command(
+            result['reports'].append(self.enumerate_aws(
+                args_arr,
                 command,
-                "{0} {1}".format(args_arr[0], "list-accounts"),
                 subaccount,
                 profile,
                 api_key,
                 api_secret,
                 api_token,
-                organization)
-            self.logger.info("AWS accounts: {0}".format(accounts))
-            if accounts:
-                for a in accounts['aws_accounts']:
-                    result['reports'].append(
-                        self.laceworkcli_json_command(
-                            command,
-                            "{0} {1} {2} {3}".format(
-                                args_arr[0],
-                                args_arr[1],
-                                a,
-                                " ".join(args_arr[2:])),
-                            subaccount,
-                            profile,
-                            api_key,
-                            api_secret,
-                            api_token,
-                            organization))
+                organization))
         elif args_arr[0] in ["gcp", "google"]:
-            org_projects = self.laceworkcli_json_command(
+            result['reports'].append(self.enumerate_gcp(
+                args_arr,
                 command,
-                "{0} {1}".format(args_arr[0], "list"),
                 subaccount,
                 profile,
                 api_key,
                 api_secret,
                 api_token,
-                organization)
-            self.logger.info("GCP org projects: {0}".format(org_projects))
-            if org_projects:
-                for op in org_projects['gcp_projects']:
-                    result['reports'].append(self.laceworkcli_json_command(
-                        command,
-                        "{0} {1} {2} {3} {4}".format(
-                            args_arr[0],
-                            args_arr[1],
-                            op['organization_id'],
-                            op['project_id'],
-                            " ".join(args_arr[2:])),
-                        subaccount,
-                        profile,
-                        api_key,
-                        api_secret,
-                        api_token,
-                        organization))
+                organization))
         elif args_arr[0] in ["azure", "az"]:
-            tennants = self.laceworkcli_json_command(
+            result['reports'].append(self.enumerate_azure(
+                args_arr,
                 command,
-                "{0} {1}".format(args_arr[0], "list-tenants"),
                 subaccount,
                 profile,
                 api_key,
                 api_secret,
                 api_token,
-                organization)
-            subscriptions = []
-
-            if tennants:
-                for t in tennants.get('azure_tenants'):
-                    subscriptions.append(
-                        self.laceworkcli_json_command(
-                            command,
-                            "{0} {1} {2}".format(args_arr[0], "list-subscriptions", t),
-                            subaccount,
-                            profile,
-                            api_key,
-                            api_secret,
-                            api_token,
-                            organization))
-            self.logger.info("Azure subscriptions: {0}".format(subscriptions))
-
-            if subscriptions:
-                for s in subscriptions:
-                    tenant = s['tenant']['id']
-                    for s in s['subscriptions']:
-                        subscription = s['id']
-                        result['reports'].append(
-                            self.laceworkcli_json_command(
-                                command,
-                                "{0} {1} {2} {3} {4}".format(
-                                    args_arr[0],
-                                    args_arr[1],
-                                    tenant,
-                                    subscription,
-                                    " ".join(args_arr[2:])),
-                                subaccount,
-                                profile,
-                                api_key,
-                                api_secret,
-                                api_token,
-                                organization))
+                organization))
 
         return result
 
