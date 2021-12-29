@@ -1,18 +1,8 @@
-
-   
 import argparse
 
 import pytest
 
-from auto_scan import get_container_registry_domains, main
-from laceworksdk import LaceworkClient
-
-lw_client = LaceworkClient()
-
-
-def test_get_container_registry_domains():
-    response = get_container_registry_domains(lw_client)
-    assert(type(response) == list)
+from lacework_custom_reports import __main__ as main
 
 
 def test_main_default():
@@ -28,7 +18,7 @@ def test_main_default():
                               list_only=None,
                               daemon=None,
                               debug=None)
-    main(args)
+    main.run(args)
 
 
 def test_main_config_fail():
@@ -45,4 +35,4 @@ def test_main_config_fail():
                               daemon=None,
                               debug=None)
     with pytest.raises(Exception):
-        main(args)
+        main.run(args)
