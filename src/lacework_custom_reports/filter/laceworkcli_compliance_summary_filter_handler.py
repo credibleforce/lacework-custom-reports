@@ -19,9 +19,10 @@ class laceworkcli_compliance_summary_filter_handler(filter_handler):
         csp_type = data['csp_type']
 
         for r in data.get('reports', {}):
+            self.logger.info(r)
             # accumulate resources
             resources = []
-            for rec in r.get('recommendations', {}):
+            for rec in r['recommendations']:
 
                 if rec.get('violations') is not None:
                     vis = rec.get('violations')

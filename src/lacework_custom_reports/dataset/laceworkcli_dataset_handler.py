@@ -156,7 +156,7 @@ class laceworkcli_dataset_handler(dataset_handler):
         }
 
         if args_arr[0] == "aws":
-            result['reports'].append(self.enumerate_aws(
+            result['reports'].extend(self.enumerate_aws(
                 args_arr,
                 command,
                 subaccount,
@@ -166,7 +166,7 @@ class laceworkcli_dataset_handler(dataset_handler):
                 api_token,
                 organization))
         elif args_arr[0] in ["gcp", "google"]:
-            result['reports'].append(self.enumerate_gcp(
+            result['reports'].extend(self.enumerate_gcp(
                 args_arr,
                 command,
                 subaccount,
@@ -176,7 +176,7 @@ class laceworkcli_dataset_handler(dataset_handler):
                 api_token,
                 organization))
         elif args_arr[0] in ["azure", "az"]:
-            result['reports'].append(self.enumerate_azure(
+            result['reports'].extend(self.enumerate_azure(
                 args_arr,
                 command,
                 subaccount,
