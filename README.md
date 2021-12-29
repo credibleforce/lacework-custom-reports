@@ -17,6 +17,7 @@ This project contains multiple examples of Data Source Handlers but is written f
 
 * [laceworkcli_dataset_handler](docs/dataset/laceworkcli_dataset_handler.md) - Pass command line arguements to the laceworkcli and capture the JSON output.
 * [s3_dataset_handler](docs/dataset/s3_dataset_handler.md) - Read one or more JSON files from an S3 bucket. Written to be used with Lacework S3 Data Export Data.
+* [laceworksdk_lql_dataset_handler](docs/dataset/laceworksdk_lql_dataset_handler.md) - Execute LQL queries using the Lacework SDK.
 
 ### Report Handlers
 
