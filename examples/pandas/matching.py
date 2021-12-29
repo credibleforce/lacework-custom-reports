@@ -53,7 +53,7 @@ data = [
         "time_to_resolve": "None",
         "severity": "low"
     },
-    
+
     {
         "assessment_date": '2021-11-11T00:00:00Z',
         "fixed_time": '2021-11-09T00:00:00Z',
@@ -123,7 +123,9 @@ df['fixed_time'] = pd.to_datetime(df['fixed_time'])
 start_time = '2021-11-10T00:00:00Z'
 end_time = '2021-11-11T00:00:00Z'
 
-fixed_this_month = df.loc[(df['fixed_time'].dt.year == df['assessment_date'].dt.year) & (df['fixed_time'].dt.month == df['assessment_date'].dt.month)]
+fixed_this_month = df.loc[
+    (df['fixed_time'].dt.year == df['assessment_date'].dt.year)
+    & (df['fixed_time'].dt.month == df['assessment_date'].dt.month)]
 fixed_this_report_period = df.loc[(df['fixed_time'] <= end_time) & (df['fixed_time'] >= start_time)]
 print(len(fixed_this_month.index))
 print(len(fixed_this_report_period.index))
