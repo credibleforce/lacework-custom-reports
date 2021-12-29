@@ -11,8 +11,9 @@ from datetime import datetime, timedelta
 
 module_path = os.path.abspath(os.path.dirname(__file__))
 
+
 class reports():
-    def __init__(self,config,plugins=[]):
+    def __init__(self, config, plugins=[]):
         self.logger = logging.getLogger(__name__)
         self.config = config
         self.plugins = plugins
@@ -22,19 +23,27 @@ class reports():
             self.generate()
         else:
             self.logger.error(msg)
-    
+
     def load(self):
         loader = jinja2.FileSystemLoader(searchpath=os.path.dirname(self.config))
-        env = jinja2.Environment(loader=loader,extensions=['jinja2.ext.do'])
+        env = jinja2.Environment(loader=loader, extensions=['jinja2.ext.do'])
         template = env.get_template(os.path.basename(self.config))
-        self.config = json.loads(template.render(env=os.environ,date=datetime.utcnow(),delta1d=timedelta(days=1),delta1h=timedelta(hours=1),delta30d=timedelta(days=30)))
-        
+        self.config = json.loads(
+                template.render(
+                    env=os.environ,
+                    date=datetime.utcnow(),
+                    delta1d=timedelta(days=1),
+                    delta1h=timedelta(hours=1),
+                    delta30d=timedelta(days=30)
+                )
+            )
+
         return self.validate_json(self.config)
 
     def generate(self):
         # enumerate reports and render
         for r in self.config['reports']:
-            j = generate(report=r,plugins=self.plugins)
+            generate(report=r, plugins=self.plugins)
 
     def get_schema(self):
         """This function loads the given schema available"""
@@ -42,7 +51,7 @@ class reports():
             schema = json.load(file)
         return schema
 
-    def validate_json(self,json_data):
+    def validate_json(self, json_data):
         execute_api_schema = self.get_schema()
         try:
             validate(instance=json_data, schema=execute_api_schema)

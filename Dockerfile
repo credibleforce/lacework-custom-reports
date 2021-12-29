@@ -16,9 +16,8 @@ ENV PATH "$PATH:/home/user/.local/bin"
 
 WORKDIR /app
 
-COPY reports.py ./
-COPY custom_reports ./custom_reports
+COPY src/lacework_custom_reports ./lacework_custom_reports
 # COPY reports ./reports
 # COPY templates ./templates
 
-ENTRYPOINT [ "python", "-u", "/app/reports.py" ]
+ENTRYPOINT [ "python3", "-m", "lacework_custom_reports" ]
