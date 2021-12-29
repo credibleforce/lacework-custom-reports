@@ -15,7 +15,6 @@ jobs:
       LW_SCANNER_SCAN_LIBRARY_PACKAGES: true
       DOCKER_REPO: credibleforce/lacework-custom-reports
       DOCKER_TEST_NAME: credibleforce/lacework-custom-reports
-    if: github.event.base_ref == 'main'
     steps:
 
       - name: Checkout

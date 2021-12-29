@@ -5,7 +5,6 @@ on:
 jobs:
   update_release_draft:
     runs-on: ubuntu-latest
-    if: github.event.base_ref == 'main'
     steps:
       # Drafts your next Release notes as Pull Requests are merged into the default branch
       - uses: release-drafter/release-drafter@v5
