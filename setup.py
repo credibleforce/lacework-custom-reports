@@ -156,7 +156,7 @@ setup(
         'pandas>=1',
         'laceworksdk>=0.10',
         'glom>=20.11.0',
-        'numpy>=1.21.3'
+        'numpy>=1'
     ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
