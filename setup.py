@@ -149,7 +149,7 @@ setup(
         'boto3>=1.20',
         'slackclient>=2.9',
         'awswrangler',
-        'jsonschema>=4.2',
+        'jsonschema>=4',
         'pytz>=2021.3',
         'python-dateutil>=2.8.2',
         'genson>=1.2',
