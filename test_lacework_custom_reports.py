@@ -2,7 +2,7 @@ import argparse
 
 import pytest
 
-from lacework_custom_reports import __main__ as main
+from src.lacework_custom_reports import __main__ as main
 
 
 def test_main_default():
