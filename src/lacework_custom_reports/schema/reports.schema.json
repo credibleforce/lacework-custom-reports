@@ -89,6 +89,9 @@
 								},
 								"enumerate_csp_accounts": {
 									"type": ["null", "boolean"]
+								},
+								"query_text": {
+									"type": ["null", "string"]
 								}
 							},
 							"required": ["name", "type"]

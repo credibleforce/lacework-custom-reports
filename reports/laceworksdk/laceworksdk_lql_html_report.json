@@ -1,0 +1,32 @@
+{
+    "reports": [
+        {
+            "name": "sample1",
+            "datasources": [
+                {
+                    "name": "dataset1",
+                    "type": "laceworksdk_lql_dataset_handler",
+                    "organization": false,
+                    "subaccount": null,
+                    "account": null,
+                    "api_key": null,
+                    "api_secret": null,
+                    "start_time": "2021-11-29T00:00:00Z",
+                    "end_time": "2021-12-29T01:00:00Z",
+                    "query_text": "Custom_HA_User_Logins_1 {    SOURCE {      LW_HA_USER_LOGINS    }    FILTER {      EVENT_TYPE ='LOGOFF'    }    RETURN DISTINCT {      BATCH_START_TIME,      BATCH_END_TIME,      RECORD_CREATED_TIME,      MID,      LOGIN_TIME,      LOGOFF_TIME,      EVENT_TYPE,      USERNAME,      HOSTNAME,      IP_ADDR,      TTY,      UID,      GID    }  }",
+                    "filter": null
+                }
+            ],
+            "settings": {
+                "template": "./templates/html/table_advanced_dataframe.html.j2"
+            },
+            "reports": [
+                {
+                    "name": "output",
+                    "type": "local_report_handler",
+                    "path": "./output/lql_report.html"
+                }
+            ]
+        }
+    ]
+}

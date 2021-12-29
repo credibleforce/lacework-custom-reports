@@ -14,7 +14,7 @@ logging.basicConfig(
 
 def run(args_override=None):
     ''' Parsing inputs '''
-    ver = "0.0.9"
+    ver = "0.0.10"
     dsc = "Custom Reports"
 
     print(Figlet(font="3-d").renderText("CUSTOM REPORTS"))
