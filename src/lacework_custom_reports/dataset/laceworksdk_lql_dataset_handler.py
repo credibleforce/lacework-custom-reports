@@ -18,8 +18,13 @@ WORKER_THREADS = 10
 class laceworksdk_lql_dataset_handler(dataset_handler):
     def load(self):
         self.lw_client = LaceworkClient(account=self.dataset.get('account'),
+                                        subaccount=self.dataset.get('subaccount'),
                                         api_key=self.dataset.get('api_key'),
-                                        api_secret=self.dataset.get('api_secret'))
+                                        api_secret=self.dataset.get('api_secret'),
+                                        instance=self.dataset.get('instance'),
+                                        base_domain=self.dataset.get('base_domain'),
+                                        profile=self.dataset.get('profile')
+                                        )
 
         # Get LQL Query
         query_text = self.dataset.get('query_text')

@@ -6,7 +6,7 @@ Execute LQL queries using the Lacework SDK.
 
 ## Configuration Options
 
-**Note**: The report configuration file does accept five jinja templating options. 
+The report configuration file does accept five jinja templating options: 
 
 * `{{ env['VALUE'] }}` can be used to access environment variables.
 * `{{ date.strftime('%Y-%m-%d') }}` provides access to the current date.
@@ -28,11 +28,14 @@ Execute LQL queries using the Lacework SDK.
 
 | Field | Description | Default |
 |-------|-------------|---------|
-|`subaccount` | use a subaccount context for the laceworkcli | `None` |
-|`account` | use a specific account to connect to the lacework api. | `None` |
-|`api_key` | use a specific api_key to connect to the lacework api. | `None` |
-|`api_secret` | use a specific api_secret to connect to the lacework api. | `None` |
-|`api_token` | use a specific api_token to connect to the lacework api. | `None` |
+|`organization` | use a organization context for the laceworksdk | `None` |
+|`subaccount` | use a subaccount context for the laceworksdk | `None` |
+|`account` | use a specific account to connect to the laceworksdk. | `None` |
+|`api_key` | use a specific api_key to connect to the laceworksdk. | `None` |
+|`api_secret` | use a specific api_secret to connect to the laceworksdk. | `None` |
+|`profile` | use a specific profile from the lacework.toml file to connect to the laceworksdk. | `None` |
+
+> **Note**: SDK credentials to access Lacework API can either be included in the `~/lacework.toml` file or explicitly defined as above.
 
 ## Example
 
