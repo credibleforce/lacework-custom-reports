@@ -4,7 +4,7 @@
             "name": "sample1",
             "datasources": [
                 {
-                    "name": "dataset1",
+                    "name": "machines",
                     "type": "laceworksdk_lql_dataset_handler",
                     "organization": false,
                     "subaccount": null,
@@ -15,11 +15,11 @@
                     "end_time": "2021-12-29T01:00:00Z",
                     "query_text": "Custom_HE_Machine_1 {    SOURCE {      LW_HE_MACHINES    }    RETURN DISTINCT {      BATCH_START_TIME,      BATCH_END_TIME,      RECORD_CREATED_TIME,      MID,      HOSTNAME,      DOMAIN,      KERNEL,      KERNEL_RELEASE,      KERNEL_VERSION,      OS,      OS_VERSION, TAGS    }  }",
                     "filter": null,
-                    "profile": "clover"
+                    "profile": "verato"
                 }
             ],
             "settings": {
-                "template": "./templates/html/table_advanced_dataframe.html.j2"
+                "template": "./templates/html/table_advanced_bootstrap_dataframe.html.j2"
             },
             "reports": [
                 {

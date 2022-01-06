@@ -25,9 +25,14 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
         #
         ###################################################################################################
 
-        lw = LaceworkClient(account=self.dataset.get('account'),
-                            api_key=self.dataset.get('api_key'),
-                            api_secret=self.dataset.get('api_secret'))
+        self.lw = LaceworkClient(account=self.dataset.get('account'),
+                                 subaccount=self.dataset.get('subaccount'),
+                                 api_key=self.dataset.get('api_key'),
+                                 api_secret=self.dataset.get('api_secret'),
+                                 instance=self.dataset.get('instance'),
+                                 base_domain=self.dataset.get('base_domain'),
+                                 profile=self.dataset.get('profile')
+                                 )
 
         # Build start/end times
         start_time = datetime.strptime(self.dataset.get('start_time'), '%Y-%m-%dT%H:%M:%SZ')
@@ -55,7 +60,7 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
         # get one report per day (good for comparing diffs over time)
         if self.dataset.get('time_day_split', False):
             for i in range(len(days)-1):
-                r = lw.vulnerabilities.get_host_vulnerabilities(
+                r = self.lw.vulnerabilities.get_host_vulnerabilities(
                     start_time=days[i],
                     end_time=days[i+1],
                     severity=severity,
@@ -64,10 +69,11 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
                 if r.get('ok') is not True:
                     self.logger.error("sdk call failed: {0}".format(r.get('message')))
                 else:
+                    self.logger.info(r.get('data'))
                     result['data'] = result['data'] + r.get('data')
         # submit time range a return api handled time frame
         else:
-            r = lw.vulnerabilities.get_host_vulnerabilities(
+            r = self.lw.vulnerabilities.get_host_vulnerabilities(
                 start_time=days[i],
                 end_time=days[i+1],
                 severity=severity,
@@ -129,9 +135,9 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
             as_index=False).size().rename(columns={"size": "count"})
 
         # total for the report period
-        total_fixed = len(fixed.index)
-        total_new = len(new.index)
-        total_active = len(active.index)
+        total_fixed = len(fixed)
+        total_new = len(new)
+        total_active = len(active)
 
         mttr = fixed['time_to_resolve'].mean()
         max_resolution_time = fixed['time_to_resolve'].max()

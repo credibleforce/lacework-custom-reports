@@ -4,30 +4,29 @@
             "name": "sample1",
             "datasources": [
                 {
-                    "name": "dataset1",
-                    "type": "laceworksdk_host_vuln_dataset_handler",
+                    "name": "vulnerabilities",
+                    "type": "laceworksdk_dataset_handler",
                     "organization": false,
                     "subaccount": null,
                     "account": null,
                     "api_key": null,
                     "api_secret": null,
-                    "profile": "gardaworld",
-                    "start_time": "{{ (date - delta1d*23).strftime('%Y-%m-%dT00:00:00Z') }}",
-                    "end_time": "{{ (date - delta1d*22).strftime('%Y-%m-%dT00:00:00Z') }}",
+                    "profile": "verato",
+                    "start_time": "2021-12-01T00:00:00Z",
+                    "end_time": "2021-12-31T00:00:00Z",
                     "fixable": true,
                     "severity": "critical",
-                    "filter": "laceworksdk_host_vuln_filter_handler",
                     "time_day_split": true
                 }
             ],
             "settings": {
-                "template": "./templates/html/host_vulnerability_bootstrap_dataframe.html.j2"
+                "template": "./templates/html/host_vulnerability_bootstrap_dataframe_test.html.j2"
             },
             "reports": [
                 {
                     "name": "output",
                     "type": "local_report_handler",
-                    "path": "./output/gardaworld_host_vuln_report_{{ (date - delta1d*23).strftime('%Y-%m-%d') }}-{{ (date - delta1d*22).strftime('%Y-%m-%d') }}.html"
+                    "path": "./output/gardaworld_host_vuln_report_2021-12-01-2021-12-31.html"
                 }
             ]
         }

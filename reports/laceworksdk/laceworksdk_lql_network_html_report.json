@@ -1,0 +1,47 @@
+{
+    "reports": [
+        {
+            "name": "sample1",
+            "datasources": [
+                {
+                    "name": "incoming_tcp_connections",
+                    "type": "laceworksdk_lql_dataset_handler",
+                    "organization": false,
+                    "subaccount": null,
+                    "account": null,
+                    "api_key": null,
+                    "api_secret": null,
+                    "start_time": "2021-12-29T00:00:00Z",
+                    "end_time": "2021-12-29T04:00:00Z",
+                    "query_text": "Custom_HA_Connections_1 { SOURCE { LW_HA_CONNECTIONS c } FILTER { NOT (STARTS_WITH(SRC_IP_ADDR,'10.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'192.168.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'127.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.16.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.17.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.18.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.19.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.20.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.21.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.22.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.23.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.24.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.25.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.26.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.27.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.28.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.29.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.30.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'172.31.')) AND NOT (STARTS_WITH(SRC_IP_ADDR,'169.254.')) AND c.SYN ='Incoming' AND c.INCOMING:bytes > 0 AND PROTOCOL = 'TCP' } RETURN DISTINCT { c.MID, c.SRC_IP_ADDR, c.DST_IP_ADDR, c.DST_PORT, c.PROTOCOL } }",
+                    "filter": null,
+                    "profile": "gardaworld"
+                },
+                {
+                    "name": "machines",
+                    "type": "laceworksdk_lql_dataset_handler",
+                    "organization": false,
+                    "subaccount": null,
+                    "account": null,
+                    "api_key": null,
+                    "api_secret": null,
+                    "start_time": "{{ (date - delta1h*4).strftime('%Y-%m-%dT%H:%M:%SZ') }}",
+                    "end_time": "{{ (date).strftime('%Y-%m-%dT%H:%M:%SZ') }}",
+                    "query_text": "Custom_HE_Machine_1 {    SOURCE {      LW_HE_MACHINES    }    RETURN DISTINCT {      BATCH_START_TIME,      BATCH_END_TIME,      RECORD_CREATED_TIME,      MID,      HOSTNAME,      DOMAIN,      KERNEL,      KERNEL_RELEASE,      KERNEL_VERSION,      OS,      OS_VERSION, TAGS    }  }",
+                    "filter": null,
+                    "profile": "gardaworld"
+                }
+            ],
+            "settings": {
+                "template": "./templates/html/table_advanced_bootstrap_dataframe.html.j2"
+            },
+            "reports": [
+                {
+                    "name": "output",
+                    "type": "local_report_handler",
+                    "path": "./output/gardaworld_tcp_connections_report-{{ (date - delta1h*4).strftime('%Y-%m-%dT%H-%M-%SZ') }}-{{ (date).strftime('%Y-%m-%dT%H-%M-%SZ') }}.html"
+                }
+            ]
+        }
+    ]
+}

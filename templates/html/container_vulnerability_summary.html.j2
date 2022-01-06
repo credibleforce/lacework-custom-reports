@@ -366,8 +366,10 @@
     </script>
     <!-- json object debugging -->
     <script type="text/javascript">
-        var dataset1 = {{ items['dataset1'].summary| tojson() }}
-        console.log(dataset1)
+        {%- for dataset in items %}
+        var dataset_{{ dataset }} = {{ items[dataset].get('summary',{}) | tojson() }}
+        console.log(dataset_{{ dataset }})
+        {%- endfor %}
     </script>
     <!-- json object debugging -->
 </body>
