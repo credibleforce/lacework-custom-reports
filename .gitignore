@@ -2,6 +2,7 @@
 output/*.html
 output/*.json
 output/*.pdf
+output/*.zip
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
