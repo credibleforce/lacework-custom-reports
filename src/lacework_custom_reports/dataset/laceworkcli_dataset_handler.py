@@ -34,12 +34,14 @@ class laceworkcli_dataset_handler(dataset_handler):
             organization)
 
         self.logger.info("Running: {0}".format(command))
-        result = subprocess.run(command, capture_output=True, text=True, shell=True).stdout
+        proc = subprocess.run(command, capture_output=True, text=True, shell=True)
 
         try:
-            return json.loads(result)
+            return json.loads(proc.stdout)
         except Exception as e:
             self.logger.error("Failed to parse json: {0}".format(e))
+            self.logger.error("Proc stdout: {0}".format(proc.stdout.splitlines()))
+            self.logger.error("Proc stderr: {0}".format(proc.stderr.splitlines()[-4:]))
             return None
 
     def enumerate_aws(self, args_arr, command, subaccount, profile, api_key, api_secret, api_token, organization):
@@ -255,11 +257,12 @@ class laceworkcli_dataset_handler(dataset_handler):
         dfs = []
         for t in executor_tasks:
             result = t.result()
-            tdf = pd.json_normalize(result, sep="_")
-            tdf['vulnerabilities'] = tdf['vulnerabilities'].apply(
-                    lambda x: self.transform_vulnerabilities(x)
-                )
-            dfs.append(tdf)
+            if result is not None:
+                tdf = pd.json_normalize(result, sep="_")
+                tdf['vulnerabilities'] = tdf['vulnerabilities'].apply(
+                        lambda x: self.transform_vulnerabilities(x)
+                    )
+                dfs.append(tdf)
 
         # concat all results into single dataframe
         df = pd.concat(dfs, ignore_index=True)
