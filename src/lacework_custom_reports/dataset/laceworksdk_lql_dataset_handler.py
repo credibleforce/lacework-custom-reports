@@ -17,6 +17,10 @@ WORKER_THREADS = 10
 
 class laceworksdk_lql_dataset_handler(dataset_handler):
     def load(self):
+        # initialize result objects
+        json_data = {}
+        data_summary = {}
+
         self.lw_client = LaceworkClient(account=self.dataset.get('account'),
                                         subaccount=self.dataset.get('subaccount'),
                                         api_key=self.dataset.get('api_key'),
@@ -51,18 +55,19 @@ class laceworksdk_lql_dataset_handler(dataset_handler):
 
         # pass through a filter for parsing/manipulation if required
         if self.filterClass is not None:
-            results = self.filterClass().filter(result)
+            json_data, data_summary = self.filterClass().filter(result, dataset=self.dataset)
         else:
-            results = result
-
-        df = pd.DataFrame(results)
-        json_data = json.loads(df.to_json(date_format='iso'))
+            json_data = json.loads(pd.DataFrame(result).to_json(date_format='iso'))
+            data_summary = {
+                "rows": len(result)
+            }
 
         self.data = {
             "name": self.dataset.get('name'),
             "data": json_data,
             "summary": {
-                "rows": len(df.index)
+                "rows": data_summary.get('rows'),
+                "data_summary": data_summary
             }
         }
         return None

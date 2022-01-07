@@ -10,7 +10,12 @@ class filter_handler():
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def filter(self, data, datasets=[]):
+    def filter(
+                self,
+                data,
+                dataset=None,
+                datasets=None
+               ):
         """
         Overriden by specific data handlers
 

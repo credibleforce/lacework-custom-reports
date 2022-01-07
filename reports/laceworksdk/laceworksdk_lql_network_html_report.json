@@ -33,7 +33,7 @@
                 }
             ],
             "settings": {
-                "template": "./templates/html/table_advanced_bootstrap_dataframe.html.j2"
+                "template": "./templates/html/general/table_advanced_bootstrap_dataframe.html.j2"
             },
             "reports": [
                 {

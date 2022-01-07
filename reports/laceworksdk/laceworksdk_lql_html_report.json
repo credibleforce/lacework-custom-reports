@@ -18,7 +18,7 @@
                 }
             ],
             "settings": {
-                "template": "./templates/html/table_advanced_dataframe.html.j2"
+                "template": "./templates/html/general/table_advanced_boostrap/dataframe.html.j2"
             },
             "reports": [
                 {

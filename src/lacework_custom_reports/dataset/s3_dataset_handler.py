@@ -33,6 +33,10 @@ class s3_dataset_handler(dataset_handler):
         return result
 
     def load(self):
+        # initialize result objects
+        json_data = {}
+        data_summary = {}
+
         s3_path = self.dataset.get('s3_path')
         profile = self.dataset.get('profile')
         newline_separated = self.dataset.get('newline_separated', False)
@@ -82,18 +86,21 @@ class s3_dataset_handler(dataset_handler):
 
         # pass through a filter for parsing/manipulation if required
         if self.filterClass is not None:
-            df = self.filterClass().filter(df, self.datasets)
-
-        rows = len(df.index)
-        json_data = json.loads(df.to_json(date_format='iso'))
+            json_data, data_summary = self.filterClass().filter(df, dataset=self.dataset, datasets=self.datasets)
+        else:
+            json_data = json.loads(df.to_json(date_format='iso'))
+            data_summary = {
+                "rows": len(df.index)
+            }
 
         self.data = {
             "name": self.dataset['name'],
             "data": json_data,
             "summary": {
-                "rows": rows,
                 "report_time": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
                 "start_time": begin_utc.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 "end_time": end_utc.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                "rows": data_summary.get('rows'),
+                "data_summary": data_summary
             }
         }

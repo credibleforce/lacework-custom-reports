@@ -18,7 +18,7 @@
                 }
             ],
             "settings": {
-                "template": "./templates/html/gcp_compliance_report.html.j2"
+                "template": "./templates/html/compliance/gcp_compliance_report.html.j2"
             },
             "reports": [
                 {

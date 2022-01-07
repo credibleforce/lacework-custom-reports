@@ -34,6 +34,8 @@ Execute laceworkcli commands and capture the JSON output.
 |`api_secret` | use a specific api_secret to connect to the lacework api. | `None` |
 |`api_token` | use a specific api_token to connect to the lacework api. | `None` |
 |`profile` | use a specific profile to connect to the lacework api. | `None` |
+|`enumerate_csp_accounts` | enumerate all csp accounts, used in conjunction with compliance to show retrieve all compliance details for all known accounts | `None` |
+|`enumerate_machine_ids` | enumerate all of the machine id, used in conjunction with host vulnerabilities to show all vulnerabilities per host. this should be the name of the dataset containing details (i.e. laceworksdk_lql_dataset_handler) | `None` |
 
 ## Example
 

@@ -4,6 +4,7 @@ from .dataset_handler import dataset_handler
 import json
 import subprocess
 from datetime import datetime
+import pandas as pd
 import os
 
 module_path = os.path.abspath(os.path.dirname(__file__))
@@ -188,9 +189,89 @@ class laceworkcli_dataset_handler(dataset_handler):
 
         return result
 
+    def transform_vulnerabilities(self, vulnerabilities):
+        result = None
+        if vulnerabilities:
+            result = []
+            for v in vulnerabilities:
+                row = {}
+                for k in v.keys():
+                    if k != "packages":
+                        row[k] = v[k]
+                    else:
+                        row[k] = []
+                        for p in v[k]:
+                            row[k].append({
+                                'cvss_score': p['cvss_score'],
+                                'cvss_v_2_score': p['cvss_v_2_score'],
+                                'cvss_v_3_score': p['cvss_v_3_score'],
+                                'name': p['name'],
+                                'namespace': p['namespace'],
+                                'severity': p['severity'],
+                                'vulnerability_status': p['vulnerability_status'],
+                                'fix_available': p['fix_available'],
+                                'fixed_version': p['fixed_version'],
+                                'first_seen_time': p['first_seen_time'],
+
+                            })
+                result.append(row)
+
+        return result
+
+    def enumerate_machine_ids(self,
+                              machine_ids,
+                              args_arr,
+                              command,
+                              subaccount,
+                              profile,
+                              api_key,
+                              api_secret,
+                              api_token,
+                              organization):
+
+        dfs = []
+        for col in machine_ids['data']['MID']:
+            machine_id = machine_ids.get('data')['MID'][col]
+            self.logger.info("Machine ID: {0}".format(machine_id))
+            result = self.laceworkcli_json_command(
+                command,
+                "{0} {1} {2} {3}".format(
+                    args_arr[0],
+                    args_arr[1],
+                    machine_id,
+                    " ".join(args_arr[2:])),
+                subaccount,
+                profile,
+                api_key,
+                api_secret,
+                api_token,
+                organization)
+
+            tdf = pd.json_normalize(result, sep="_")
+            tdf['vulnerabilities'] = tdf['vulnerabilities'].apply(
+                    lambda x: self.transform_vulnerabilities(x)
+                )
+            dfs.append(tdf)
+
+        # concat all results into single dataframe
+        df = pd.concat(dfs, ignore_index=True)
+
+        return df
+
     def load(self):
+        # initialize result objects
+        json_data = {}
+        data_summary = {}
+        machine_ids = []
+
         # check for csp enumeration
         enumerate_csp_accounts = self.dataset.get('enumerate_csp_accounts', False)
+        enumerate_machine_ids = self.dataset.get('enumerate_machine_ids', None)
+
+        # retrieve machine ids from existing dataset
+        if enumerate_machine_ids:
+            machine_ids = self.datasets.get(enumerate_machine_ids)
+
         command = self.dataset.get('command')
         args = self.dataset.get('args')
         args_arr = args.split(" ")
@@ -215,6 +296,21 @@ class laceworkcli_dataset_handler(dataset_handler):
                 and args_arr[1] == "get-report"):
 
             result = self.enumerate_csp(args_arr, command, subaccount, profile, api_key, api_secret, api_token, organization)
+        elif (enumerate_machine_ids
+                and command in ['vulnerability', 'vuln']
+                and args_arr[0] in ['host']
+                and args_arr[1] in ['show-assessment']):
+
+            result = self.enumerate_machine_ids(
+                machine_ids,
+                args_arr,
+                command,
+                subaccount,
+                profile,
+                api_key,
+                api_secret,
+                api_token,
+                organization)
         else:
             result = self.laceworkcli_json_command(
                 command,
@@ -228,20 +324,26 @@ class laceworkcli_dataset_handler(dataset_handler):
 
         # pass through a filter for parsing/manipulation if required
         if self.filterClass is not None:
-            df = self.filterClass().filter(result)
-            rows = len(df.index)
-            json_data = json.loads(df.to_json(date_format='iso'))
-
-        # return unfiltered object
+            json_data, data_summary = self.filterClass().filter(result, dataset=self.dataset)
         else:
-            rows = len(result)
-            json_data = result
+            # handle dataframe result
+            if type(result) == pd.DataFrame:
+                json_data = json.loads(result.to_json(date_format='iso'))
+                data_summary = {
+                    "rows": len(result.index)
+                }
+            else:
+                json_data = result
+                data_summary = {
+                    "rows": len(result)
+                }
 
         self.data = {
             "name": self.dataset.get('name'),
             "data": json_data,
             "summary": {
                 "report_time": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
-                "rows": rows
+                "rows": data_summary.get('rows'),
+                "data_summary": data_summary
             }
         }

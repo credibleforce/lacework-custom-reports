@@ -14,13 +14,13 @@
                 }
             ],
             "settings": {
-                "template": "./templates/html/s3_dns_report.html.j2"
+                "template": "./templates/html/general/table_advanced_bootstrap_dataframe.html.j2"
             },
             "reports": [
                 {
                     "name": "output",
                     "type": "local_report_handler",
-                    "path": "./output/s3_dns_report.html"
+                    "path": "./output/report.html"
                 }
             ]
         }

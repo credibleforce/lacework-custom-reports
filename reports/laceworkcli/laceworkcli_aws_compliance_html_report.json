@@ -18,7 +18,7 @@
                 }
             ],
             "settings": {
-                "template": "./templates/html/table_simple.html.j2"
+                "template": "./templates/html/general/table_simple.html.j2"
             },
             "reports": [
                 {

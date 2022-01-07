@@ -35,7 +35,7 @@
                 }
             ],
             "settings": {
-                "template": "./templates/html/advanced_compliance_summary.html.j2"
+                "template": "./templates/html/compliance/advanced_compliance_summary.html.j2"
             },
             "reports": [
                 {

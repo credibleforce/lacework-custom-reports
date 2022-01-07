@@ -2,7 +2,9 @@ from __future__ import print_function
 
 from .filter_handler import filter_handler
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
+import pandas as pd
+import json
 import os
 
 module_path = os.path.abspath(os.path.dirname(__file__))
@@ -12,58 +14,131 @@ class laceworksdk_host_vuln_filter_handler(filter_handler):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def filter(self, data, datasets=[]):
-        # filter/manipulate the resultant data
-        results = []
-        for d in data:
-            # severity = list(d.get('summary').get('severity').keys())[0]
-            # total_fixed = 0
-            # total_new = 0
-            for p in d.get('packages'):
+    def filter(
+                self,
+                data,
+                dataset=None,
+                datasets=None
+               ):
 
-                assessment_date = datetime.fromtimestamp(int(d.get('summary').get('last_evaluation_time'))/1000)
-                last_updated_time = datetime.strptime(p.get('last_updated_time'), '%a, %d %b %Y %H:%M:%S %z')
-                first_seen_time = datetime.strptime(p.get('first_seen_time'), '%a, %d %b %Y %H:%M:%S %z')
-                if p.get('status') == 'Fixed':
-                    fixed_time = (
-                        first_seen_time + timedelta(minutes=int(p.get('time_to_resolve')))
-                    ).strftime('%Y-%m-%dT%H:%M:%SZ')
-                else:
-                    fixed_time = None
+        # set report time
+        report_start_time = datetime.strptime(dataset.get('start_time'), '%Y-%m-%dT%H:%M:%SZ').strftime('%Y-%m-%d %H:%M')
+        report_end_time = datetime.strptime(dataset.get('end_time'), '%Y-%m-%dT%H:%M:%SZ').strftime('%Y-%m-%d %H:%M')
 
-                results.append({
-                    'assessment_date': assessment_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                    'cve_id': d.get('cve_id'),
-                    'name': p.get('name'),
-                    'namespace': p.get('namespace'),
-                    'fix_available': p.get('fix_available'),
-                    'version': p.get('version'),
-                    'fixed_version': p.get('fixed_version'),
-                    # 'host_count': p.get('host_count'),
-                    'severity': p.get('severity'),
-                    'cve_link': p.get('cve_link'),
-                    'cvss_score': p.get('cvss_score'),
-                    # 'cvss_v3_score': p.get('cvss_v3_score'),
-                    # 'cvss_v2_score': p.get('cvss_v3_score'),
-                    # 'description': p.get('description'),
-                    'status': p.get('status'),
-                    'package_status': p.get('package_status'),
-                    'last_updated_time': last_updated_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                    'first_seen_time': first_seen_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                    'time_to_resolve': p.get('time_to_resolve'),
-                    'fixed_time': fixed_time,
-                    # 'total_vulnerabilities': d.get('summary').get('total_vulnerabilities'),
-                    # 'total_exception_vulnerabilities': d.get('summary').get('total_exception_vulnerabilities'),
-                    # 'exception_fixable': d.get('summary').get('severity').get(severity).get('exception_fixable'),
-                    # 'exception_vulnerabilities': d.get('summary')
-                    #   .get('severity')
-                    #   .get(severity)
-                    #   .get('exception_vulnerabilities'),
-                    # 'fixable': d.get('summary').get('severity').get(severity).get('fixable'),
-                    # 'vulnerabilities': d.get('summary').get('severity').get(severity).get('vulnerabilities'),
-                    # 'summary_severity': severity
-                })
+        # convert to dataframe before passing to filter
+        df = pd.DataFrame(data)
+        df.flags.allows_duplicate_labels = False
+        df = df.explode('packages').reset_index(drop=True)
+        df = df.join(pd.json_normalize(df.packages))
+        df['severity'] = df['summary'].apply(lambda x: next(iter(x.get('severity'))))
+        df['severity_detail'] = df['summary'].apply(lambda x: x.get('severity').get(next(iter(x.get('severity')))))
+        df = df.join(pd.json_normalize(df['severity_detail']).add_prefix('severity_'))
+        df['total_vulnerabilities'] = df['summary'].apply(lambda x: x.get('total_vulnerabilities'))
+        df['last_evaluation_time'] = df['summary'].apply(lambda x: x.get('last_evaluation_time'))
+        df['total_exception_vulnerabilities'] = df['summary'].apply(lambda x: x.get('total_exception_vulnerabilities'))
+        df['assessment_date'] = pd.to_datetime(
+                    df['last_evaluation_time'].apply(
+                        lambda x: datetime.fromtimestamp(int(x)/1000)
+                    ), utc=True
+                )
+        df['assessment_day'] = df['assessment_date'].dt.strftime('%Y-%m-%d')
+        df['last_updated_time'] = pd.to_datetime(df['last_updated_time'], utc=True)
+        df['first_seen_time'] = pd.to_datetime(df['first_seen_time'], utc=True)
+        df['time_to_resolve'] = pd.to_numeric(df['time_to_resolve'])
+        df['fixed_time'] = pd.to_datetime(df['first_seen_time'] + pd.to_timedelta(df['time_to_resolve'], unit='m'))
 
-        # transform
+        # set index
+        df = df.loc[
+                (df['assessment_date'] >= report_start_time)
+                & (df['assessment_date'] <= report_end_time)
+            ]
+        df.set_index(pd.DatetimeIndex(df['assessment_date']), drop=True, inplace=True)
 
-        return results
+        # sort data
+        df.sort_values([
+                "assessment_day",
+                "cve_id", "name",
+                "namespace",
+                "status"
+            ], ascending=(
+                True,
+                True,
+                True,
+                True,
+                True
+            ), inplace=True)
+
+        # drop duplicates
+        df.drop_duplicates(subset=[
+                                    'assessment_day',
+                                    'cve_id',
+                                    'name',
+                                    'namespace'
+                        ], keep='last', inplace=True)
+
+        # count packages per cve
+        df['total_vulnerability_count'] = df.groupby([
+                    'assessment_day',
+                    'cve_id',
+                    'status'
+        ])['status'].transform('count')
+
+        df.drop(columns=['packages', 'summary', 'last_evaluation_time', 'severity_detail'], inplace=True)
+        df.reset_index(drop=True, inplace=True)
+
+        mttr = df.loc[(df['status'] == 'Fixed')]['time_to_resolve'].mean()
+        mttr_days = round(mttr/1440) if not pd.isna(mttr) else 0
+
+        # build latest status by cve, name, namespace
+        status = df.drop_duplicates(subset=['cve_id', 'name', 'namespace', 'status'], keep='last')
+
+        # count of fixed within reporting window
+        total_fixed = len(status.loc[
+                (status['status'] == 'Fixed')
+                & (status['fixed_time'] >= report_start_time)
+                & (status['fixed_time'] <= report_end_time)
+            ].index)
+
+        # total active unique cve, name, namespace within reporting window
+        total_active = len(status.loc[
+                (status['status'] == 'Active')
+                | (status['status'] == 'Reopened')
+            ].index)
+
+        # total new within reporting window
+        total_new = len(df.loc[
+                (df['status'] == 'New')
+            ].index)
+
+        # status summary
+        status_summary = df.groupby([
+                'assessment_day',
+                'status',
+                'severity'
+            ], as_index=False).size().rename(columns={"size": "count"})
+
+        vuln_summary = df.loc[
+                    (df['status'] == 'Active')
+                ].groupby([
+                    'assessment_day',
+                    'severity'
+                ], as_index=False).size().rename(columns={"size": "count"})
+
+        # data summary
+        data_summary = {
+            "total_fixed": total_fixed,
+            "total_active": total_active,
+            "total_new": total_new,
+            "severities": df['severity'].unique().tolist(),
+            "assessment_dates": df['assessment_day'].unique().tolist(),
+            "status_summary": json.loads(status_summary.to_json(date_format='iso')),
+            "vuln_summary": json.loads(vuln_summary.to_json(date_format='iso')),
+            "mttr": mttr,
+            "mttr_days": mttr_days,
+            "rows": len(df.index)
+        }
+
+        # convert to from dataframe
+        json_data = json.loads(df.to_json(date_format='iso'))
+
+        return json_data, data_summary
