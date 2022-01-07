@@ -7,6 +7,8 @@ from datetime import datetime
 import pandas as pd
 import os
 
+from concurrent.futures import ThreadPoolExecutor
+
 module_path = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -229,24 +231,30 @@ class laceworkcli_dataset_handler(dataset_handler):
                               api_token,
                               organization):
 
-        dfs = []
-        for col in machine_ids['data']['MID']:
-            machine_id = machine_ids.get('data')['MID'][col]
-            self.logger.info("Machine ID: {0}".format(machine_id))
-            result = self.laceworkcli_json_command(
-                command,
-                "{0} {1} {2} {3}".format(
-                    args_arr[0],
-                    args_arr[1],
-                    machine_id,
-                    " ".join(args_arr[2:])),
-                subaccount,
-                profile,
-                api_key,
-                api_secret,
-                api_token,
-                organization)
+        executor_tasks = []
+        with ThreadPoolExecutor(max_workers=5) as exe:
+            for col in machine_ids['data']['MID']:
+                machine_id = machine_ids.get('data')['MID'][col]
+                self.logger.info("Machine ID: {0}".format(machine_id))
 
+                executor_tasks.append(exe.submit(
+                    self.laceworkcli_json_command,
+                    command,
+                    "{0} {1} {2} {3}".format(
+                        args_arr[0],
+                        args_arr[1],
+                        machine_id,
+                        " ".join(args_arr[2:])),
+                    subaccount,
+                    profile,
+                    api_key,
+                    api_secret,
+                    api_token,
+                    organization))
+
+        dfs = []
+        for t in executor_tasks:
+            result = t.result()
             tdf = pd.json_normalize(result, sep="_")
             tdf['vulnerabilities'] = tdf['vulnerabilities'].apply(
                     lambda x: self.transform_vulnerabilities(x)
