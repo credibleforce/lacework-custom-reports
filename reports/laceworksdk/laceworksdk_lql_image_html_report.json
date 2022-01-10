@@ -1,0 +1,33 @@
+{
+    "reports": [
+        {
+            "name": "sample1",
+            "datasources": [
+                {
+                    "name": "images",
+                    "type": "laceworksdk_lql_dataset_handler",
+                    "organization": false,
+                    "subaccount": null,
+                    "account": null,
+                    "api_key": null,
+                    "api_secret": null,
+                    "start_time": "{{ (date - delta1d*2).strftime('%Y-%m-%dT00:00:00Z') }}",
+                    "end_time": "{{ date.strftime('%Y-%m-%dT%H:%M:%SZ') }}",
+                    "query_text": "Custom_HE_Images_1 {    SOURCE {      LW_HE_IMAGES    }    RETURN DISTINCT {      BATCH_START_TIME,      BATCH_END_TIME,      RECORD_CREATED_TIME,      IMAGE_CREATED_TIME,      MID,      IMAGE_ID,      CONTAINER_TYPE,      AUTHOR,      REPO,      TAG,      SIZE,      VIRTUAL_SIZE,      IMAGE_VERSION,      ACTIVE_COUNT    }  }",
+                    "filter": null,
+                    "profile": "clover"
+                }
+            ],
+            "settings": {
+                "template": "./templates/html/general/table_advanced_bootstrap_dataframe.html.j2"
+            },
+            "reports": [
+                {
+                    "name": "output",
+                    "type": "local_report_handler",
+                    "path": "./output/lql_image_report.html"
+                }
+            ]
+        }
+    ]
+}
