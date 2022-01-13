@@ -222,6 +222,17 @@ class laceworkcli_dataset_handler(dataset_handler):
 
         return result
 
+    def vulnerabilities_count_status(self, status, vulnerabilities):
+        result = 0
+        if vulnerabilities:
+            for v in vulnerabilities:
+                for k in v.keys():
+                    if k == "packages":
+                        for p in v[k]:
+                            if p['vulnerability_status'] == status:
+                                result += 1
+        return result
+
     def enumerate_machine_ids(self,
                               machine_ids,
                               args_arr,
@@ -255,25 +266,51 @@ class laceworkcli_dataset_handler(dataset_handler):
                     organization))
 
         dfs = []
+        cve_summary = {
+            "active_cves": [],
+            "active_cve_count": 0,
+            "active_cve_packages": [],
+            "active_cve_package_count": 0
+        }
         for t in executor_tasks:
             result = t.result()
             if result is not None:
                 tdf = pd.json_normalize(result, sep="_")
-                tdf['vulnerabilities'] = tdf['vulnerabilities'].apply(
-                        lambda x: self.transform_vulnerabilities(x)
+                for vulns in tdf['vulnerabilities']:
+                    if vulns:
+                        for v in vulns:
+                            cve = v['cve_id']
+                            if cve not in cve_summary['active_cves']:
+                                cve_summary['active_cves'].append(cve)
+                                cve_summary['active_cve_count'] += 1
+                            for p in v['packages']:
+                                package = "{0}:{1}:{2}".format(cve, p['name'], p['namespace'])
+                                if package not in cve_summary['active_cve_packages']:
+                                    cve_summary['active_cve_packages'].append(package)
+                                    cve_summary['active_cve_package_count'] += 1
+
+                tdf['vulnerabilities_active_count'] = tdf['vulnerabilities'].apply(
+                        lambda x: self.vulnerabilities_count_status("Active", x)
+                    )
+                tdf['vulnerabilities_reopened_count'] = tdf['vulnerabilities'].apply(
+                        lambda x: self.vulnerabilities_count_status("Reopened", x)
+                    )
+                tdf['vulnerabilities_fixed_count'] = tdf['vulnerabilities'].apply(
+                        lambda x: self.vulnerabilities_count_status("Fixed", x)
                     )
                 dfs.append(tdf)
 
         # concat all results into single dataframe
         df = pd.concat(dfs, ignore_index=True)
 
-        return df
+        return df, cve_summary
 
     def load(self):
         # initialize result objects
         json_data = {}
         data_summary = {}
         machine_ids = []
+        machine_summary_required = False
 
         # check for csp enumeration
         enumerate_csp_accounts = self.dataset.get('enumerate_csp_accounts', False)
@@ -312,7 +349,9 @@ class laceworkcli_dataset_handler(dataset_handler):
                 and args_arr[0] in ['host']
                 and args_arr[1] in ['show-assessment']):
 
-            result = self.enumerate_machine_ids(
+            # if we're enumerating vulnerabilities we need to provide some summary data
+            machine_summary_required = True
+            result, cve_summary = self.enumerate_machine_ids(
                 machine_ids,
                 args_arr,
                 command,
@@ -340,9 +379,15 @@ class laceworkcli_dataset_handler(dataset_handler):
             # handle dataframe result
             if type(result) == pd.DataFrame:
                 json_data = json.loads(result.to_json(date_format='iso'))
-                data_summary = {
-                    "rows": len(result.index)
-                }
+                if machine_summary_required:
+                    data_summary = {
+                        "rows": len(result.index),
+                        "cve_summary": cve_summary
+                    }
+                else:
+                    data_summary = {
+                        "rows": len(result.index)
+                    }
             else:
                 json_data = result
                 data_summary = {
