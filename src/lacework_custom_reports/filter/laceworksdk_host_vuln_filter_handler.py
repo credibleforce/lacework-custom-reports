@@ -117,9 +117,13 @@ class laceworksdk_host_vuln_filter_handler(filter_handler):
                 'severity'
             ], as_index=False).size().rename(columns={"size": "count"})
 
-        vuln_summary = status_summary.loc[
-                    (df['status'] == 'Active')
-                ].size().rename(columns={"size": "count"})
+        vuln_summary = df.loc[
+                        (df['status'] == 'Active')
+                    ].groupby([
+                        'assessment_day',
+                        'status',
+                        'severity'
+                    ], as_index=False).size().rename(columns={"size": "count"})
 
         # data summary
         data_summary = {
