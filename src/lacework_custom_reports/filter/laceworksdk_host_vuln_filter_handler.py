@@ -101,9 +101,7 @@ class laceworksdk_host_vuln_filter_handler(filter_handler):
                 (status['status'] == 'Fixed')
                 & (status['fixed_time'] >= report_start_time)
                 & (status['fixed_time'] <= report_end_time)
-            ].drop_duplicates(
-                subset=['cve_id'], keep='last'
-            ).index)
+            ].index)
 
         # total active count in last assessment
         total_active = int(latest_status.loc[

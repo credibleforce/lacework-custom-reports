@@ -266,14 +266,15 @@ class laceworkcli_dataset_handler(dataset_handler):
                     if vulns:
                         for v in vulns:
                             cve = v['cve_id']
-                            if cve not in cve_summary['active_cves']:
-                                cve_summary['active_cves'].append(cve)
-                                cve_summary['active_cve_count'] += 1
                             for p in v['packages']:
-                                package = "{0}:{1}:{2}".format(cve, p['name'], p['namespace'])
-                                if package not in cve_summary['active_cve_packages']:
-                                    cve_summary['active_cve_packages'].append(package)
-                                    cve_summary['active_cve_package_count'] += 1
+                                if p['vulnerability_status'] in ['Active', 'Reopened']:
+                                    if cve not in cve_summary['active_cves']:
+                                        cve_summary['active_cves'].append(cve)
+                                        cve_summary['active_cve_count'] += 1
+                                    package = "{0}:{1}:{2}".format(cve, p['name'], p['namespace'])
+                                    if package not in cve_summary['active_cve_packages']:
+                                        cve_summary['active_cve_packages'].append(package)
+                                        cve_summary['active_cve_package_count'] += 1
 
                 # simplify the vulnerability output
                 tdf['vulnerabilities'] = tdf['vulnerabilities'].apply(
