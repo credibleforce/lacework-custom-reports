@@ -194,31 +194,16 @@ class laceworkcli_dataset_handler(dataset_handler):
         return result
 
     def transform_vulnerabilities(self, vulnerabilities):
-        result = None
+        result = []
         if vulnerabilities:
-            result = []
             for v in vulnerabilities:
-                row = {}
-                for k in v.keys():
-                    if k != "packages":
-                        row[k] = v[k]
-                    else:
-                        row[k] = []
-                        for p in v[k]:
-                            row[k].append({
-                                'cvss_score': p['cvss_score'],
-                                'cvss_v_2_score': p['cvss_v_2_score'],
-                                'cvss_v_3_score': p['cvss_v_3_score'],
-                                'name': p['name'],
-                                'namespace': p['namespace'],
-                                'severity': p['severity'],
-                                'vulnerability_status': p['vulnerability_status'],
-                                'fix_available': p['fix_available'],
-                                'fixed_version': p['fixed_version'],
-                                'first_seen_time': p['first_seen_time'],
+                cve = v['cve_id']
+                for p in v['packages']:
+                    package = "{0}:{1}:{2}".format(cve, p['name'], p['namespace'])
+                    result.append(package)
 
-                            })
-                result.append(row)
+        if len(result) == 0:
+            result = "None"
 
         return result
 
@@ -274,6 +259,7 @@ class laceworkcli_dataset_handler(dataset_handler):
         }
         for t in executor_tasks:
             result = t.result()
+            # vuln_summaray = []
             if result is not None:
                 tdf = pd.json_normalize(result, sep="_")
                 for vulns in tdf['vulnerabilities']:
@@ -289,15 +275,10 @@ class laceworkcli_dataset_handler(dataset_handler):
                                     cve_summary['active_cve_packages'].append(package)
                                     cve_summary['active_cve_package_count'] += 1
 
-                tdf['vulnerabilities_active_count'] = tdf['vulnerabilities'].apply(
-                        lambda x: self.vulnerabilities_count_status("Active", x)
-                    )
-                tdf['vulnerabilities_reopened_count'] = tdf['vulnerabilities'].apply(
-                        lambda x: self.vulnerabilities_count_status("Reopened", x)
-                    )
-                tdf['vulnerabilities_fixed_count'] = tdf['vulnerabilities'].apply(
-                        lambda x: self.vulnerabilities_count_status("Fixed", x)
-                    )
+                # simplify the vulnerability output
+                tdf['vulnerabilities'] = tdf['vulnerabilities'].apply(
+                    lambda x: self.transform_vulnerabilities(x)
+                )
                 dfs.append(tdf)
 
         # concat all results into single dataframe

@@ -90,39 +90,50 @@ class laceworksdk_host_vuln_filter_handler(filter_handler):
         mttr_days = round(mttr/1440) if not pd.isna(mttr) else 0
 
         # build latest status by cve, name, namespace
-        status = df.drop_duplicates(subset=['cve_id', 'name', 'namespace', 'status'], keep='last')
+        status = df[['assessment_day', 'cve_id', 'severity', 'status', 'fixed_time']].drop_duplicates(
+                        subset=['assessment_day', 'cve_id', 'severity', 'status'], keep='last'
+                    )
+
+        latest_status = status.loc[status['assessment_day'] >= status['assessment_day'].max()]
 
         # count of fixed within reporting window
         total_fixed = len(status.loc[
                 (status['status'] == 'Fixed')
                 & (status['fixed_time'] >= report_start_time)
                 & (status['fixed_time'] <= report_end_time)
-            ].index)
+            ].drop_duplicates(
+                subset=['cve_id'], keep='last'
+            ).index)
 
-        # total active unique cve, name, namespace within reporting window
-        total_active = len(status.loc[
+        # total active count in last assessment
+        total_active = int(latest_status.loc[
                 (status['status'] == 'Active')
                 | (status['status'] == 'Reopened')
-            ].index)
+            ].drop_duplicates(
+                subset=['cve_id'], keep='last'
+            )['cve_id'].count())
 
         # total new within reporting window
         total_new = len(df.loc[
                 (df['status'] == 'New')
-            ].index)
+            ].drop_duplicates(
+                subset=['cve_id'], keep='last'
+            ).index)
 
         # status summary
-        status_summary = df.groupby([
-                'assessment_day',
-                'status',
-                'severity'
-            ], as_index=False).size().rename(columns={"size": "count"})
+        status_summary = status.groupby([
+            'assessment_day',
+            'cve_id',
+            'severity',
+            'status'
+        ], as_index=False).size().rename(columns={"size": "count"})
 
-        vuln_summary = df.loc[
+        vuln_summary = status.loc[
                         (df['status'] == 'Active')
+                        | (df['status'] == 'Reopened')
                     ].groupby([
                         'assessment_day',
-                        'status',
-                        'severity'
+                        'severity',
                     ], as_index=False).size().rename(columns={"size": "count"})
 
         # data summary
