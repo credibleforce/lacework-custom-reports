@@ -207,16 +207,36 @@ class laceworkcli_dataset_handler(dataset_handler):
 
         return result
 
-    def vulnerabilities_count_status(self, status, vulnerabilities):
-        result = 0
-        if vulnerabilities:
-            for v in vulnerabilities:
-                for k in v.keys():
-                    if k == "packages":
-                        for p in v[k]:
-                            if p['vulnerability_status'] == status:
-                                result += 1
-        return result
+    def vulnerabilities_task(self, result, cve_summary):
+        df = pd.json_normalize(result, sep="_")
+        for vulns in df['vulnerabilities']:
+            if vulns:
+                for v in vulns:
+                    cve = v['cve_id']
+                    for p in v['packages']:
+                        if p['vulnerability_status'] in ['Active', 'Reopened']:
+                            if cve not in cve_summary['active_cves']:
+                                cve_summary['active_cves'].append(cve)
+                                cve_summary['active_cve_count'] += 1
+
+                            package = "{0}:{1}:{2}:{3}:{4}".format(
+                                cve,
+                                p['name'],
+                                p['namespace'],
+                                p['severity'],
+                                p['vulnerability_status']
+                            )
+
+                            if package not in cve_summary['active_cve_packages']:
+                                cve_summary['active_cve_packages'].append(package)
+                                cve_summary['active_cve_package_count'] += 1
+
+        # simplify the vulnerability output
+        df['vulnerabilities'] = df['vulnerabilities'].apply(
+            lambda x: self.transform_vulnerabilities(x)
+        )
+
+        return df, cve_summary
 
     def enumerate_machine_ids(self,
                               machine_ids,
@@ -267,34 +287,8 @@ class laceworkcli_dataset_handler(dataset_handler):
         for t in executor_tasks:
             result = t.result()
             if result is not None:
-                tdf = pd.json_normalize(result, sep="_")
-                for vulns in tdf['vulnerabilities']:
-                    if vulns:
-                        for v in vulns:
-                            cve = v['cve_id']
-                            for p in v['packages']:
-                                if p['vulnerability_status'] in ['Active', 'Reopened']:
-                                    if cve not in cve_summary['active_cves']:
-                                        cve_summary['active_cves'].append(cve)
-                                        cve_summary['active_cve_count'] += 1
-
-                                    package = "{0}:{1}:{2}:{3}:{4}".format(
-                                        cve,
-                                        p['name'],
-                                        p['namespace'],
-                                        p['severity'],
-                                        p['vulnerability_status']
-                                    )
-
-                                    if package not in cve_summary['active_cve_packages']:
-                                        cve_summary['active_cve_packages'].append(package)
-                                        cve_summary['active_cve_package_count'] += 1
-
-                # simplify the vulnerability output
-                tdf['vulnerabilities'] = tdf['vulnerabilities'].apply(
-                    lambda x: self.transform_vulnerabilities(x)
-                )
-                dfs.append(tdf)
+                df, cve_summary = self.vulnerabilities_task(result, cve_summary)
+                dfs.append(df)
 
         # concat all results into single dataframe
         df = pd.concat(dfs, ignore_index=True)
