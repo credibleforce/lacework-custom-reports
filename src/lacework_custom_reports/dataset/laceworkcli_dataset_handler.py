@@ -230,7 +230,9 @@ class laceworkcli_dataset_handler(dataset_handler):
                               organization):
 
         executor_tasks = []
+        machine_limit = 0
         with ThreadPoolExecutor(max_workers=5) as exe:
+            i = 0
             for col in machine_ids['data']['MID']:
                 machine_id = machine_ids.get('data')['MID'][col]
                 self.logger.info("Machine ID: {0}".format(machine_id))
@@ -249,6 +251,11 @@ class laceworkcli_dataset_handler(dataset_handler):
                     api_secret,
                     api_token,
                     organization))
+                i += 1
+
+                # allow for debug break
+                if machine_limit > 0 and i >= machine_limit:
+                    break
 
         dfs = []
         cve_summary = {
@@ -259,7 +266,6 @@ class laceworkcli_dataset_handler(dataset_handler):
         }
         for t in executor_tasks:
             result = t.result()
-            # vuln_summaray = []
             if result is not None:
                 tdf = pd.json_normalize(result, sep="_")
                 for vulns in tdf['vulnerabilities']:
@@ -271,7 +277,15 @@ class laceworkcli_dataset_handler(dataset_handler):
                                     if cve not in cve_summary['active_cves']:
                                         cve_summary['active_cves'].append(cve)
                                         cve_summary['active_cve_count'] += 1
-                                    package = "{0}:{1}:{2}".format(cve, p['name'], p['namespace'])
+
+                                    package = "{0}:{1}:{2}:{3}:{4}".format(
+                                        cve,
+                                        p['name'],
+                                        p['namespace'],
+                                        p['severity'],
+                                        p['vulnerability_status']
+                                    )
+
                                     if package not in cve_summary['active_cve_packages']:
                                         cve_summary['active_cve_packages'].append(package)
                                         cve_summary['active_cve_package_count'] += 1
