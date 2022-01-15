@@ -9,6 +9,7 @@ import re
 import os
 
 from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import as_completed
 
 module_path = os.path.abspath(os.path.dirname(__file__))
 
@@ -24,7 +25,7 @@ class laceworkcli_dataset_handler(dataset_handler):
                                  api_token="",
                                  organization=""):
         # build command
-        command = 'lacework {0} {1} {2} {3} {4} {5} {6} {7} --nocolor --noninteractive --json'.format(
+        commandline = 'lacework {0} {1} {2} {3} {4} {5} {6} {7} --nocolor --noninteractive --json'.format(
             command,
             args,
             subaccount,
@@ -34,27 +35,27 @@ class laceworkcli_dataset_handler(dataset_handler):
             api_token,
             organization)
 
-        self.logger.info("Running: {0}".format(command))
-        proc = subprocess.run(command, capture_output=True, text=True, shell=True)
+        self.logger.info("Running: {0}".format(commandline))
+        proc = subprocess.run(commandline, capture_output=True, text=True, shell=True)
 
         try:
             return json.loads(proc.stdout)
         except Exception as e:
             self.logger.error("Failed to parse json: {0}".format(e))
-            error_lines = proc.stdout.splitlines()
+            error_lines = proc.stderr.splitlines()
             error_code = 0
             error_message = None
 
-            if len(error_lines) >= 4:
-                self.logger.error("Proc stderr: {0}".format(error_lines[-4:]))
-                m = re.match(r'\[(?<error_code>\d+)\] (?<error_message>.*)', 'error_lines[-1]')
-                if m:
-                    error_code = m.group(1)
-                    error_message = m.group(2)
-                    self.logger.info("Error: Code: {0} Message: {1}".format(error_code, error_message))
+            self.logger.error("Proc stderr: {0}".format(error_lines[-4:]))
+            m = re.match(r'  \[(\d+)\] (.*)', error_lines[-1])
+            self.logger.info(m)
+            if m:
+                error_code = m.group(1)
+                error_message = m.group(2)
+                self.logger.info("Error: Code: {0} Message: {1}".format(error_code, error_message))
 
             return {
-                "errror": True,
+                "error": True,
                 "error_code": error_code,
                 "error_message": error_message,
                 "command": command,
@@ -286,15 +287,15 @@ class laceworkcli_dataset_handler(dataset_handler):
                               api_token,
                               organization):
 
-        executor_tasks = []
-        machine_limit = 0
+        futures = []
         with ThreadPoolExecutor(max_workers=5) as exe:
-            i = 0
+            completed = 0
+            total_machines = len(machine_ids['data']['MID'])
             for col in machine_ids['data']['MID']:
                 machine_id = machine_ids.get('data')['MID'][col]
                 self.logger.info("Machine ID: {0}".format(machine_id))
 
-                executor_tasks.append(exe.submit(
+                futures.append(exe.submit(
                     self.laceworkcli_json_command,
                     command,
                     "{0} {1} {2} {3}".format(
@@ -308,11 +309,35 @@ class laceworkcli_dataset_handler(dataset_handler):
                     api_secret,
                     api_token,
                     organization))
-                i += 1
 
-                # allow for debug break
-                if machine_limit > 0 and i >= machine_limit:
-                    break
+                for future in as_completed(futures):
+                    completed += 1
+                    self.logger.info("Job status: {0}/{1} {2}%".format(
+                        completed,
+                        total_machines,
+                        round(completed/total_machines*100, 1))
+                    )
+                    result = future.result()
+                    error = result.get('error', False)
+                    if error:
+                        self.logger.error("Completed Job with Error: {0}".format(result))
+                        if future.result().get('error_code') == '500':
+                            self.logger.info("Resubmitting job for machine: {0}".format(result.get('args').split(' ')[2]))
+                            completed -= 1
+                            futures.append(exe.submit(
+                                self.laceworkcli_json_command,
+                                result.get('command'),
+                                result.get('args'),
+                                result.get('subaccount'),
+                                result.get('profile'),
+                                result.get('api_key'),
+                                result.get('api_secret'),
+                                result.get('api_token'),
+                                result.get('organization')
+                            ))
+
+                    else:
+                        self.logger.info("Completed Successfully!")
 
         dfs = []
         cve_summary = {
@@ -324,11 +349,11 @@ class laceworkcli_dataset_handler(dataset_handler):
             "active_cve_packages": [],
             "active_cve_package_count": 0
         }
-        for t in executor_tasks:
-            result = t.result()
+        for future in futures:
+            result = future.result()
 
             # check for error
-            if result.get('error', False):
+            if not result.get('error', False):
                 df, cve_summary = self.vulnerabilities_task(result, cve_summary)
                 dfs.append(df)
             else:
