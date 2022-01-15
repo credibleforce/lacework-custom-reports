@@ -5,6 +5,7 @@ import json
 import subprocess
 from datetime import datetime
 import pandas as pd
+import re
 import os
 
 from concurrent.futures import ThreadPoolExecutor
@@ -40,9 +41,31 @@ class laceworkcli_dataset_handler(dataset_handler):
             return json.loads(proc.stdout)
         except Exception as e:
             self.logger.error("Failed to parse json: {0}".format(e))
-            self.logger.error("Proc stdout: {0}".format(proc.stdout.splitlines()))
-            self.logger.error("Proc stderr: {0}".format(proc.stderr.splitlines()[-4:]))
-            return None
+            error_lines = proc.stdout.splitlines()
+            error_code = 0
+            error_message = None
+
+            if len(error_lines) >= 4:
+                self.logger.error("Proc stderr: {0}".format(error_lines[-4:]))
+                m = re.match(r'\[(?<error_code>\d+)\] (?<error_message>.*)', 'error_lines[-1]')
+                if m:
+                    error_code = m.group(1)
+                    error_message = m.group(2)
+                    self.logger.info("Error: Code: {0} Message: {1}".format(error_code, error_message))
+
+            return {
+                "errror": True,
+                "error_code": error_code,
+                "error_message": error_message,
+                "command": command,
+                "args": args,
+                "subaccount": subaccount,
+                "profile": profile,
+                "api_key": api_key,
+                "api_secret": api_secret,
+                "api_token": api_token,
+                "organization": organization
+            }
 
     def enumerate_aws(self, args_arr, command, subaccount, profile, api_key, api_secret, api_token, organization):
         reports = []
@@ -303,9 +326,13 @@ class laceworkcli_dataset_handler(dataset_handler):
         }
         for t in executor_tasks:
             result = t.result()
-            if result is not None:
+
+            # check for error
+            if result.get('error', False):
                 df, cve_summary = self.vulnerabilities_task(result, cve_summary)
                 dfs.append(df)
+            else:
+                self.logger.error("Machine ID Failed [{0}]: {1}".format(result.get('error_code'), result.get('args').split(' ')[-1]))
 
         # concat all results into single dataframe
         df = pd.concat(dfs, ignore_index=True)
