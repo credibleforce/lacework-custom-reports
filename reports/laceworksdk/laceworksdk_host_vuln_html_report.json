@@ -11,7 +11,7 @@
                     "account": null,
                     "api_key": null,
                     "api_secret": null,
-                    "profile": "verato",
+                    "profile": "hrs",
                     "start_time": "2022-01-01T00:00:00Z",
                     "end_time": "{{ date.strftime('%Y-%m-%dT23:59:59Z') }}",
                     "fixable": true,
@@ -27,7 +27,7 @@
                 {
                     "name": "output",
                     "type": "local_report_handler",
-                    "path": "./output/host_vuln_report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.html"
+                    "path": "./output/hrs_host_vuln_report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.html"
                 }
             ]
         }

@@ -12,3 +12,8 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: {{ env['LACEWORK_TOKEN'] }}" \
   --request GET \
   https://lwps.lacework.net/api/v2/UserProfile
+
+curl -X POST https://lwps.lacework.net/api/v2/Entities/Containers/search \
+  -H "Authorization: Bearer {{ env['LACEWORK_TOKEN'] }}"  \
+  -H "Content-Type: application/json" \
+  --data "{}"

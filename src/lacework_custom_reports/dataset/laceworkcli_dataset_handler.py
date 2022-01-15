@@ -209,8 +209,12 @@ class laceworkcli_dataset_handler(dataset_handler):
 
     def vulnerabilities_task(self, result, cve_summary):
         df = pd.json_normalize(result, sep="_")
+        cve_summary['machines_count'] += 1
+        # enumerate vulnerability array for each machine and summarize
         for vulns in df['vulnerabilities']:
             if vulns:
+                cve_summary['machines_affected'].append(df['host_hostname'])
+                cve_summary['machines_affected_count'] += 1
                 for v in vulns:
                     cve = v['cve_id']
                     for p in v['packages']:
@@ -231,10 +235,20 @@ class laceworkcli_dataset_handler(dataset_handler):
                                 cve_summary['active_cve_packages'].append(package)
                                 cve_summary['active_cve_package_count'] += 1
 
-        # simplify the vulnerability output
-        df['vulnerabilities'] = df['vulnerabilities'].apply(
-            lambda x: self.transform_vulnerabilities(x)
+        # create a machine row for each cve
+        df = df.explode('vulnerabilities').reset_index(drop=True)
+        df['cve_id'] = df['vulnerabilities'].apply(
+            lambda x: x.get('cve_id', None) if x is not None else None
         )
+        df['packages'] = df['vulnerabilities'].apply(
+            lambda x: x.get('packages', None) if x is not None else None
+        )
+        # create a machine, cve row for each pacakge
+        df = df.explode('packages').reset_index(drop=True)
+        df = df.join(pd.json_normalize(df.packages))
+
+        # remove unnecessary columns
+        df.drop(columns=['packages', 'vulnerabilities'], inplace=True)
 
         return df, cve_summary
 
@@ -250,7 +264,7 @@ class laceworkcli_dataset_handler(dataset_handler):
                               organization):
 
         executor_tasks = []
-        machine_limit = 0
+        machine_limit = 15
         with ThreadPoolExecutor(max_workers=5) as exe:
             i = 0
             for col in machine_ids['data']['MID']:
@@ -279,6 +293,9 @@ class laceworkcli_dataset_handler(dataset_handler):
 
         dfs = []
         cve_summary = {
+            "machines_count": 0,
+            "machines_affected_count": 0,
+            "machines_affected": [],
             "active_cves": [],
             "active_cve_count": 0,
             "active_cve_packages": [],

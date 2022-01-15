@@ -41,10 +41,13 @@ class laceworksdk_host_vuln_filter_handler(filter_handler):
                         lambda x: datetime.fromtimestamp(int(x)/1000)
                     ), utc=True
                 )
+
+        if 'time_to_resolve' not in df.index:
+            df['time_to_resolve'] = None
         df['assessment_day'] = df['assessment_date'].dt.strftime('%Y-%m-%d')
         df['last_updated_time'] = pd.to_datetime(df['last_updated_time'], utc=True)
         df['first_seen_time'] = pd.to_datetime(df['first_seen_time'], utc=True)
-        df['time_to_resolve'] = pd.to_numeric(df['time_to_resolve'])
+        df['time_to_resolve'] = pd.to_numeric(df['time_to_resolve'].fillna(0))
         df['fixed_time'] = pd.to_datetime(df['first_seen_time'] + pd.to_timedelta(df['time_to_resolve'], unit='m'))
 
         # set index
