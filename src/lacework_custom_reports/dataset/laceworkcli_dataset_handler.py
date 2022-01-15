@@ -41,18 +41,16 @@ class laceworkcli_dataset_handler(dataset_handler):
         try:
             return json.loads(proc.stdout)
         except Exception as e:
-            self.logger.error("Failed to parse json: {0}".format(e))
+            self.logger.error("Failed to parse result: {0}".format(e))
             error_lines = proc.stderr.splitlines()
             error_code = 0
             error_message = None
 
-            self.logger.error("Proc stderr: {0}".format(error_lines[-4:]))
+            self.logger.error("laceworkcli stderr: {0}".format(error_lines[-4:]))
             m = re.match(r'  \[(\d+)\] (.*)', error_lines[-1])
-            self.logger.info(m)
             if m:
                 error_code = m.group(1)
                 error_message = m.group(2)
-                self.logger.info("Error: Code: {0} Message: {1}".format(error_code, error_message))
 
             return {
                 "error": True,
@@ -288,56 +286,6 @@ class laceworkcli_dataset_handler(dataset_handler):
                               organization):
 
         futures = []
-        with ThreadPoolExecutor(max_workers=5) as exe:
-            completed = 0
-            total_machines = len(machine_ids['data']['MID'].keys())
-            for col in machine_ids['data']['MID']:
-                machine_id = machine_ids.get('data')['MID'][col]
-                self.logger.info("Machine ID: {0}".format(machine_id))
-
-                futures.append(exe.submit(
-                    self.laceworkcli_json_command,
-                    command,
-                    "{0} {1} {2} {3}".format(
-                        args_arr[0],
-                        args_arr[1],
-                        machine_id,
-                        " ".join(args_arr[2:])),
-                    subaccount,
-                    profile,
-                    api_key,
-                    api_secret,
-                    api_token,
-                    organization))
-
-                for completed, future in enumerate(as_completed(futures)):
-                    self.logger.info("Job status: {0}/{1} {2}%".format(
-                        completed,
-                        total_machines,
-                        round(completed/total_machines*100, 1))
-                    )
-                    result = future.result()
-                    error = result.get('error', False)
-                    if error:
-                        self.logger.error("Completed Job with Error: {0}".format(result))
-                        if future.result().get('error_code') == '500':
-                            self.logger.info("Resubmitting job for machine: {0}".format(result.get('args').split(' ')[2]))
-                            # completed -= 1
-                            # futures.append(exe.submit(
-                            #     self.laceworkcli_json_command,
-                            #     result.get('command'),
-                            #     result.get('args'),
-                            #     result.get('subaccount'),
-                            #     result.get('profile'),
-                            #     result.get('api_key'),
-                            #     result.get('api_secret'),
-                            #     result.get('api_token'),
-                            #     result.get('organization')
-                            # ))
-
-                    else:
-                        self.logger.info("Completed Successfully!")
-
         dfs = []
         cve_summary = {
             "machines_count": 0,
@@ -348,19 +296,38 @@ class laceworkcli_dataset_handler(dataset_handler):
             "active_cve_packages": [],
             "active_cve_package_count": 0
         }
-        for future in futures:
-            result = future.result()
+        total_machines = len(machine_ids['data']['MID'].keys())
+        with ThreadPoolExecutor(max_workers=5) as exe:
+            futures = [exe.submit(
+                    self.laceworkcli_json_command,
+                    command,
+                    "{0} {1} {2} {3}".format(
+                        args_arr[0],
+                        args_arr[1],
+                        machine_ids['data']['MID'][col],
+                        " ".join(args_arr[2:])),
+                    subaccount,
+                    profile,
+                    api_key,
+                    api_secret,
+                    api_token,
+                    organization) for col in machine_ids['data']['MID']]
 
-            # check for error
-            if not result.get('error', False):
-                df, cve_summary = self.vulnerabilities_task(result, cve_summary)
-                dfs.append(df)
-            else:
-                self.logger.error(
-                    "Machine ID Failed [{0}]: {1}".format(
-                        result.get('error_code'),
-                        result.get('args').split(' ')[-1])
-                )
+            for completed, future in enumerate(as_completed(futures)):
+                result = future.result()
+                error = result.get('error', False)
+                if error:
+                    self.logger.error("Completed Job with Error: {0}".format(result))
+                    if future.result().get('error_code') == '500':
+                        self.logger.info("Resubmitting job for machine: {0}".format(result.get('args').split(' ')[2]))
+                else:
+                    self.logger.info("Job status: {0}/{1} {2}%".format(
+                        completed,
+                        total_machines,
+                        round(completed/total_machines*100, 1))
+                    )
+                    df, cve_summary = self.vulnerabilities_task(result, cve_summary)
+                    dfs.append(df)
 
         # concat all results into single dataframe
         df = pd.concat(dfs, ignore_index=True)
