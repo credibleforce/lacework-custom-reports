@@ -290,7 +290,7 @@ class laceworkcli_dataset_handler(dataset_handler):
         futures = []
         with ThreadPoolExecutor(max_workers=5) as exe:
             completed = 0
-            total_machines = len(machine_ids['data']['MID'])
+            total_machines = len(machine_ids['data']['MID'].keys())
             for col in machine_ids['data']['MID']:
                 machine_id = machine_ids.get('data')['MID'][col]
                 self.logger.info("Machine ID: {0}".format(machine_id))
@@ -310,8 +310,7 @@ class laceworkcli_dataset_handler(dataset_handler):
                     api_token,
                     organization))
 
-                for future in as_completed(futures):
-                    completed += 1
+                for completed, future in enumerate(as_completed(futures)):
                     self.logger.info("Job status: {0}/{1} {2}%".format(
                         completed,
                         total_machines,
@@ -323,18 +322,18 @@ class laceworkcli_dataset_handler(dataset_handler):
                         self.logger.error("Completed Job with Error: {0}".format(result))
                         if future.result().get('error_code') == '500':
                             self.logger.info("Resubmitting job for machine: {0}".format(result.get('args').split(' ')[2]))
-                            completed -= 1
-                            futures.append(exe.submit(
-                                self.laceworkcli_json_command,
-                                result.get('command'),
-                                result.get('args'),
-                                result.get('subaccount'),
-                                result.get('profile'),
-                                result.get('api_key'),
-                                result.get('api_secret'),
-                                result.get('api_token'),
-                                result.get('organization')
-                            ))
+                            # completed -= 1
+                            # futures.append(exe.submit(
+                            #     self.laceworkcli_json_command,
+                            #     result.get('command'),
+                            #     result.get('args'),
+                            #     result.get('subaccount'),
+                            #     result.get('profile'),
+                            #     result.get('api_key'),
+                            #     result.get('api_secret'),
+                            #     result.get('api_token'),
+                            #     result.get('organization')
+                            # ))
 
                     else:
                         self.logger.info("Completed Successfully!")
