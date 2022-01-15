@@ -332,7 +332,11 @@ class laceworkcli_dataset_handler(dataset_handler):
                 df, cve_summary = self.vulnerabilities_task(result, cve_summary)
                 dfs.append(df)
             else:
-                self.logger.error("Machine ID Failed [{0}]: {1}".format(result.get('error_code'), result.get('args').split(' ')[-1]))
+                self.logger.error(
+                    "Machine ID Failed [{0}]: {1}".format(
+                        result.get('error_code'),
+                        result.get('args').split(' ')[-1])
+                )
 
         # concat all results into single dataframe
         df = pd.concat(dfs, ignore_index=True)
