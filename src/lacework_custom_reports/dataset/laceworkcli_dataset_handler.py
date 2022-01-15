@@ -264,7 +264,7 @@ class laceworkcli_dataset_handler(dataset_handler):
                               organization):
 
         executor_tasks = []
-        machine_limit = 15
+        machine_limit = 0
         with ThreadPoolExecutor(max_workers=5) as exe:
             i = 0
             for col in machine_ids['data']['MID']:
