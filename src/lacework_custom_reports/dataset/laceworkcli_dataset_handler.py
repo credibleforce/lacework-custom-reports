@@ -35,36 +35,36 @@ class laceworkcli_dataset_handler(dataset_handler):
             api_token,
             organization)
 
-        self.logger.info("Running: {0}".format(commandline))
+        self.logger.debug("Running: {0}".format(commandline))
         proc = subprocess.run(commandline, capture_output=True, text=True, shell=True)
 
         try:
             return json.loads(proc.stdout)
         except Exception as e:
-            self.logger.error("Failed to parse result: {0}".format(e))
+            self.logger.debug("Failed to parse result: {0}".format(e))
             error_lines = proc.stderr.splitlines()
             error_code = 0
             error_message = None
 
-            self.logger.error("laceworkcli stderr: {0}".format(error_lines[-4:]))
+            self.logger.debug("laceworkcli stderr: {0}".format(error_lines[-4:]))
             m = re.match(r'  \[(\d+)\] (.*)', error_lines[-1])
             if m:
                 error_code = m.group(1)
                 error_message = m.group(2)
 
-            return {
-                "error": True,
-                "error_code": error_code,
-                "error_message": error_message,
-                "command": command,
-                "args": args,
-                "subaccount": subaccount,
-                "profile": profile,
-                "api_key": api_key,
-                "api_secret": api_secret,
-                "api_token": api_token,
-                "organization": organization
-            }
+        return {
+            "error": True,
+            "error_code": error_code,
+            "error_message": error_message,
+            "command": command,
+            "args": args,
+            "subaccount": subaccount,
+            "profile": profile,
+            "api_key": api_key,
+            "api_secret": api_secret,
+            "api_token": api_token,
+            "organization": organization
+        }
 
     def enumerate_aws(self, args_arr, command, subaccount, profile, api_key, api_secret, api_token, organization):
         reports = []
@@ -298,7 +298,7 @@ class laceworkcli_dataset_handler(dataset_handler):
         }
         total_machines = len(machine_ids['data']['MID'].keys())
         with ThreadPoolExecutor(max_workers=5) as exe:
-            futures = [exe.submit(
+            futures = {exe.submit(
                     self.laceworkcli_json_command,
                     command,
                     "{0} {1} {2} {3}".format(
@@ -311,7 +311,7 @@ class laceworkcli_dataset_handler(dataset_handler):
                     api_key,
                     api_secret,
                     api_token,
-                    organization) for col in machine_ids['data']['MID']]
+                    organization) for col in machine_ids['data']['MID']}
 
             for completed, future in enumerate(as_completed(futures)):
                 result = future.result()
@@ -326,6 +326,7 @@ class laceworkcli_dataset_handler(dataset_handler):
                         total_machines,
                         round(completed/total_machines*100, 1))
                     )
+
                     df, cve_summary = self.vulnerabilities_task(result, cve_summary)
                     dfs.append(df)
 
