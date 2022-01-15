@@ -40,12 +40,12 @@ class laceworkcli_dataset_handler(dataset_handler):
         try:
             return json.loads(proc.stdout)
         except Exception as e:
-            self.logger.debug("Failed to parse result: {0}".format(e))
+            self.logger.error("Failed to parse result: {0}".format(e))
             error_lines = proc.stderr.splitlines()
             error_code = 0
             error_message = None
 
-            self.logger.debug("laceworkcli stderr: {0}".format(error_lines[-4:]))
+            self.logger.error("laceworkcli stderr: {0}".format(error_lines[-4:]))
             m = re.match(r'  \[(\d+)\] (.*)', error_lines[-1])
             if m:
                 error_code = m.group(1)
@@ -258,18 +258,21 @@ class laceworkcli_dataset_handler(dataset_handler):
 
         # create a machine row for each cve
         df = df.explode('vulnerabilities').reset_index(drop=True)
-        df['cve_id'] = df['vulnerabilities'].apply(
-            lambda x: x.get('cve_id', None) if x is not None else None
-        )
-        df['packages'] = df['vulnerabilities'].apply(
-            lambda x: x.get('packages', None) if x is not None else None
-        )
-        # create a machine, cve row for each pacakge
-        df = df.explode('packages').reset_index(drop=True)
-        df = df.join(pd.json_normalize(df.packages))
+        if not df['vulnerabilities'].isnull().values.any():
+            df['cve_id'] = df['vulnerabilities'].apply(
+                lambda x: x.get('cve_id', None) if x is not None else None
+            )
+            df['packages'] = df['vulnerabilities'].apply(
+                lambda x: x.get('packages', None) if x is not None else None
+            )
+            # create a machine, cve row for each pacakge
+            df = df.explode('packages').reset_index(drop=True)
+            df = df.join(pd.json_normalize(df.packages))
 
-        # remove unnecessary columns
-        df.drop(columns=['packages', 'vulnerabilities'], inplace=True)
+            # remove unnecessary columns
+            df.drop(columns=['packages', 'vulnerabilities'], inplace=True)
+        else:
+            df.drop(columns=['vulnerabilities'], inplace=True)
 
         return df, cve_summary
 
