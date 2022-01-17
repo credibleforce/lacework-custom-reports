@@ -706,8 +706,11 @@ spec:
                 mountPath: /app/templates/template.xlsx.j2
                 subPath: template.xlsx.j2
               - name: config
-                mountPath: /app/templates/slack.json.j2
-                subPath: slack.json.j2
+                mountPath: /app/templates/slack_html.json.j2
+                subPath: slack_html.json.j2
+              - name: config
+                mountPath: /app/templates/slack_xlsx.json.j2
+                subPath: slack_xlsx.json.j2
           volumes:
             - name: config
               configMap:
