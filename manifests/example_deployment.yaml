@@ -49,16 +49,16 @@ data:
                       "name": "output",
                       "type": "local_report_handler",
                       "path": "/app/output/report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.html"
-                  }
+                  },
                   {
                     "name": "slack",
                     "type": "slack_report_handler",
                     "token": "{{ env['SLACK_TOKEN'] }}",
                     "channel": "log",
-                    "template": "/app/templates/slack.json.j2"
-                    "attachment_template": "/app/templates/template.html.j2"
-                    "attachment_name": "report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.html"
-                    "attachment_comment" "Vulnerability Summary Report"
+                    "template": "/app/templates/slack.json.j2",
+                    "attachment_template": "/app/templates/template.html.j2",
+                    "attachment_name": "report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.html",
+                    "attachment_comment": "Vulnerability Summary Report"
                 }
               ]
           }
