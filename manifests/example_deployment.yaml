@@ -571,65 +571,117 @@ data:
       "text": "Report Execution Complete: report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.html"
     }
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1beta1
+kind: CronJob
 metadata:
   name: lacework-custom-report
 spec:
-  replicas: 1
-  revisionHistoryLimit: 0
-  selector:
-    matchLabels:
-      app: lacework-custom-report
-  template:
-    metadata:
-      labels:
-        app: lacework-custom-report
+  schedule: "*/10 * * * *"
+  jobTemplate:
     spec:
-      containers:
-      - image: credibleforce/lacework-custom-report:latest
-        name: lacework-custom-report
-        args: ["--config", "/app/reports/laceworkcli/laceworkcli_gcp_compliance_html_report.json"]
-        resources:
-          requests:
-            cpu: 200m
-            memory: 512Mi
-          limits:
-            cpu: 500m
-            memory: 1450Mi
-        env:
-        - name: LW_ACCOUNT
-          valueFrom:
-            secretKeyRef:
-              name: lacework-api
-              key: account
-        - name: LW_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: lacework-api
-              key: api-key
-        - name: LW_API_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: lacework-api
-              key: api-secret
-        - name: SLACK_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: slack-api
-              key: slack-token
-        volumeMounts:
-          - name: config
-            mountPath: /app/reports/report.json
-            subPath: report.json
-          - name: config
-            mountPath: /app/templates/template.html.j2
-            subPath: template.html.j2
-          - name: config
-            mountPath: /app/templates/slack.json.j2
-            subPath: slack.json.j2
-      volumes:
-        - name: config
-          configMap:
-            name: report-configmap
-      restartPolicy: Never
+      ttlSecondsAfterFinished: 100
+      template:
+        spec:
+          containers:
+          - image: credibleforce/lacework-custom-reports:latest
+            name: lacework-custom-report
+            args: ["--config", "/app/reports/report.json"]
+            resources:
+              requests:
+                cpu: 200m
+                memory: 512Mi
+              limits:
+                cpu: 500m
+                memory: 1450Mi
+            env:
+            - name: LW_ACCOUNT
+              valueFrom:
+                secretKeyRef:
+                  name: lacework-api
+                  key: account
+            - name: LW_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: lacework-api
+                  key: api-key
+            - name: LW_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: lacework-api
+                  key: api-secret
+            - name: SLACK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: slack-api
+                  key: slack-token
+            volumeMounts:
+              - name: config
+                mountPath: /app/reports/report.json
+                subPath: report.json
+              - name: config
+                mountPath: /app/templates/template.html.j2
+                subPath: template.html.j2
+              - name: config
+                mountPath: /app/templates/slack.json.j2
+                subPath: slack.json.j2
+          volumes:
+            - name: config
+              configMap:
+                name: report-configmap
+          restartPolicy: Never
+# ---
+# apiVersion: batch/v1
+# kind: Job
+# metadata:
+#   name: lacework-custom-report
+# spec:
+#   ttlSecondsAfterFinished: 100
+#   template:
+#     spec:
+#       containers:
+#       - image: credibleforce/lacework-custom-reports:latest
+#         name: lacework-custom-report
+#         args: ["--config", "/app/reports/report.json"]
+#         resources:
+#           requests:
+#             cpu: 200m
+#             memory: 512Mi
+#           limits:
+#             cpu: 500m
+#             memory: 1450Mi
+#         env:
+#         - name: LW_ACCOUNT
+#           valueFrom:
+#             secretKeyRef:
+#               name: lacework-api
+#               key: account
+#         - name: LW_API_KEY
+#           valueFrom:
+#             secretKeyRef:
+#               name: lacework-api
+#               key: api-key
+#         - name: LW_API_SECRET
+#           valueFrom:
+#             secretKeyRef:
+#               name: lacework-api
+#               key: api-secret
+#         - name: SLACK_TOKEN
+#           valueFrom:
+#             secretKeyRef:
+#               name: slack-api
+#               key: slack-token
+#         volumeMounts:
+#           - name: config
+#             mountPath: /app/reports/report.json
+#             subPath: report.json
+#           - name: config
+#             mountPath: /app/templates/template.html.j2
+#             subPath: template.html.j2
+#           - name: config
+#             mountPath: /app/templates/slack.json.j2
+#             subPath: slack.json.j2
+#       volumes:
+#         - name: config
+#           configMap:
+#             name: report-configmap
+#       restartPolicy: Never
