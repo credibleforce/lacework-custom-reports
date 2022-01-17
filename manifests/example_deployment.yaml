@@ -55,11 +55,21 @@ data:
                     "type": "slack_report_handler",
                     "token": "{{ env['SLACK_TOKEN'] }}",
                     "channel": "log",
-                    "template": "/app/templates/slack.json.j2",
+                    "template": "/app/templates/slack_html.json.j2",
                     "attachment_template": "/app/templates/template.html.j2",
                     "attachment_name": "report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.html",
                     "attachment_comment": "Vulnerability Summary Report"
-                }
+                  },
+                  {
+                    "name": "slack",
+                    "type": "slack_report_handler",
+                    "token": "{{ env['SLACK_TOKEN'] }}",
+                    "channel": "log",
+                    "template": "/app/templates/slack_xlsx.json.j2",
+                    "attachment_template": "/app/templates/template.xlsx.j2",
+                    "attachment_name": "report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.xlsx",
+                    "attachment_comment": "Vulnerability Summary Report"
+                  }
               ]
           }
       ]
@@ -565,10 +575,81 @@ data:
         </script>
         <!-- json object debugging -->
     </body>
-  slack.json.j2: |
+  template.xlsx.j2: |
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"
+    xmlns="http://www.w3.org/TR/REC-html40">
+    <meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">
+
+    <head>
+        <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Table</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+        <style>
+            @page {
+                size: portrait;
+                mso-page-orientation: portrait;
+            }
+
+            @page Section1 {
+                size: 595.28pt 841.89pt;
+                margin: 1.0in 1.25in 1.0in 1.25in;
+                mso-header-margin: .5in;
+                mso-footer-margin: .5in;
+                mso-paper-source: 0;
+            }
+
+            div.Section1 {
+                page: Section1;
+            }
+
+            @page Section2 {
+                size: 841.89pt 595.28pt;
+                mso-page-orientation: portrait;
+                margin: 1.25in 1.0in 1.25in 1.0in;
+                mso-header-margin: .5in;
+                mso-footer-margin: .5in;
+                mso-paper-source: 0;
+            }
+
+            div.Section2 {
+                page: Section2;
+            }
+
+            br {
+                mso-data-placement: same-cell;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="Section1">
+            <table>
+                <thead>
+                    <tr>
+                        {% for field in items['dataset1'].data[0] %}
+                        <TD class="c1">{{ field }}</TD>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                {% for item in items['dataset1'].data %}
+                    <tr>
+                    {% for field in item %}
+                        <td class="c1">{{ item[field] }}</TD>
+                    {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </body>
+  slack_html.json.j2: |
     {
       "channel": "{{ channel }}",
       "text": "Report Execution Complete: report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.html"
+    }
+  slack_xlsx.json.j2: |
+    {
+      "channel": "{{ channel }}",
+      "text": "Report Execution Complete: report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.xlsx"
     }
 ---
 apiVersion: batch/v1beta1
@@ -621,6 +702,9 @@ spec:
               - name: config
                 mountPath: /app/templates/template.html.j2
                 subPath: template.html.j2
+              - name: config
+                mountPath: /app/templates/template.xlsx.j2
+                subPath: template.xlsx.j2
               - name: config
                 mountPath: /app/templates/slack.json.j2
                 subPath: slack.json.j2
