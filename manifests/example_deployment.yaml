@@ -579,7 +579,6 @@ data:
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"
     xmlns="http://www.w3.org/TR/REC-html40">
     <meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">
-
     <head>
         <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Table</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
         <style>
@@ -618,19 +617,19 @@ data:
             }
         </style>
     </head>
-
     <body>
-        <div class="Section1">
+        {%- for dataset in items %}
+        <div class="Section{{ loop.index }}">
             <table>
                 <thead>
                     <tr>
-                        {% for field in items['dataset1'].data[0] %}
-                        <TD class="c1">{{ field }}</TD>
+                        {% for field in items[dataset].data[0] %}
+                        <td class="c1">{{ field }}</TD>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                {% for item in items['dataset1'].data %}
+                {% for item in items[dataset].data %}
                     <tr>
                     {% for field in item %}
                         <td class="c1">{{ item[field] }}</TD>
@@ -640,6 +639,7 @@ data:
                 </tbody>
             </table>
         </div>
+        {%- endfor %}
     </body>
   slack_html.json.j2: |
     {
