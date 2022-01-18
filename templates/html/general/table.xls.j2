@@ -41,25 +41,26 @@
 </head>
 <body>
     {%- for dataset in items %}
+
+    {%- set fields = items[dataset].data.keys() %}
+    {%- set first_field = fields|first %}
+
     <div class="Section1">
         <table class="data-table">
             <thead>
-            <tr>
-                {% set fields = items[dataset].data.keys() %}
-                {% for field in items[dataset].data %}
-                <TD class="c1">{{ field }}</TD>
-                {% endfor %}
-            </tr>
+                <tr>
+                    {%- for field in items[dataset].data %}
+                    <td class="c1">{{ field }}</TD>
+                    {%- endfor %}
+                </tr>
             </thead>
-            {% set first_field = fields|first %}
-            {% for row in items[dataset].data[first_field].keys() %}
-            <tr>
-            {% for field in fields %}
-            <TD class="c1">{{ items[dataset].data[field][row] }}</TD>
-            {% endfor %}
-            </tr>
-            {% endfor %}
-
+            {%- for row in items[dataset].data[first_field].keys() %}
+                <tr>
+                {%- for field in fields %}
+                <td class="c1">{{ items[dataset].data[field][row] }}</TD>
+                {%- endfor %}
+                </tr>
+            {%- endfor %}
         </table>
     </div>
     {%- endfor %}
