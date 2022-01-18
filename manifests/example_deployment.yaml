@@ -1250,6 +1250,9 @@ spec:
                 mountPath: /app/templates/host_vulnerability.html.j2
                 subPath: host_vulnerability.html.j2
               - name: config
+                mountPath: /app/templates/host_vulnerability.xls.j2
+                subPath: host_vulnerability.xls.j2
+              - name: config
                 mountPath: /app/templates/slack_html.json.j2
                 subPath: slack_html.json.j2
               - name: config
@@ -1266,7 +1269,7 @@ kind: CronJob
 metadata:
   name: lacework-host-vulnerability-report
 spec:
-  schedule: "00 06 * * * *"
+  schedule: "00 06 * * *"
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: 100
@@ -1320,6 +1323,9 @@ spec:
               - name: config
                 mountPath: /app/templates/host_vulnerability.html.j2
                 subPath: host_vulnerability.html.j2
+              - name: config
+                mountPath: /app/templates/host_vulnerability.xls.j2
+                subPath: host_vulnerability.xls.j2
               - name: config
                 mountPath: /app/templates/slack_html.json.j2
                 subPath: slack_html.json.j2
