@@ -65,9 +65,9 @@ data:
                     "type": "slack_report_handler",
                     "token": "{{ env['SLACK_TOKEN'] }}",
                     "channel": "log",
-                    "template": "/app/templates/slack_xlsx.json.j2",
-                    "attachment_template": "/app/templates/template.xlsx.j2",
-                    "attachment_name": "report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.xlsx",
+                    "template": "/app/templates/slack_xls.json.j2",
+                    "attachment_template": "/app/templates/template.xls.j2",
+                    "attachment_name": "report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.xls",
                     "attachment_comment": "Vulnerability Summary Report"
                   }
               ]
@@ -575,7 +575,7 @@ data:
         </script>
         <!-- json object debugging -->
     </body>
-  template.xlsx.j2: |
+  template.xls.j2: |
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"
     xmlns="http://www.w3.org/TR/REC-html40">
     <meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">
@@ -646,10 +646,10 @@ data:
       "channel": "{{ channel }}",
       "text": "Report Execution Complete: report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.html"
     }
-  slack_xlsx.json.j2: |
+  slack_xls.json.j2: |
     {
       "channel": "{{ channel }}",
-      "text": "Report Execution Complete: report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.xlsx"
+      "text": "Report Execution Complete: report_2022-01-01-{{ date.strftime('%Y-%m-%d') }}.xls"
     }
 ---
 apiVersion: batch/v1beta1
@@ -703,14 +703,14 @@ spec:
                 mountPath: /app/templates/template.html.j2
                 subPath: template.html.j2
               - name: config
-                mountPath: /app/templates/template.xlsx.j2
-                subPath: template.xlsx.j2
+                mountPath: /app/templates/template.xls.j2
+                subPath: template.xls.j2
               - name: config
                 mountPath: /app/templates/slack_html.json.j2
                 subPath: slack_html.json.j2
               - name: config
-                mountPath: /app/templates/slack_xlsx.json.j2
-                subPath: slack_xlsx.json.j2
+                mountPath: /app/templates/slack_xls.json.j2
+                subPath: slack_xls.json.j2
           volumes:
             - name: config
               configMap:
