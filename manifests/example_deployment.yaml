@@ -1,8 +1,14 @@
 ---
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: lacework-custom-reports
+---
+apiVersion: v1
 kind: Secret
 metadata:
   name: lacework-api
+  namespace: lacework-custom-reports
 type: Opaque
 data:
   account: LACEWORK_ACCOUNT_BASE64_ENCODED
@@ -13,6 +19,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: slack-api
+  namespace: lacework-custom-reports
 type: Opaque
 data:
   slack-token: SLACK_TOKEN_BASE64_ENCODED
@@ -21,7 +28,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: report-configmap
-  namespace: default
+  namespace: lacework-custom-reports
 data:
   host_vulnerability_trend.json: |
     {
@@ -1194,6 +1201,7 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: lacework-host-vulnerability-trend-report
+  namespace: lacework-custom-reports
 spec:
   schedule: "45 05 * * *"
   jobTemplate:
@@ -1268,6 +1276,7 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: lacework-host-vulnerability-report
+  namespace: lacework-custom-reports
 spec:
   schedule: "00 06 * * *"
   jobTemplate:

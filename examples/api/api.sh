@@ -17,3 +17,19 @@ curl -X POST https://lwps.lacework.net/api/v2/Entities/Containers/search \
   -H "Authorization: Bearer {{ env['LACEWORK_TOKEN'] }}"  \
   -H "Content-Type: application/json" \
   --data "{}"
+
+curl -X POST https://lwps.lacework.net/api/v2/Entities/Machines/search \
+  -H "Authorization: Bearer {{ env['LACEWORK_TOKEN'] }}"  \
+  -H "Content-Type: application/json" \
+  --data "{}"
+
+curl -X POST https://lwps.lacework.net/api/v2/Vulnerabilities/Hosts/search \
+  -H "Authorization: Bearer {{ env['LACEWORK_TOKEN'] }}"  \
+  -H "Content-Type: application/json" \
+  --data "{}"
+
+curl -X POST https://lwps.lacework.net/api/v2/Vulnerabilities/Containers/search \
+  -H "Authorization: Bearer {{ env['LACEWORK_TOKEN'] }}"  \
+  -H "Content-Type: application/json" \
+  --data "{}"
+  

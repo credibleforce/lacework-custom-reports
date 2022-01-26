@@ -1,0 +1,4 @@
+evaluatorId: Config
+queryId: MyLQL
+queryText: |-
+    Swimlane_Custom_Query {source {LW_CFG_AWS} filter { RESOURCE_ID is not null and RESOURCE_TYPE = 'ec2:instance'} return { ACCOUNT_ID,ARN,RESOURCE_TYPE,RESOURCE_ID,RESOURCE_REGION,RESOURCE_CONFIG}}

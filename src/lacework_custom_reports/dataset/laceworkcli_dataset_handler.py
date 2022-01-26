@@ -34,7 +34,7 @@ class laceworkcli_dataset_handler(dataset_handler):
             api_token,
             organization)
 
-        self.logger.debug("Running: {0}".format(commandline))
+        self.logger.info("Running: {0}".format(commandline))
         proc = subprocess.run(commandline, capture_output=True, text=True, shell=True)
 
         try:
@@ -109,6 +109,11 @@ class laceworkcli_dataset_handler(dataset_handler):
         self.logger.info("GCP org projects: {0}".format(org_projects))
         if org_projects:
             for op in org_projects['gcp_projects']:
+                # cli doesn't provide org detail in same cases
+                if op['organization_id'] == 'n/a':
+                    self.logger.error("Unable to obtain organization id - missing GCP org integration")
+                    raise Exception("Unable to obtain organization id - missing GCP org integration")
+
                 reports.append(self.laceworkcli_json_command(
                     command,
                     "{0} {1} {2} {3} {4}".format(
@@ -228,14 +233,45 @@ class laceworkcli_dataset_handler(dataset_handler):
 
         return result
 
+    def vulnerability_dataframe_transform(self, df):
+        # create a machine row for each cve
+        df = df.explode('vulnerabilities').reset_index(drop=True)
+        if not df['vulnerabilities'].isnull().values.any():
+            df['cve_id'] = df['vulnerabilities'].apply(
+                lambda x: x.get('cve_id', None) if x is not None else None
+            )
+            df['packages'] = df['vulnerabilities'].apply(
+                lambda x: x.get('packages', None) if x is not None else None
+            )
+            # create a machine, cve row for each pacakge
+            df = df.explode('packages').reset_index(drop=True)
+            df = df.join(pd.json_normalize(df.packages))
+
+            # remove unnecessary columns
+            df.drop(columns=['packages', 'vulnerabilities'], inplace=True)
+        else:
+            df.drop(columns=['vulnerabilities'], inplace=True)
+
+        return df
+
     def vulnerabilities_task(self, result, cve_summary):
         df = pd.json_normalize(result, sep="_")
         cve_summary['machines_count'] += 1
+
         # enumerate vulnerability array for each machine and summarize
         for vulns in df['vulnerabilities']:
             if vulns:
                 cve_summary['machines_affected'].append(df['host_hostname'])
                 cve_summary['machines_affected_count'] += 1
+
+                account = None
+                if 'host_tags_Account' in df.columns and df['host_tags_Account'][0] != "":
+                    account = df['host_tags_Account'][0]
+                if account not in cve_summary['account_summary'].keys():
+                    cve_summary['account_summary'][account] = 1
+                else:
+                    cve_summary['account_summary'][account] += 1
+
                 for v in vulns:
                     cve = v['cve_id']
                     for p in v['packages']:
@@ -256,23 +292,7 @@ class laceworkcli_dataset_handler(dataset_handler):
                                 cve_summary['active_cve_packages'].append(package)
                                 cve_summary['active_cve_package_count'] += 1
 
-        # create a machine row for each cve
-        df = df.explode('vulnerabilities').reset_index(drop=True)
-        if not df['vulnerabilities'].isnull().values.any():
-            df['cve_id'] = df['vulnerabilities'].apply(
-                lambda x: x.get('cve_id', None) if x is not None else None
-            )
-            df['packages'] = df['vulnerabilities'].apply(
-                lambda x: x.get('packages', None) if x is not None else None
-            )
-            # create a machine, cve row for each pacakge
-            df = df.explode('packages').reset_index(drop=True)
-            df = df.join(pd.json_normalize(df.packages))
-
-            # remove unnecessary columns
-            df.drop(columns=['packages', 'vulnerabilities'], inplace=True)
-        else:
-            df.drop(columns=['vulnerabilities'], inplace=True)
+        df = self.vulnerability_dataframe_transform(df)
 
         return df, cve_summary
 
@@ -293,9 +313,10 @@ class laceworkcli_dataset_handler(dataset_handler):
                 round(self.completed/self.total_machines*100, 1))
             )
 
-            df, cve_summary = self.vulnerabilities_task(result, self.cve_summary)
+            df, self.cve_summary = self.vulnerabilities_task(result, self.cve_summary)
             self.dfs.append(df)
 
+    # required currently for all customers not on v2 beta
     def enumerate_machine_ids(self,
                               machine_ids,
                               args_arr,
@@ -316,7 +337,8 @@ class laceworkcli_dataset_handler(dataset_handler):
             "active_cves": [],
             "active_cve_count": 0,
             "active_cve_packages": [],
-            "active_cve_package_count": 0
+            "active_cve_package_count": 0,
+            "account_summary": {}
         }
         self.total_machines = len(machine_ids['data']['MID'].keys())
         self.completed = 0
@@ -340,24 +362,6 @@ class laceworkcli_dataset_handler(dataset_handler):
                         organization)
                 future.add_done_callback(lambda f: self.host_vuln_callback(f))
                 futures.append(future)
-
-            # for future in as_completed(futures):
-            #     result = future.result()
-            #     completed += 1
-            #     error = result.get('error', False)
-            #     if error:
-            #         self.logger.error("Completed Job with Error: {0}".format(result))
-            #         if future.result().get('error_code') == '500':
-            #             self.logger.info("Resubmitting job for machine: {0}".format(result.get('args').split(' ')[2]))
-            #     else:
-            #         self.logger.info("Job status: {0}/{1} {2}%".format(
-            #             completed,
-            #             total_machines,
-            #             round(completed/total_machines*100, 1))
-            #         )
-
-            #         df, cve_summary = self.vulnerabilities_task(result, cve_summary)
-            #         dfs.append(df)
 
         # concat all results into single dataframe
         df = pd.concat(self.dfs, ignore_index=True)

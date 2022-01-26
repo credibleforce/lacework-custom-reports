@@ -1,0 +1,20 @@
+LW_Global_AWS_Config_S3BucketNotEncryptedAtRest {
+     source {
+         LW_CFG_AWS_S3 bucket
+         with LW_CFG_AWS_S3_GET_BUCKET_ENCRYPTION encryption
+     }
+     filter {
+         encryption.ARN is null
+     }
+     return distinct {
+         bucket.ACCOUNT_ALIAS,
+         bucket.ACCOUNT_ID,
+         bucket.RESOURCE_CONFIG,
+         bucket.RESOURCE_ID,
+         bucket.RESOURCE_REGION,
+         bucket.RESOURCE_TYPE,
+         bucket.SERVICE,
+         case when encryption.ARN is null then 'ServerSideEncryptionNotEnabled'
+         end as reason
+     }
+ }

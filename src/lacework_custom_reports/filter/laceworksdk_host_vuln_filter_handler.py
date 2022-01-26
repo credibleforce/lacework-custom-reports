@@ -28,6 +28,7 @@ class laceworksdk_host_vuln_filter_handler(filter_handler):
         # convert to dataframe before passing to filter
         df = pd.DataFrame(data)
         df.flags.allows_duplicate_labels = False
+        self.logger.info(df)
         df = df.explode('packages').reset_index(drop=True)
         df = df.join(pd.json_normalize(df.packages))
         df['severity'] = df['summary'].apply(lambda x: next(iter(x.get('severity'))))
