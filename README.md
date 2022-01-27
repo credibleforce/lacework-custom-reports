@@ -59,7 +59,7 @@ docker run --rm -it \
     --env=HOME=/home/user \
     --user $UID:$GID \
     `# run the report script` \
-    credibleforce/lacework-custom-reports:latest --config /app/reports/laceworkcli/laceworkcli_gcp_compliance_html_report.json
+    laceworkps/lacework-custom-reports:latest --config /app/reports/laceworkcli/laceworkcli_gcp_compliance_html_report.json
 ```
 
 ### Setup.py

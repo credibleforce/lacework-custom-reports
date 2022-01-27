@@ -1285,7 +1285,7 @@ spec:
       template:
         spec:
           containers:
-          - image: credibleforce/lacework-custom-reports:latest
+          - image: laceworkps/lacework-custom-reports:latest
             name: lacework-host-vulnerability-report
             args: ["--config", "/app/reports/host_vulnerability.json"]
             resources:
@@ -1356,7 +1356,7 @@ spec:
 #   template:
 #     spec:
 #       containers:
-#       - image: credibleforce/lacework-custom-reports:latest
+#       - image: laceworkps/lacework-custom-reports:latest
 #         name: lacework-custom-report
 #         args: ["--config", "/app/reports/report.json"]
 #         resources:
@@ -1419,7 +1419,7 @@ spec:
 #         app: lacework-custom-report
 #     spec:
 #       containers:
-#       - image: credibleforce/lacework-custom-reports:latest
+#       - image: laceworkps/lacework-custom-reports:latest
 #         name: lacework-custom-report
 #         args: ["--config", "/app/reports/report.json"]
 #         resources:

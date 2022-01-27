@@ -9,12 +9,12 @@
                     "command": "compliance",
                     "args": "gcp get-report --severity high --type CIS",
                     "organization": false,
-                    "subaccount": null,
+                    "subaccount": "google-cloud",
                     "account": null,
                     "api_key": null,
                     "api_secret": null,
                     "api_token": null,
-                    "profile": "hrs",
+                    "profile": "telushealth",
                     "filter": "laceworkcli_compliance_summary_filter_handler",
                     "enumerate_csp_accounts": true
                 }
@@ -26,7 +26,7 @@
                 {
                     "name": "output",
                     "type": "local_report_handler",
-                    "path": "./output/gorillas_sample_compliance_summary.html"
+                    "path": "./output/telushealth_sample_compliance_summary.html"
                 }
             ]
         }

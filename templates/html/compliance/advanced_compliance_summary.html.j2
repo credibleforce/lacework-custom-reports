@@ -261,12 +261,74 @@
       <article class="card">
           <content class="card-body">
             <h5 class="card-title">{{ items[dataset].data.reportTitle['0'] }}</h5>
+            <div class="row card">
+                <div id="legend-container" class="col-12"></div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="row">
+                        <strong>Compliance Coverage Score</strong>
+                    </div>
+                    <div class="row" style="font-size: 110pt;">
+                        {{ items[dataset].summary.data_summary['total_compliance_coverage'] }}%
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="trend-chart">
+                        <canvas id="chart_{{dataset}}"></canvas>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12">
-                    <div class="toolbar_{{ dataset }}">
-                        Total rows: <span id="total">{{ items[dataset].summary.rows }}</span>
+                    <div class="row card">
+                        <div class="row">
+                            <div class="col-4 compliance-severity">TOTAL ACCOUNTS</div>
+                            <div class="col-4 compliance-severity">TOTAL COMPLIANT</div>
+                            <div class="col-4 compliance-severity">TOTAL NON-COMPLIANT</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 compliance-severity-count">{{ items[dataset].summary.data_summary['total_accounts'] }}</div>
+                            <div class="col-4 compliance-severity-count">{{ items[dataset].summary.data_summary['total_compliant'] }}</div>
+                            <div class="col-4 compliance-severity-count">{{ items[dataset].summary.data_summary['total_not_compliant'] }}</div>
+                        </div>
                     </div>
-                    <table class="data-table" id="table_{{ dataset }}"></table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="row card" style="padding: 10px">
+                        <h5 class="card-title">Executive Summary</h5>
+                        <div class="col-12">
+                            The Account Compliance Report shows a list of all accounts and their compliance against the measured framework. Ideally all resources would be fully aligned with the compliance framework. Exception should be created and documented for all resources which will should not be measured as part of compliance demonstration.
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="toolbar_{{ dataset }}">
+                            Total rows: <span id="total">{{ items[dataset].summary.rows }}</span>
+                        </div>
+                        <table class="data-table" id="table_{{ dataset }}"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="row card" style="padding: 10px">
+                        <h5 class="card-title">Executive Summary</h5>
+                        <div class="col-12">
+                            The Account Compliance Report shows a list of all accounts and their compliance against the measured framework. Ideally all resources would be fully aligned with the compliance framework. Exception should be created and documented for all resources which will should not be measured as part of compliance demonstration.
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="toolbar_{{ dataset }}">
+                            Total rows: <span id="total">{{ items[dataset].summary.rows }}</span>
+                        </div>
+                        <table class="data-table" id="table_{{ dataset }}"></table>
+                    </div>
                 </div>
             </div>
         </content>
@@ -276,34 +338,186 @@
    <script type="text/javascript">
         {%- for dataset in items %}
 
+        // chart {{ dataset }}
+         const ctx_{{ dataset }} = document.getElementById('chart_{{dataset}}');
+        ctx_{{ dataset }}.getContext("2d").canvas.width = 200;
+        ctx_{{ dataset }}.getContext("2d").canvas.height = 110;
+        
+        const chartLabels = [
+            {%- for col in items[dataset].summary.data_summary['account_compliance']['report_account'] %}
+                '{{ items[dataset].summary.data_summary['account_compliance']['report_account'][col] }}'
+                {%- if not loop.last -%}
+                ,
+                {%- endif %}
+            {%- endfor %}
+        ]
+
+        const chartData = [
+            {%- for col in items[dataset].summary.data_summary['account_compliance']['compliance_coverage'] %}
+                {{ items[dataset].summary.data_summary['account_compliance']['compliance_coverage'][col] }}
+                {%- if not loop.last -%}
+                ,
+                {%- endif %}
+            {%- endfor %}
+        ]
+        i = 0;
+        var graphColors = [];
+        var graphOutlines = [];
+        var hoverColor = [];
+        while (i <= chartData.length) {
+            var randomR = Math.floor((Math.random() * 130) + 100);
+            var randomG = Math.floor((Math.random() * 130) + 100);
+            var randomB = Math.floor((Math.random() * 130) + 100);
+        
+            var graphBackground = "rgb(" 
+                    + randomR + ", " 
+                    + randomG + ", " 
+                    + randomB + ")";
+            graphColors.push(graphBackground);
+            
+            var graphOutline = "rgb(" 
+                    + (randomR - 80) + ", " 
+                    + (randomG - 80) + ", " 
+                    + (randomB - 80) + ")";
+            graphOutlines.push(graphOutline);
+            
+            var hoverColors = "rgb(" 
+                    + (randomR + 25) + ", " 
+                    + (randomG + 25) + ", " 
+                    + (randomB + 25) + ")";
+            hoverColor.push(hoverColors);
+            
+            i++;
+        };
+
+        const data = {
+            labels: chartLabels,
+            datasets: [{
+                data: chartData,
+                backgroundColor: graphColors,
+                hoverOffset: 4
+            }]
+        };
+
+        const getOrCreateLegendList = (chart, id) => {
+            const legendContainer = document.getElementById(id);
+            let listContainer = legendContainer.querySelector('ul');
+
+            if (!listContainer) {
+                listContainer = document.createElement('ul');
+                listContainer.style.display = 'flex';
+                listContainer.style.flexWrap = 'wrap';
+                listContainer.style.margin = 0;
+                listContainer.style.padding = 0;
+                listContainer.style.textAlign = 'center';
+                listContainer.style.height = '110px';
+                listContainer.style.overflowY = 'scroll';
+
+                legendContainer.appendChild(listContainer);
+            }
+
+            return listContainer;
+        };
+
+        const htmlLegendPlugin = {
+            id: 'htmlLegend',
+            afterUpdate(chart, args, options) {
+                console.log(chart)
+                const ul = getOrCreateLegendList(chart, chart.options.plugins.htmlLegend.containerID);
+
+                // Remove old legend items
+                while (ul.firstChild) {
+                    ul.firstChild.remove();
+                }
+
+                // Reuse the built-in legendItems generator                    
+                const items = chart.options.legend.labels.generateLabels(chart);
+
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.style.alignItems = 'center';
+                    li.style.cursor = 'pointer';
+                    li.style.display = 'flex';
+                    li.style.flexDirection = 'row';
+                    li.style.marginLeft = '10px';
+
+                    li.onclick = () => {
+                        const {type} = chart.config;
+                        if (type === 'pie' || type === 'doughnut') {
+                        // Pie and doughnut charts only have a single dataset and visibility is per item
+                        chart.toggleDataVisibility(item.index);
+                        } else {
+                        chart.setDatasetVisibility(item.datasetIndex, !chart.isDatasetVisible(item.datasetIndex));
+                        }
+                        chart.update();
+                    };
+
+                    // Color box
+                    const boxSpan = document.createElement('span');
+                    boxSpan.style.background = item.fillStyle;
+                    boxSpan.style.borderColor = item.strokeStyle;
+                    boxSpan.style.borderWidth = item.lineWidth + 'px';
+                    boxSpan.style.display = 'inline-block';
+                    boxSpan.style.height = '20px';
+                    boxSpan.style.marginRight = '10px';
+                    boxSpan.style.width = '20px';
+
+                    // Text
+                    const textContainer = document.createElement('p');
+                    textContainer.style.color = item.fontColor;
+                    textContainer.style.margin = 0;
+                    textContainer.style.padding = 0;
+                    textContainer.style.textDecoration = item.hidden ? 'line-through' : '';
+
+                    const text = document.createTextNode(item.text);
+                    textContainer.appendChild(text);
+
+                    li.appendChild(boxSpan);
+                    li.appendChild(textContainer);
+                    ul.appendChild(li);
+                });
+            }
+        };
+        const chart_{{ dataset }} = new Chart(ctx_{{ dataset }}, {
+            type: 'polarArea',
+            data: data,
+            responsive: true,
+            maintainAspectRatio: true,
+            options: {
+                plugins: {
+                    htmlLegend: {
+                        // ID of the container to put the legend in
+                        containerID: 'legend-container',
+                    },
+                    legend: {
+                        display: false,
+                    }
+                },
+                legend: {
+                    display: false,
+                },
+                title: {
+                    display: true,
+                    text: '% Compliant by Account'
+                }
+            },
+            plugins: [htmlLegendPlugin]
+        });
+
         // data table {{ dataset }}
         {%- set fields = items[dataset].data.keys() %}
         {%- set first_field = fields|first %}
-        {%- set summary_fields = items[dataset].data.summary['0'].keys()  %}
 
         var $table = $('#table_{{ dataset }}')
         var total = 0
         
         const table_cols_{{ dataset }} = [
             {%- for field in items[dataset].data %}
-            {%- if field != "summary" %}
-                 {
-                    field: '{{ field }}',
-                    title: '{{ field }}',
-                    sortable: true
-                }
-            {%- else %}
-                {%- for sum_field in summary_fields %}
-                    {
-                        field: '{{ sum_field }}',
-                        title: '{{ sum_field }}',
-                        sortable: true
-                    }
-                    {%- if not loop.last -%}
-                    ,
-                    {%- endif %}
-                {%- endfor %}
-            {%- endif %}
+            {
+                field: '{{ field }}',
+                title: '{{ field }}',
+                sortable: true
+            }
             {%- if not loop.last -%}
             ,
             {%- endif %}
@@ -315,16 +529,7 @@
                 {
                     id: {{ row }},
                     {%- for field in fields %}
-                        {%- if field != "summary" %}
-                            {{ field }}: "{{ items[dataset].data[field][row] }}"
-                        {%- else %}
-                            {%- for sum_field in summary_fields %}
-                                {{ sum_field }}: "{{ items[dataset].data['summary'][row][sum_field] }}"
-                                {%- if not loop.last -%}
-                                ,
-                                {%- endif %}
-                            {%- endfor %}
-                        {%- endif %}
+                        {{ field }}: "{{ items[dataset].data[field][row] }}"
                         {%- if not loop.last -%}
                         ,
                         {%- endif %}
