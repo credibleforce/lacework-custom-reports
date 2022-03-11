@@ -7,14 +7,14 @@
                     "name": "dataset1",
                     "type": "laceworkcli_dataset_handler",
                     "command": "compliance",
-                    "args": "gcp get-report --severity high --type CIS",
+                    "args": "aws get-report --severity critical --type CIS",
                     "organization": false,
-                    "subaccount": "google-cloud",
+                    "subaccount": null,
                     "account": null,
                     "api_key": null,
                     "api_secret": null,
                     "api_token": null,
-                    "profile": "telushealth",
+                    "profile": "fubotv",
                     "filter": "laceworkcli_compliance_summary_filter_handler",
                     "enumerate_csp_accounts": true
                 }
@@ -26,7 +26,7 @@
                 {
                     "name": "output",
                     "type": "local_report_handler",
-                    "path": "./output/telushealth_sample_compliance_summary.html"
+                    "path": "./output/fubotv_aws_compliance_summary.html"
                 }
             ]
         }

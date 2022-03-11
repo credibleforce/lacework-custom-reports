@@ -11,7 +11,12 @@ RUN pip install -r requirements.txt
 # Temp workaround for beta v2 API support (beta support)
 WORKDIR /
 RUN git clone https://github.com/lacework/python-sdk -b alannix-lw/pagination
-RUN cd python-sdk && pip install -r requirements.txt && python setup.py install
+RUN cd python-sdk \
+    && pip install -r requirements.txt \
+    && python setup.py install \
+    && mkdir -p /app \
+    && chown user:user /app \
+    && mv laceworksdk /app
 
 USER user
 

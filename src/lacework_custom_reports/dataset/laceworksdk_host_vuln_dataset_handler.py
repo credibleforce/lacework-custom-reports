@@ -62,10 +62,11 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
             {"field": "status", "expression": "eq", "value": "Active"}
         )
 
-        if severity:
+        if severity and severity.lower() in ['critical', 'high', 'medium', 'low']:
             query['filters'].append(
-                {"field": "severity", "expression": "eq", "value": severity}
+                {"field": "severity", "expression": "eq", "value": severity.lower().capitalize()}
             )
+
         if fixable:
             query['filters'].append(
                 {"field": "fixInfo.fix_available", "expression": "eq", "value": 1}
@@ -79,17 +80,18 @@ class laceworksdk_host_vuln_dataset_handler(dataset_handler):
             "vulnId",
             "featureKey",
             "machineTags",
-            "fixInfo.fix_available",
-            "fixInfo.fixed_version",
-            "fixInfo.version_installed"
+            "fixInfo"
         ]
+
+        self.logger.info(query)
         host_vulns = self.lw.vulnerabilities.hosts.search(json=query)
 
         results = []
         for h in host_vulns:
             for d in h['data']:
                 self.logger.info(d['vulnId'])
-                results.append(d)
+                # results.append(d)
+                break
 
         # convert to data frame
         df = pd.DataFrame(results)

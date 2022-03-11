@@ -1,0 +1,71 @@
+{
+    "reports": [
+        {
+            "name": "example",
+            "title": "title",
+            "summary": "this is a summary",
+            "type": "laceworks3",
+            "parameters": {
+                "path": "s3://bucket/data.html",
+                "timeFilters": {
+                    "startTime": "now-1d",
+                    "endTime": "now"
+                },
+                "query": "select * from df"
+            },
+            "summary_data": [
+                {
+                    "name": "project_count",
+                    "query": "select count(*) from df group by projectId"
+                }
+            ],
+            "destinations": [
+                {
+                    "name": "html",
+                    "type": "local",
+                    "path": "result.html",
+                    "format": "template",
+                    "templatePath": "example.html.j2"
+                },
+                {
+                    "name": "xls",
+                    "type": "local",
+                    "path": "result.xls",
+                    "format": "template",
+                    "templatePath": "xls.j2"
+                },
+                {
+                    "name": "csv",
+                    "type": "local",
+                    "path": "result.csv",
+                    "format": "csv",
+                    "seperator": ","
+                },
+                {
+                    "name": "json",
+                    "type": "local",
+                    "path": "result.json",
+                    "format": "raw"
+                },
+                {
+                    "name": "s3",
+                    "type": "s3",
+                    "path": "s3://bucket/result.html",
+                    "format": "template",
+                    "templatePath": "example.html.j2"
+                },
+                {
+                    "name": "slack",
+                    "type": "slack",
+                    "token": "{{ env['SLACK_TOKEN'] }}",
+                    "channel": "log",
+                    "format": "template",
+                    "templatePath": "slack_message.json.j2",
+                    "attachment_template": "example.html.j2",
+                    "attachment_name": "report.html",
+                    "attachment_comment": "report comment"
+                }
+            ]
+        }
+    ]
+}

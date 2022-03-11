@@ -85,7 +85,7 @@ class laceworkcli_dataset_handler(dataset_handler):
                         "{0} {1} {2} {3}".format(
                             args_arr[0],
                             args_arr[1],
-                            a,
+                            a['account_id'],
                             " ".join(args_arr[2:])),
                         subaccount,
                         profile,
@@ -111,9 +111,9 @@ class laceworkcli_dataset_handler(dataset_handler):
             for op in org_projects['gcp_projects']:
                 # cli doesn't provide org detail in same cases
                 if op['organization_id'] == 'n/a':
-                    op['organization_id'] = 969366444050
+                    op['organization_id'] = 621911425474
                     self.logger.error("Unable to obtain organization id - missing GCP org integration")
-                    raise Exception("Unable to obtain organization id - missing GCP org integration")
+                    # raise Exception("Unable to obtain organization id - missing GCP org integration")
 
                 reports.append(self.laceworkcli_json_command(
                     command,
